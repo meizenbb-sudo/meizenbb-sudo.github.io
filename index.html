@@ -698,8 +698,33 @@ h2 {
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-areas: 'table' 'results' 'keyboard';
+  grid-template-rows: auto auto;
+  grid-template-areas: 'table' 'results';
+}
+/* 手入力はページ全体をスクロールする（結果の欄だけを小さくスクロールさせない）。
+   スマホでは牌のキーボードを画面の下に重ねて出し、その高さぶん body の下に余白を足す（--kb-space は JS が入れる） */
+.app[data-mode='manual'] {
+  height: auto;
+  min-height: 100%;
+}
+.app[data-mode='manual'] > .manual {
+  flex: 1 0 auto;
+  height: auto;
+}
+body {
+  padding-bottom: var(--kb-space, 0px);
+}
+/* 写真の画面は画面の高さに合わせて作る（html・body は 100%）。手入力の画面は中身の高さでページごとスクロールする */
+html[data-mode='manual'],
+html[data-mode='manual'] body {
+  height: auto;
+  min-height: 100%;
+}
+/* キーボードを開いている間は、手牌を画面の上に留める（下の結果を見ながら入れられる） */
+.manual[data-kb='open'] .table {
+  position: sticky;
+  top: 0;
+  z-index: 6;
 }
 @media (min-width: 720px) and (min-height: 600px) {
   .workspace {
@@ -708,8 +733,19 @@ h2 {
     grid-template-areas: 'table results' 'keyboard results';
     column-gap: 24px;
   }
-  .keyboard {
+  /* 広い画面では今までどおり左の列に置く（重ねない）。下の「牌キーボード」の基本より強くするため .workspace を付ける */
+  .workspace > .keyboard {
+    position: static;
     align-self: start;
+    max-width: none;
+    margin: 0;
+    padding: 8px 0 10px;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .manual[data-kb='open'] .table {
+    position: relative;
   }
 }
 
@@ -949,9 +985,85 @@ h2 {
 }
 
 /* ---------- 牌キーボード ---------- */
+/* スマホ: 画面の下に重ねるシート。上の段に手牌・鳴きのタブと大きな「閉じる」 */
 .keyboard {
   grid-area: keyboard;
-  padding-block: 8px 10px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 12;
+  max-width: 640px;
+  margin-inline: auto;
+  padding: 8px max(12px, env(safe-area-inset-left, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-right, 0px));
+  background: var(--surface);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -10px 28px rgb(0 0 0 / 0.16), 0 -1px 0 var(--line);
+}
+.keyboard[hidden],
+.kb-open[hidden] {
+  display: none;
+}
+.kb-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kb-head .kb-tabs {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* 閉じるボタン: タブと見分けがつくよう濃い色の丸いボタンに、矢印と「閉じる」の文字 */
+.kb-close {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 14px 0 9px;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 13.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.kb-close svg {
+  width: 18px;
+  height: 18px;
+}
+.kb-close:active {
+  filter: brightness(1.2);
+}
+/* 閉じているときに下に出す「牌を入力」 */
+.kb-open {
+  position: fixed;
+  z-index: 12;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 22px 0 18px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 0.28);
+}
+.kb-open svg {
+  width: 22px;
+  height: 22px;
+}
+.kb-open:active {
+  transform: translateX(-50%) scale(0.97);
 }
 .kb-tabs {
   display: flex;
@@ -1065,8 +1177,6 @@ h2 {
 .results {
   grid-area: results;
   min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1700,6 +1810,8 @@ details.more[open] > summary::before {
   top: calc(env(safe-area-inset-top, 0px) + 10px);
   transform: translateX(-50%);
   z-index: 10;
+  /* left:50% だと使える幅が画面の半分になり、短い文でも折り返してしまう。中身の幅にそろえて上限だけ決める */
+  width: max-content;
   max-width: min(92vw, 420px);
   padding: 9px 14px;
   border-radius: 12px;
@@ -1709,6 +1821,24 @@ details.more[open] > summary::before {
   font-weight: 500;
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
   animation: toast-in 0.18s ease-out;
+}
+/* ボタン付き（「元に戻す」など）。ボタンは押しやすい大きさに */
+.toast.has-act {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 6px 6px 14px;
+}
+.toast-act {
+  flex: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 13px;
+  background: #8fe3bd;
+  color: #10352a;
+  font-size: 12.5px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 @keyframes toast-in {
   from {
@@ -2165,6 +2295,42 @@ details.more[open] > summary::before {
 .band-head-slot:empty {
   display: none;
 }
+/* 見出しの列: 状態の言葉（テンパイなど）の下に「リセット」。右の「配牌整理」と同じ段にそろう */
+.cam-head-col {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+.cam-head-col > .band-head-slot {
+  flex: none;
+  align-self: stretch;
+}
+/* 「リセット」: 牌のチップと認識の結果を消す。「別の写真」と同じ操作ボタンの見た目に左回りの矢印 */
+.cam-reset {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 11px 6px 8px;
+  background: rgb(0 0 0 / 0.55);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+}
+.cam-reset svg {
+  width: 14px;
+  height: 14px;
+}
+.cam-reset:active {
+  background: rgb(0 0 0 / 0.78);
+}
 .cam-actions {
   position: relative;
   z-index: 3;
@@ -2594,6 +2760,26 @@ details.more[open] > summary::before {
 .plabel {
   font-size: 12px;
   font-weight: 700;
+}
+/* その他の設定: ルール名が長いので見出しの列を広げ、短い説明を下に小さく */
+.pop[data-kind='settings'] .prow {
+  grid-template-columns: 7.6em minmax(0, 1fr);
+}
+.plabel small {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+  opacity: 0.7;
+}
+.psep {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
 }
 .pop .seg {
   background: rgb(255 255 255 / 0.1);
@@ -3344,6 +3530,7 @@ details.more[open] > summary::before {
     height: 24px;
   }
   .retake,
+  .cam-reset,
   #cam-sort {
     padding-block: 4px;
     font-size: 11px;
@@ -3569,7 +3756,7 @@ details.more[open] > summary::before {
 /* テンパイになる切り方の待ち牌（横並び。点数はOK後に牌の下） */
 .wait-chips {
   flex-wrap: wrap;
-  gap: 6px 4px;
+  gap: 6px 10px; /* ツモの2段の点数（子 ○・親 ○）が隣と詰まらないように */
 }
 .wait-chip {
   display: inline-flex;
@@ -3603,6 +3790,32 @@ details.more[open] > summary::before {
 }
 .next-row .tiles-inline {
   min-width: 0;
+}
+
+/* ツモの点数（待ち牌の下）: 子のツモは「子 ○」「親 ○」の2段、親のツモは「○」「オール」の2段 */
+.pay2 {
+  display: inline-grid;
+  justify-items: center;
+  row-gap: 1px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.pay2 b {
+  font-weight: inherit;
+}
+.pay2 small {
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.1;
+  opacity: 0.78;
+}
+.pay2.ko {
+  justify-items: end;
+}
+.pay2.ko > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
 }
 
 </style>
@@ -3665,7 +3878,14 @@ details.more[open] > summary::before {
     <div class="cam-empty" id="cam-empty" hidden></div>
     <div class="cam-overlay" id="cam-overlay">
       <div class="cam-top">
-        <div class="band-head-slot" id="band-head"></div>
+        <div class="cam-head-col">
+          <div class="band-head-slot" id="band-head"></div>
+          <!-- 牌のチップと認識の結果を消して「認識する」の前に戻す（写真とその位置・条件は残す） -->
+          <button type="button" class="cam-reset" id="cam-reset" data-action="cam-reset" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg>
+            <span>リセット</span>
+          </button>
+        </div>
         <div class="cam-actions">
           <div class="cam-side-btns" id="cam-side-btns">
             <button type="button" class="retake" id="retake" data-action="cam-retake" hidden>撮り直す</button>
@@ -3686,7 +3906,6 @@ details.more[open] > summary::before {
   <aside class="cam-side" id="cam-side" aria-label="役と点数">
     <div class="side-body" id="side-body" aria-live="polite"></div>
   </aside>
-  <div class="pop" id="pop" role="dialog" aria-label="設定" hidden></div>
   <input type="file" id="file-pick" accept="image/*" hidden>
 </section>
 
@@ -3704,158 +3923,29 @@ details.more[open] > summary::before {
     <main class="results" id="results">
       <section class="card verdict" id="verdict" aria-live="polite"></section>
 
-      <section class="card" id="situation-card" aria-labelledby="sit-title">
-        <h2 id="sit-title">状況</h2>
-        <div class="panel-rows">
-          <div class="row">
-            <span class="label">場風</span>
-            <div class="seg" data-group="roundWind">
-              <button type="button" data-action="seg" data-value="27">東</button>
-              <button type="button" data-action="seg" data-value="28">南</button>
-              <button type="button" data-action="seg" data-value="29">西</button>
-              <button type="button" data-action="seg" data-value="30">北</button>
-            </div>
-          </div>
-          <div class="row">
-            <span class="label">自風</span>
-            <div class="seg" data-group="seatWind">
-              <button type="button" data-action="seg" data-value="27">東<small>親</small></button>
-              <button type="button" data-action="seg" data-value="28">南</button>
-              <button type="button" data-action="seg" data-value="29">西</button>
-              <button type="button" data-action="seg" data-value="30">北</button>
-            </div>
-          </div>
-          <div class="row">
-            <span class="label">アガリ</span>
-            <div class="seg" data-group="tsumo">
-              <button type="button" data-action="seg" data-value="0">ロン</button>
-              <button type="button" data-action="seg" data-value="1">ツモ</button>
-            </div>
-          </div>
-          <div class="row">
-            <span class="label">リーチ</span>
-            <div class="seg" data-group="riichi">
-              <button type="button" data-action="seg" data-value="0">なし</button>
-              <button type="button" data-action="seg" data-value="1">リーチ</button>
-              <button type="button" data-action="seg" data-value="2">ダブル</button>
-            </div>
-            <span class="note" id="riichi-note" hidden>鳴きがあるためリーチは付きません</span>
-          </div>
-          <div class="row">
-            <span class="label">付加役</span>
-            <div class="chips" id="special-chips">
-              <button type="button" class="chip" data-action="special" data-value="ippatsu">一発</button>
-              <button type="button" class="chip" data-action="special" data-value="rinshan">嶺上開花</button>
-              <button type="button" class="chip" data-action="special" data-value="chankan">槍槓</button>
-              <button type="button" class="chip" data-action="special" data-value="haitei">海底摸月</button>
-              <button type="button" class="chip" data-action="special" data-value="houtei">河底撈魚</button>
-              <button type="button" class="chip" data-action="special" data-value="tenhou">天和</button>
-              <button type="button" class="chip" data-action="special" data-value="chiihou">地和</button>
-            </div>
-          </div>
-          <div class="row">
-            <span class="label">積み棒</span>
-            <div class="steppers">
-              <span class="stepper">
-                <svg viewBox="0 0 60 20" aria-hidden="true"><rect x="1" y="4" width="58" height="12" rx="6" fill="#f4f1e8" stroke="#9aa39e"/><g fill="#1e232b"><circle cx="9" cy="8" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="14" cy="8" r="1.4"/><circle cx="14" cy="12" r="1.4"/><circle cx="46" cy="8" r="1.4"/><circle cx="46" cy="12" r="1.4"/><circle cx="51" cy="8" r="1.4"/><circle cx="51" cy="12" r="1.4"/></g></svg>
-                本場
-                <span class="ctl">
-                  <button type="button" data-action="step" data-key="honba" data-delta="-1" aria-label="本場を減らす">−</button>
-                  <output id="honba-out">0</output>
-                  <button type="button" data-action="step" data-key="honba" data-delta="1" aria-label="本場を増やす">＋</button>
-                </span>
-              </span>
-              <span class="stepper">
-                <svg viewBox="0 0 60 20" aria-hidden="true"><rect x="1" y="4" width="58" height="12" rx="6" fill="#f4f1e8" stroke="#9aa39e"/><circle cx="30" cy="10" r="3.2" fill="#c4302b"/></svg>
-                供託
-                <span class="ctl">
-                  <button type="button" data-action="step" data-key="kyotaku" data-delta="-1" aria-label="供託を減らす">−</button>
-                  <output id="kyotaku-out">0</output>
-                  <button type="button" data-action="step" data-key="kyotaku" data-delta="1" aria-label="供託を増やす">＋</button>
-                </span>
-              </span>
-              <span class="stepper" id="nuki-stepper" hidden>
-                抜きドラ
-                <span class="ctl">
-                  <button type="button" data-action="step" data-key="nuki" data-delta="-1" aria-label="抜きドラを減らす">−</button>
-                  <output id="nuki-out">0</output>
-                  <button type="button" data-action="step" data-key="nuki" data-delta="1" aria-label="抜きドラを増やす">＋</button>
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="card" id="dora-card" aria-labelledby="dora-title">
-        <h2 id="dora-title">ドラ</h2>
-        <div class="panel-rows">
-          <div class="row">
-            <span class="label">表示牌</span>
-            <div>
-              <div class="ind-row" id="dora-ind"></div>
-              <div class="derived" id="dora-derived"></div>
-            </div>
-          </div>
-          <div class="row" id="ura-row">
-            <span class="label">裏ドラ<br>表示牌</span>
-            <div>
-              <div class="ind-row" id="ura-ind"></div>
-              <div class="derived" id="ura-derived"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <details class="card rules" id="rules-card">
-        <summary><h2>ルール</h2><span class="rs" id="rules-summary"></span></summary>
-        <div style="margin-top: 8px">
-          <label class="rule"><span>三人麻雀<small>2〜8萬なし・チーなし・北や花は抜きドラ</small></span><input type="checkbox" class="switch" id="rule-sanma" data-rule="sanma"></label>
-          <div class="rule" id="rule-tsumoloss-row" hidden><span>ツモ損<small>いない家のぶんを受け取らない（なしは二人で折半）</small></span>
-            <div class="seg">
-              <button type="button" data-action="rule-seg2" data-rule-seg="tsumoLoss" data-value="1">あり</button>
-              <button type="button" data-action="rule-seg2" data-rule-seg="tsumoLoss" data-value="0">なし</button>
-            </div>
-          </div>
-          <div class="rule"><span>符の数え方<small>固定にすると符を数えずに点数を出す</small></span>
-            <div class="seg">
-              <button type="button" data-action="rule-seg2" data-rule-seg="fuMode" data-value="normal">正規</button>
-              <button type="button" data-action="rule-seg2" data-rule-seg="fuMode" data-value="fix30">30符</button>
-              <button type="button" data-action="rule-seg2" data-rule-seg="fuMode" data-value="fix40">40符</button>
-            </div>
-          </div>
-          <div class="rule" id="rule-fuex-row" hidden><span>符の例外<small>七対子25符・平和ツモ20符はそのまま</small></span>
-            <div class="seg">
-              <button type="button" data-action="rule-seg2" data-rule-seg="fuExceptions" data-value="1">あり</button>
-              <button type="button" data-action="rule-seg2" data-rule-seg="fuExceptions" data-value="0">なし</button>
-            </div>
-          </div>
-          <label class="rule"><span>喰いタン<small>鳴いた断幺九を認める</small></span><input type="checkbox" class="switch" id="rule-kuitan" data-rule="kuitan"></label>
-          <label class="rule"><span>切り上げ満貫<small>30符4翻・60符3翻を満貫にする</small></span><input type="checkbox" class="switch" id="rule-kiriage" data-rule="kiriage"></label>
-          <label class="rule"><span>数え役満<small>13翻以上を役満にする（なしは三倍満）</small></span><input type="checkbox" class="switch" id="rule-kazoe" data-rule="kazoe"></label>
-          <label class="rule"><span>役満の複合<small>大三元＋字一色などを加算する</small></span><input type="checkbox" class="switch" id="rule-multi" data-rule="multipleYakuman"></label>
-          <label class="rule"><span>ダブル役満<small>四暗刻単騎・国士13面・純正九蓮・大四喜</small></span><input type="checkbox" class="switch" id="rule-double" data-rule="doubleYakuman"></label>
-          <label class="rule"><span>緑一色に發が必須</span><input type="checkbox" class="switch" id="rule-hatsu" data-rule="ryuuiisouNeedsHatsu"></label>
-          <label class="rule"><span>花牌を使う<small>春夏秋冬を入れている卓だけオンにする（写真から花牌として読む）</small></span><input type="checkbox" class="switch" id="rule-flowers" data-rule="flowers"></label>
-          <div class="rule"><span>連風牌の雀頭<small>場風と自風が同じ牌の対子</small></span>
-            <div class="seg" data-group="doubleWindPairFu">
-              <button type="button" data-action="rule-seg" data-value="2">2符</button>
-              <button type="button" data-action="rule-seg" data-value="4">4符</button>
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <p class="footnote">計算はすべてこの端末内で行います。フリテン・流し満貫・ローカル役には未対応です。赤5は同じ色で何枚でも入れられます（ノーマルの5と合わせて4枚まで）。カメラ画面の自動読み取りは現在クラウドAI（β）で、端末内AIは学習データを集めてから搭載します。</p>
+      <p class="footnote">計算はすべてこの端末内で行います。フリテン・流し満貫・ローカル役には未対応です。赤5は同じ色で何枚でも入れられます（ノーマルの5と合わせて4枚まで）。</p>
     </main>
 
-    <footer class="keyboard" id="keyboard">
-      <div class="kb-tabs" role="tablist" id="kb-tabs"></div>
+    <!-- 牌のキーボード。スマホでは画面の下に重ねて出す（閉じられる。アガリ牌まで入れると自動で閉じる） -->
+    <footer class="keyboard" id="keyboard" aria-label="牌の入力">
+      <div class="kb-head">
+        <div class="kb-tabs" role="tablist" id="kb-tabs"></div>
+        <button type="button" class="kb-close" data-action="fold" aria-label="牌の入力を閉じる">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          <span>閉じる</span>
+        </button>
+      </div>
       <div class="kb-hint" id="kb-hint"></div>
       <div class="kb-grid" id="kb-grid"></div>
     </footer>
   </div>
+  <button type="button" class="kb-open" id="kb-open" data-action="kb-open" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h0M11 10h0M15 10h0M8 14h8"/></svg>
+    <span>牌を入力</span>
+  </button>
 </div>
+<!-- 設定シート（ドラ表示牌・その他の設定など）。写真の画面と手入力の画面で共通 -->
+<div class="pop" id="pop" role="dialog" aria-label="設定" hidden></div>
 <div class="toast" id="toast" role="status" hidden></div>
 <!-- バナー広告のスペース（320×50相当）。既定では出さない（広告が入るまで空の枠を見せない）。
      中身を AdMob（アプリ）や AdSense（Web）のタグに差し替え、window.haiyomi.setAds(true) で出す -->
@@ -7150,6 +7240,7 @@ function tileHTML(id, opts = {}) {
 
 
 
+
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => Number(n).toLocaleString('ja-JP');
 
@@ -7166,6 +7257,21 @@ function paymentShort(r) {
   if (p.type === 'ron') return fmt(p.ron);
   if (p.type === 'tsumoDealer') return `${fmt(p.each)}<small>オール</small>`;
   return `${fmt(p.child)}-${fmt(p.parent)}`;
+}
+
+/**
+ * 牌の下に出す短い点数（本場・供託は含めない基本の点数）。
+ *   ロン「8,000」／子のツモ「子 2,000」「親 4,000」の2段／親のツモ「4,000」「オール」の2段。
+ * ツモの合計だけを出すと「子のツモ 2,000-4,000」が伝わらないので、支払いの形で書く
+ */
+function paymentChipHTML(r) {
+  const p = r.payment;
+  if (p.type === 'ron') return fmt(p.ron);
+  if (p.type === 'tsumoDealer') return `<span class="pay2"><b>${fmt(p.each)}</b><small>オール</small></span>`;
+  return (
+    `<span class="pay2 ko"><span><small>子</small><b>${fmt(p.child)}</b></span>` +
+    `<span><small>親</small><b>${fmt(p.parent)}</b></span></span>`
+  );
 }
 
 function hanFuText(r) {
@@ -7306,8 +7412,9 @@ function stepperHTML(s, key, label, dim = false) {
 }
 
 /** 「その他」に、既定と違うルールがあるか（あれば点を付けて知らせる） */
+/** 「その他」のルールを1つでも既定から変えているか（「その他」に印を付ける） */
 function rulesChanged(r) {
-  return !!(r.sanma || (r.fuMode && r.fuMode !== 'normal') || r.flowers || r.kiriage || r.doubleYakuman || r.kuitan === false);
+  return Object.keys(DEFAULT_RULES).some((k) => r[k] !== undefined && r[k] !== DEFAULT_RULES[k]);
 }
 
 /** 条件の段のステータス札（未設定／未確定／設定済） */
@@ -7602,7 +7709,8 @@ function load() {
     win: s.win,
     melds: s.melds,
     dora: s.dora,
-    ura: s.ura,
+    // 裏ドラは「裏ドラ」の枚数（帯の±）だけにした。以前の版で表示牌として入れたものは、見えないまま数えないよう消す
+    ura: [],
     situation: { ...DEFAULT_SITUATION, ...(s.situation || {}) },
     situationTouched: !!s.situationTouched,
     setup: { ...DEFAULT_SETUP, ...(s.setup || {}) },
@@ -7635,6 +7743,12 @@ function update() {
 
 // ---------- 元に戻す ----------
 const undoStack = [];
+// 戻す履歴が動いた回数（snapshot・undo のたびに増える）。
+// 「元に戻す」を押したときに、そのあと別の操作がされていないかを確かめるのに使う
+let histSeq = 0;
+const historySeq = () => histSeq;
+// ボタン付きのお知らせ（「元に戻す」など）を出しているか。手牌が動いたら古いボタンは片付ける
+let toastAct = false;
 function snapshot() {
   undoStack.push(
     JSON.stringify({
@@ -7647,6 +7761,8 @@ function snapshot() {
     }),
   );
   if (undoStack.length > 80) undoStack.shift();
+  histSeq++;
+  if (toastAct) hideToast();
 }
 function undo() {
   const raw = undoStack.pop();
@@ -7654,6 +7770,8 @@ function undo() {
     toast('戻せる操作はありません');
     return;
   }
+  histSeq++;
+  if (toastAct) hideToast();
   const s = JSON.parse(raw);
   Object.assign(state, { concealed: s.concealed, win: s.win, melds: s.melds, dora: s.dora, ura: s.ura, lastAdded: null, cursor: null });
   state.cam.draft = s.draft;
@@ -7878,18 +7996,40 @@ function setRule(key, value) {
 }
 
 let toastTimer = 0;
-function toast(msg, ms = 2800) {
+/**
+ * 画面の上に短いお知らせを出す。action を渡すと右にボタンを付ける（例: { label: '元に戻す', run }）。
+ * ボタンを押すとお知らせを閉じてから run を呼ぶ
+ */
+function toast(msg, ms = 2800, action = null) {
   const el = $('toast');
   if (!el) return;
   el.textContent = msg;
+  el.classList.toggle('has-act', !!action);
+  toastAct = !!action;
+  if (action) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'toast-act';
+    b.textContent = action.label;
+    b.addEventListener('click', () => {
+      hideToast();
+      action.run();
+    });
+    el.append(b);
+  }
   el.hidden = false;
   el.style.animation = 'none';
   void el.offsetWidth;
   el.style.animation = '';
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    el.hidden = true;
-  }, ms);
+  toastTimer = setTimeout(hideToast, ms);
+}
+
+function hideToast() {
+  clearTimeout(toastTimer);
+  toastAct = false;
+  const el = $('toast');
+  if (el) el.hidden = true;
 }
 
 // ---- src/ui/guide.js ----
@@ -7915,7 +8055,7 @@ const GICON = {
 const STEPS = [
   ['rotate', 'スマホは縦のままでOK', '下の横長の枠に、手牌が一列に入るように写します（並び順はバラバラでも大丈夫）'],
   ['read', '「認識する」を押す', '牌の判別は端末の中だけで行います（通信なし・1〜2秒）。オフライン環境でも使用可能'],
-  ['fix', '違う牌はタップで直す', '読み違えた牌をタップすると、候補から選び直せます'],
+  ['fix', '違う牌はタップで直す', '読み違えた牌をタップすると、候補から選び直せます。全部やり直すときは左上の「リセット」'],
   ['wait', '待ち牌が手牌の上に出る', '待ち牌をタップすると、役と点数が出ます'],
   ['gear', '条件を合わせて「OK」', '上の「場の設定」「アガリ想定」をタップで合わせ、右下の「OK」で点数が出ます。待ちとシャンテン数は設定なしでも出ます。人数は見出し横の「4人／3人」'],
 ];
@@ -8018,19 +8158,18 @@ function handleGuide(el) {
 
 
 
+
+// キーボードで入れるのは手牌と鳴きだけ。ドラは上の「条件/ルール 設定」のドラ（写真の画面と同じシート）、
+// 裏ドラは同じ帯の「裏ドラ」で枚数を入れる（表示牌でも入れられると二重に数えてしまうため一本化）
 const TARGETS = [
   ['hand', '手牌'],
   ['chi', 'チー'],
   ['pon', 'ポン'],
   ['minkan', '明槓'],
   ['ankan', '暗槓'],
-  ['dora', 'ドラ'],
-  ['ura', '裏ドラ'],
 ];
 
-/** ドラ・裏ドラの表示牌は王牌からめくるので、手牌とは別に数える（カンで同じ表示牌が出る） */
-const INDICATOR_TARGETS = new Set(['dora', 'ura']);
-const scopeFor = (t) => (INDICATOR_TARGETS.has(t) ? state.dora.concat(state.ura) : allInputTiles());
+const scopeFor = () => allInputTiles();
 
 /** 今どの位置に入れようとしているか（0..need()。need() はアガリ牌） */
 function cursorIndex() {
@@ -8095,8 +8234,7 @@ function addTile(id) {
     if (meld.type !== 'ankan' && state.situation.riichi) toast('鳴きがあるためリーチは計算に含めません');
     state.lastAdded = { where: 'meld', index: state.melds.length - 1 };
   } else {
-    const what = INDICATOR_TARGETS.has(t) ? '表示牌として' : '';
-    if (used[b] >= 4) return toast(`${tileLabel(b)}は${what}すでに4枚使われています（赤5をふくめて4枚まで）`);
+    if (used[b] >= 4) return toast(`${tileLabel(b)}はすでに4枚使われています（赤5をふくめて4枚まで）`);
     if (t === 'hand') {
       // 左から順に入れる。赤い枠の位置に入り、入れたら1つ右へ進む
       const c = cursorIndex();
@@ -8112,27 +8250,50 @@ function addTile(id) {
         state.lastAdded = { where: 'win' };
       }
       state.cursor = null;
-    } else {
-      const list = state[t];
-      if (list.length >= 5) return toast('表示牌は5枚までです');
-      snapshot();
-      list.push(id);
-      markSetup(t);
-      state.lastAdded = { where: t, index: list.length - 1 };
-      if (t === 'ura' && !state.situation.riichi) toast('裏ドラはリーチしているときだけ数えます');
+      // 手牌とアガリ牌がそろったら、キーボードを閉じて結果を広く見せる（牌をタップすればまた開く）
+      if (state.concealed.length === need() && state.win != null) state.kbFolded = true;
     }
   }
   state.sample = false;
   state.cam.sel = null;
-  return update();
+  update();
+  // 鳴きを入れて卓の段が増えたときなども、手牌がキーボードに隠れないように
+  if (!state.kbFolded) revealTable();
+  return undefined;
 }
 
 // ---------- 描画 ----------
-/** 画面上部の「ルール」の帯（手入力画面版。押すと該当のカードへ移動する） */
+/** 画面上部の「条件/ルール 設定」。写真の画面と同じもの（ドラ・その他は同じシートを開く） */
 function renderRulesBar() {
-  // ドラとルールのチップは、その設定カードへ移動する
-  const link = (kind) => `data-action="goto" data-goto="${kind === 'dora' ? 'dora-card' : 'rules-card'}"`;
-  $('rules-bar').innerHTML = situationBarHTML(state, link, { table: setupStatus('table'), agari: setupStatus('agari'), ready: scoreReady() });
+  $('rules-bar').innerHTML = chipsHTML();
+}
+
+/**
+ * スマホではキーボードを画面の下に重ねて出すので、その高さぶんページの下に余白を足す
+ * （結果をキーボードより上までスクロールできるように）。閉じているときは「牌を入力」ボタンのぶん
+ */
+function syncKbSpace() {
+  const root = document.documentElement;
+  const kb = $('keyboard');
+  const btn = $('kb-open');
+  let h = 0;
+  if (state.mode === 'manual' && kb) {
+    if (!kb.hidden) h = getComputedStyle(kb).position === 'fixed' ? kb.getBoundingClientRect().height : 0;
+    else if (btn && !btn.hidden) h = btn.getBoundingClientRect().height + 24;
+  }
+  root.style.setProperty('--kb-space', `${Math.ceil(h)}px`);
+}
+
+/** キーボードを開いたとき、手牌がキーボードの下に隠れていたら見える位置までスクロールする */
+function revealTable() {
+  requestAnimationFrame(() => {
+    const t = $('table');
+    const kb = $('keyboard');
+    if (!t || !kb || kb.hidden || state.mode !== 'manual' || getComputedStyle(kb).position !== 'fixed') return;
+    const r = t.getBoundingClientRect();
+    const limit = kb.getBoundingClientRect().top - 8;
+    if (r.bottom > limit) window.scrollBy({ top: r.bottom - limit, behavior: 'smooth' });
+  });
 }
 
 function renderTable() {
@@ -8192,13 +8353,17 @@ function renderTable() {
 
 function renderKeyboard() {
   const targets = state.rules.sanma ? TARGETS.filter(([k]) => k !== 'chi') : TARGETS;
-  if (state.rules.sanma && state.target === 'chi') state.target = 'hand';
-  $('kb-tabs').innerHTML =
-    targets.map(
+  if (!targets.some(([k]) => k === state.target)) state.target = 'hand';
+  const open = !state.kbFolded;
+  $('keyboard').hidden = !open;
+  $('kb-open').hidden = open;
+  $('manual-view').dataset.kb = open ? 'open' : 'closed';
+  $('kb-tabs').innerHTML = targets
+    .map(
       ([key, label]) =>
         `<button type="button" class="kb-tab" role="tab" aria-selected="${state.target === key}" data-action="target" data-target="${key}">${label}</button>`,
-    ).join('') +
-    `<button type="button" class="kb-fold" data-action="fold" aria-label="${state.kbFolded ? '牌を表示' : '牌をたたむ'}">${state.kbFolded ? '▴' : '▾'}</button>`;
+    )
+    .join('');
 
   const t = state.target;
   let hint;
@@ -8209,9 +8374,7 @@ function renderKeyboard() {
     else if (state.win == null) hint = '次にタップした牌がアガリ牌になります';
     else hint = 'アガリ牌を入れ直します（赤い枠）';
   } else if (t === 'chi') hint = '順子の一番小さい牌をタップ（3萬 → 345萬）';
-  else if (MELD_TYPES.has(t)) hint = `${MELD_LABELS[t]}した牌をタップ`;
-  else if (t === 'dora') hint = 'ドラ表示牌をタップ（ドラはその次の牌）';
-  else hint = '裏ドラ表示牌をタップ（リーチ時のみ計算）';
+  else hint = `${MELD_LABELS[t]}した牌をタップ`;
   const redBtn = MELD_TYPES.has(t)
     ? `<button type="button" class="red-toggle" data-action="meld-red" aria-pressed="${state.meldRed}">赤5入り</button>`
     : replacingTile() != null
@@ -8233,9 +8396,8 @@ function renderKeyboard() {
     `<button type="button" class="key act" data-action="undo" aria-label="1つ戻す"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>戻す</button>`,
     `<button type="button" class="key act wide" data-action="clear">全消去</button>`,
   );
-  const grid = $('kb-grid');
-  grid.innerHTML = keys.join('');
-  grid.hidden = state.kbFolded;
+  $('kb-grid').innerHTML = keys.join('');
+  syncKbSpace();
 }
 
 function waitRows(waits) {
@@ -8433,94 +8595,11 @@ function renderVerdict(a) {
   el.innerHTML = html;
 }
 
-function renderSituation() {
-  const s = state.situation;
-  const values = { roundWind: s.roundWind, seatWind: s.seatWind, tsumo: s.tsumo ? 1 : 0, riichi: s.riichi | 0 };
-  document.querySelectorAll('#situation-card .seg').forEach((seg) => {
-    const v = values[seg.dataset.group];
-    seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.value === v)));
-  });
-  const open = hasOpenMeld();
-  document.querySelectorAll('#situation-card [data-group="riichi"] button').forEach((b) => {
-    b.disabled = open && b.dataset.value !== '0';
-  });
-  $('riichi-note').hidden = !open;
-  document.querySelectorAll('#special-chips .chip').forEach((b) => {
-    const v = b.dataset.value;
-    const on = v === 'ippatsu' ? !!s.ippatsu : s.special === v;
-    b.setAttribute('aria-pressed', String(on));
-    b.disabled = v === 'ippatsu' ? !s.riichi || open : (v === 'tenhou' || v === 'chiihou') && state.melds.length > 0;
-  });
-  $('honba-out').textContent = s.honba | 0;
-  $('kyotaku-out').textContent = s.kyotaku | 0;
-  $('nuki-out').textContent = s.nuki | 0;
-  $('nuki-stepper').hidden = !state.rules.sanma;
-  document.querySelectorAll('#situation-card [data-group="seatWind"] button, #situation-card [data-group="roundWind"] button')
-    .forEach((b) => {
-      if (b.dataset.value === '30') b.hidden = !!state.rules.sanma; // 三人麻雀に北家はいない
-    });
-}
-
-function renderDora() {
-  const ind = (key) => {
-    const tiles = state[key]
-      .map(
-        (id, i) =>
-          `<button type="button" data-action="remove" data-where="${key}" data-index="${i}" aria-label="${tileLabel(id)}を削除">${tileHTML(id, { size: 'sm' })}</button>`,
-      )
-      .join('');
-    const active = state.target === key;
-    return `${tiles}<button type="button" class="add" data-action="target" data-target="${key}" aria-pressed="${active}">${active ? '下の牌から選択中' : '＋ 追加'}</button>`;
-  };
-  $('dora-ind').innerHTML = ind('dora');
-  $('ura-ind').innerHTML = ind('ura');
-  const derived = (list) => (list.length ? `ドラ ${list.map((id) => tileHTML(doraFromIndicator(id), { size: 'xs' })).join('')}` : '');
-  $('dora-derived').innerHTML = derived(state.dora);
-  const uraN = state.situation.uraDora | 0;
-  const uraNote = uraN ? `<span>＋上の「裏ドラ」${uraN}枚</span>` : '';
-  $('ura-derived').innerHTML = state.ura.length ? derived(state.ura) + uraNote : uraNote || '<span>リーチ時のみ計算します（枚数は上の「裏ドラ」±でも入れられます）</span>';
-  $('ura-row').classList.toggle('dim', !state.situation.riichi);
-}
-
-function renderRules() {
-  const r = state.rules;
-  document.querySelectorAll('[data-rule]').forEach((el) => {
-    el.checked = !!r[el.dataset.rule];
-  });
-  document.querySelectorAll('[data-group="doubleWindPairFu"] button').forEach((b) => {
-    b.setAttribute('aria-pressed', String(+b.dataset.value === r.doubleWindPairFu));
-  });
-  const fuLabel = { normal: '符は正規', fix30: '30符固定', fix40: '40符固定' }[r.fuMode || 'normal'];
-  document.querySelectorAll('[data-rule-seg]').forEach((b) => {
-    const key = b.dataset.ruleSeg;
-    const v = b.dataset.value;
-    const cur = key === 'fuMode' ? r.fuMode || 'normal' : r[key] === false ? '0' : '1';
-    b.setAttribute('aria-pressed', String(cur) === String(v) ? 'true' : 'false');
-  });
-  const row = (id, show) => {
-    const el = $(id);
-    if (el) el.hidden = !show;
-  };
-  row('rule-tsumoloss-row', !!r.sanma);
-  row('rule-fuex-row', (r.fuMode || 'normal') !== 'normal');
-  const summary = [
-    r.sanma ? `三人麻雀（ツモ損${r.tsumoLoss === false ? 'なし' : 'あり'}）` : null,
-    fuLabel,
-    r.flowers ? '花牌あり' : null,
-    r.kuitan ? '喰いタンあり' : '喰いタンなし',
-    r.kiriage ? '切り上げ満貫' : null,
-    r.doubleYakuman ? 'ダブル役満あり' : null,
-  ].filter(Boolean);
-  $('rules-summary').textContent = summary.join('・');
-}
-
 function renderManual(a) {
   renderTable();
   renderKeyboard();
   renderVerdict(a);
-  renderSituation();
-  renderDora();
-  renderRules();
+  renderPop(); // ドラ・その他のシート（写真の画面と共通）
 }
 
 // ---------- 操作 ----------
@@ -8533,14 +8612,18 @@ function handleManual(el) {
     case 'target':
       state.target = d.target;
       state.kbFolded = false;
-      renderKeyboard();
-      return renderDora();
+      return renderKeyboard();
     case 'remove': return removeAt(d.where, +d.index);
     case 'hand-sel': {
+      // 手牌の牌・空きをタップ → その位置に入れる（閉じていたらキーボードを開く）
+      const wasFolded = state.kbFolded;
       state.cursor = d.index === 'win' ? need() : Math.min(+d.index, state.concealed.length);
       state.target = 'hand';
       state.lastAdded = null;
-      return update();
+      state.kbFolded = false;
+      update();
+      if (wasFolded) revealTable();
+      return undefined;
     }
     case 'hand-del': {
       const c = cursorIndex();
@@ -8548,21 +8631,6 @@ function handleManual(el) {
       if (state.win != null) return removeAt('win', 0);
       return undefined;
     }
-    case 'seg': {
-      const group = el.closest('.seg').dataset.group;
-      const v = +d.value;
-      return setSituation(group, group === 'tsumo' ? v === 1 : v);
-    }
-    case 'rule-seg': return setRule('doubleWindPairFu', +d.value);
-    case 'rule-seg2': {
-      const key = d.ruleSeg;
-      const raw = d.value;
-      const value = key === 'fuMode' ? raw : +raw === 1;
-      setRule(key, value);
-      return undefined;
-    }
-    case 'special': return toggleSpecial(d.value);
-    case 'step': return step(d.key, +d.delta);
     case 'sample':
       snapshot();
       applyDemo('agari');
@@ -8571,20 +8639,16 @@ function handleManual(el) {
       state.meldRed = !state.meldRed;
       return renderKeyboard();
     case 'fold':
-      state.kbFolded = !state.kbFolded;
+      state.kbFolded = true;
       return renderKeyboard();
-    case 'goto': {
-      const t = $(d.goto);
-      if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    case 'kb-open':
+      state.kbFolded = false;
+      renderKeyboard();
+      revealTable();
       return undefined;
-    }
     default:
       return undefined;
   }
-}
-
-function handleManualChange(el) {
-  if (el.dataset && el.dataset.rule) setRule(el.dataset.rule, el.checked);
 }
 
 // ---- src/ui/camera.js ----
@@ -8767,6 +8831,38 @@ function retake() {
     renderCamera(view.analysis);
     openPicker();
   }
+}
+
+/**
+ * 「リセット」（写真の画面）: 牌のチップと認識の結果を消して、「認識する」を押す前に戻す。
+ * 写真とその位置、ドラ・リーチ・ツモなどの条件はそのまま（条件は「条件/ルール 設定」のリセットで別に消す）。
+ * 確認は出さずにすぐ消し、数秒だけ「元に戻す」を出す
+ */
+function resetRead() {
+  if (cam.busy) return;
+  const prev = {
+    photoUrl: cam.photoUrl,
+    sample: state.sample,
+    cam: { read: cam.read, recog: cam.recog, cands: cam.cands, sortPerm: cam.sortPerm, note: cam.note },
+  };
+  snapshot();
+  const seq = historySeq();
+  Object.assign(state, { concealed: [], win: null, melds: [], sample: false });
+  Object.assign(cam, { draft: null, sel: null, recog: null, cands: null, sortPerm: null, pop: null, note: '', read: false });
+  update();
+  toast('リセットしました', 5000, {
+    label: '元に戻す',
+    run: () => {
+      // リセットのあとに別の操作（認識・牌の追加・別の写真など）をしていたら、その結果は消さない
+      if (historySeq() !== seq || cam.photoUrl !== prev.photoUrl || cam.busy) {
+        toast('リセットのあとに操作したため、元に戻せませんでした');
+        return;
+      }
+      Object.assign(cam, prev.cam);
+      state.sample = prev.sample;
+      undo(); // 牌（手牌・アガリ牌・鳴き・読めなかった牌）を戻して描き直す
+    },
+  });
 }
 
 /** アルバムを開く（タップの中で呼ぶ。同じ写真をもう一度選べるように値は消す） */
@@ -9441,6 +9537,7 @@ function setCameraSource(src) {
 }
 
 // ---------- 表示: 上部の設定 ----------
+/** 上の「条件/ルール 設定」の帯（写真の画面・手入力の画面で共通。ドラ・その他は同じシートを開く） */
 function chipsHTML() {
   // ドラは表示牌のポップアップ、ルールは計算条件のポップアップへ
   const link = (kind) =>
@@ -9520,16 +9617,19 @@ function bandHTML(a) {
         );
       }
       const ready = scoreReady();
+      // 点数は「アガリ想定」のロン／ツモに合わせる（ツモを選んでいるのにロンの点数を出さない）
+      const tsumo = !!state.situation.tsumo;
       return (
         bandHead('テンパイ', ready ? `待ち ${a.waits.length}種・タップで役と点数` : `待ち ${a.waits.length}種・点数は条件のOK後`, 'ok') +
         chipRow(
           'wait',
           a.waits.map((w) => {
             if (!ready) return { tile: w.tile };
-            let pt = '役なし';
-            if (w.ron.ok) pt = fmt(w.ron.points);
-            else if (w.tsumo.ok) pt = 'ツモのみ';
-            return { tile: w.tile, pt, dim: !w.ron.ok };
+            const r = tsumo ? w.tsumo : w.ron;
+            if (r.ok) return { tile: w.tile, pt: paymentChipHTML(r) };
+            // ロンでは役がないがツモならアガれる
+            if (!tsumo && w.tsumo.ok) return { tile: w.tile, pt: 'ツモのみ', dim: true };
+            return { tile: w.tile, pt: '役なし', dim: true };
           }),
         )
       );
@@ -9551,7 +9651,9 @@ function bandHTML(a) {
       // 本場・供託があるときは「実際に動く点数」も帯に出す（基本の点数と区別できるように）
       const extra = (r.total | 0) - (r.points | 0);
       const move = extra > 0 ? `・受け取り ${fmt(r.total)}点` : '';
-      return bandHead('アガリ', `${fmt(r.points)}点${r.limit ? '・' + r.limit : ''}（${r.dealer ? '親' : '子'}の${r.tsumo ? 'ツモ' : 'ロン'}）${move}`, 'win');
+      // ツモは支払いの形も添える（子のツモ 2,000-4,000／親のツモ 4,000オール）
+      const how = `${r.dealer ? '親' : '子'}の${r.tsumo ? `ツモ ${paymentShort(r)}` : 'ロン'}`;
+      return bandHead('アガリ', `${fmt(r.points)}点${r.limit ? '・' + r.limit : ''}（${how}）${move}`, 'win');
     }
     return bandHead('アガリ形・役なし', 'ドラだけではアガれません', 'warn');
   }
@@ -9775,7 +9877,7 @@ function discardDetail(a) {
     const chips = d.waits
       .map((w) => {
         const r = state.situation.tsumo ? w.tsumo : w.ron;
-        const pt = ready ? `<small${r.ok ? '' : ' class="none"'}>${r.ok ? fmt(r.points) : '役なし'}</small>` : '';
+        const pt = ready ? `<small${r.ok ? '' : ' class="none"'}>${r.ok ? paymentChipHTML(r) : '役なし'}</small>` : '';
         return `<span class="wait-chip">${tileHTML(w.tile, { size: 'xs' })}${pt}</span>`;
       })
       .join('');
@@ -9929,6 +10031,16 @@ function popShell(title, body, headExtra = '', fixed = '') {
   );
 }
 
+// その他の設定の見出し（短い説明つき）
+const RULE_LABELS = {
+  kuitan: '喰いタン<small>鳴いた断幺九</small>',
+  kiriage: '切り上げ満貫<small>30符4翻・60符3翻</small>',
+  kazoe: '数え役満<small>13翻以上</small>',
+  multipleYakuman: '役満の複合<small>大三元＋字一色など</small>',
+  doubleYakuman: 'ダブル役満<small>四暗刻単騎など</small>',
+  ryuuiisouNeedsHatsu: '緑一色の發',
+  doubleWindPairFu: '連風牌の雀頭<small>場風＝自風の対子</small>',
+};
 function ruleRow(label, key, options, current, cls = '') {
   const buttons = options
     .map(([v, l]) => `<button type="button" data-action="cam-rule" data-key="${key}" data-value="${v}" aria-pressed="${String(current) === String(v)}">${l}</button>`)
@@ -9947,20 +10059,36 @@ function popHTML() {
   const s = state.situation;
   switch (cam.pop) {
     case 'settings': {
-      const specials = [['rinshan', '嶺上開花'], ['chankan', '槍槓'], ['haitei', '海底'], ['houtei', '河底']];
+      // 付加役とルールを全部ここにまとめる（写真の画面・手入力の画面で共通。手入力の下にあった「状況」「ルール」の欄はなくした）
+      const specials = [['rinshan', '嶺上開花'], ['chankan', '槍槓'], ['haitei', '海底摸月'], ['houtei', '河底撈魚'], ['tenhou', '天和'], ['chiihou', '地和']];
       const r = state.rules;
+      const yn = (key, on) => ruleRow(RULE_LABELS[key], key, [[1, 'あり'], [0, 'なし']], on ? 1 : 0);
+      const melded = state.melds.length > 0;
       const body =
+        `<div class="prow"><span class="plabel">付加役</span><div class="chips">` +
+        specials
+          .map(([v, l]) => {
+            const off = (v === 'tenhou' || v === 'chiihou') && melded; // 鳴いていたら天和・地和はない
+            return `<button type="button" class="chip" data-action="cam-special" data-value="${v}" aria-pressed="${s.special === v}"${off ? ' disabled' : ''}>${l}</button>`;
+          })
+          .join('') +
+        `</div></div>` +
+        `<div class="psep">ルール</div>` +
         ruleRow('人数', 'sanma', [[0, '四人麻雀'], [1, '三人麻雀']], r.sanma ? 1 : 0) +
-        (r.sanma ? ruleRow('ツモ損', 'tsumoLoss', [[1, 'あり'], [0, 'なし']], r.tsumoLoss === false ? 0 : 1) : '') +
+        (r.sanma ? ruleRow('ツモ損', 'tsumoLoss', [[1, 'あり'], [0, 'なし（折半）']], r.tsumoLoss === false ? 0 : 1) : '') +
         ruleRow('符', 'fuMode', [['normal', '正規'], ['fix30', '30符'], ['fix40', '40符']], r.fuMode || 'normal') +
         (r.fuMode && r.fuMode !== 'normal'
           ? ruleRow('符の例外', 'fuExceptions', [[1, '七対子25・平和ツモ20'], [0, 'なし']], r.fuExceptions === false ? 0 : 1, 'auto')
           : '') +
-        `<div class="prow"><span class="plabel">付加役</span><div class="chips">` +
-        specials.map(([v, l]) => `<button type="button" class="chip" data-action="cam-special" data-value="${v}" aria-pressed="${s.special === v}">${l}</button>`).join('') +
-        `</div></div>` +
+        yn('kuitan', r.kuitan !== false) +
+        yn('kiriage', !!r.kiriage) +
+        ruleRow(RULE_LABELS.kazoe, 'kazoe', [[1, 'あり'], [0, '三倍満']], r.kazoe === false ? 0 : 1) +
+        yn('multipleYakuman', r.multipleYakuman !== false) +
+        yn('doubleYakuman', !!r.doubleYakuman) +
+        ruleRow(RULE_LABELS.ryuuiisouNeedsHatsu, 'ryuuiisouNeedsHatsu', [[0, 'なくてよい'], [1, '必須']], r.ryuuiisouNeedsHatsu ? 1 : 0) +
+        ruleRow(RULE_LABELS.doubleWindPairFu, 'doubleWindPairFu', [[2, '2符'], [4, '4符']], r.doubleWindPairFu === 2 ? 2 : 4) +
         ruleRow('花牌', 'flowers', [[0, '使わない'], [1, '使う']], r.flowers ? 1 : 0) +
-        `<p class="muted">場風・家・本場・供託・ドラは上の「場の設定」、リーチ・ロン/ツモ・一発・裏ドラ・抜きドラは「アガリ想定」でタップして変えられます。裏ドラを表示牌で入れたいときは「手入力」画面へ。</p>`;
+        `<p class="muted">場風・家・本場・供託・ドラは上の「場の設定」、リーチ・ロン/ツモ・一発・裏ドラ（枚数）・抜きドラは「アガリ想定」でタップして変えられます。</p>`;
       return popShell('その他の設定', body);
     }
     case 'dora': {
@@ -10128,6 +10256,9 @@ function renderControls() {
   }
   $('retake').hidden = !(!cam.busy && ((src === 'live' && cam.live === 'frozen') || (src === 'photo' && cam.photoSize)));
   $('retake').textContent = src === 'live' ? '撮り直す' : '別の写真';
+  // 「リセット」: 写真の画面で、牌のチップか認識の結果があるときだけ出す
+  const hasHand = state.concealed.length > 0 || state.win != null || state.melds.length > 0 || !!cam.draft;
+  $('cam-reset').hidden = !(src === 'photo' && !cam.busy && (hasHand || cam.read));
   const sort = $('cam-sort');
   const sortReady = cam.read && handIds().length >= 2;
   sort.hidden = cam.busy || !(canRead || sortReady);
@@ -10174,7 +10305,17 @@ function renderCamera(analysis) {
   twin.innerHTML = twinHTML(a);
   fitTwin();
   $('side-body').innerHTML = summaryHTML(a) + detailHTML(a) + notesHTML();
+  renderPop();
+}
+
+// 手入力の画面でも開けるシート（ほかは写真の画面だけのもの）
+const SHARED_POPS = new Set(['dora', 'settings']);
+
+/** 設定シート（#pop）を描く。写真の画面と手入力の画面で共通 */
+function renderPop() {
   const pop = $('pop');
+  if (!pop) return;
+  if (state.mode !== 'camera' && cam.pop && !SHARED_POPS.has(cam.pop)) cam.pop = null;
   const html = cam.pop ? popHTML() : '';
   // 同じポップアップを描き直すときは、スクロール位置を保つ（選ぶたびに先頭へ飛ばない）
   const prev = pop.querySelector('.pop-body');
@@ -10200,7 +10341,8 @@ function onViewportChange() {
 // ---------- 操作 ----------
 function handleCamera(el) {
   const d = el.dataset;
-  const rerender = () => renderCamera(view.analysis);
+  // ドラ・その他のシートは手入力の画面からも開くので、今の画面を描き直す
+  const rerender = () => (state.mode === 'camera' ? renderCamera(view.analysis) : update());
   switch (d.action) {
     case 'cam-sel':
       cam.sel = { kind: d.kind, tile: +d.tile };
@@ -10279,7 +10421,8 @@ function handleCamera(el) {
       return startLive();
     case 'cam-rule': {
       const raw = d.value;
-      const value = raw === 'normal' || raw === 'fix30' || raw === 'fix40' ? raw : +raw === 1;
+      let value = raw === 'normal' || raw === 'fix30' || raw === 'fix40' ? raw : +raw === 1;
+      if (d.key === 'doubleWindPairFu') value = +raw; // 2符／4符
       setRule(d.key, value);
       if (d.key === 'flowers' && cam.source === 'photo') {
         toast('花牌の設定を変えました。「認識する」を押すと反映します');
@@ -10294,6 +10437,8 @@ function handleCamera(el) {
       return readCloud();
     case 'cam-retake':
       return retake();
+    case 'cam-reset':
+      return resetRead();
     case 'cam-stop':
       if (readCtl) readCtl.abort();
       return undefined;
@@ -10330,7 +10475,8 @@ function initCamera() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && cam.pop) {
       cam.pop = null;
-      renderCamera(view.analysis);
+      if (state.mode === 'camera') renderCamera(view.analysis);
+      else update();
     }
   });
   if (cam.source === 'live') cam.live = 'off';
@@ -10377,17 +10523,22 @@ function syncSetupHead() {
   if (bar) bar.hidden = !open;
 }
 
+let lastMode = null;
 function render(a) {
   const camera = state.mode === 'camera';
   $('app').dataset.mode = state.mode;
+  document.documentElement.dataset.mode = state.mode; // 手入力はページごとスクロールする（CSS）
   $('cam-view').hidden = !camera;
   $('manual-view').hidden = camera;
-  if (!camera) $('pop').hidden = true;
   syncViewTabs(state.mode, state.cam.source);
   syncPlayers();
   syncSetupHead();
   if (camera) renderCamera(a);
   else renderManual(a);
+  if (camera) syncKbSpace(); // 手入力のキーボードの余白を消す
+  // 手入力に入ったとき（タブ・スタート画面・前回の続き）は、手牌がキーボードの下に隠れないようにする
+  else if (lastMode !== 'manual') revealTable();
+  lastMode = state.mode;
   renderGuide();
 }
 
@@ -10439,7 +10590,6 @@ function init() {
   load();
   setRenderer(render);
   document.addEventListener('click', onClick);
-  document.addEventListener('change', (e) => handleManualChange(e.target));
   // 画面の向きが変わったら作り直す（写真の枠と表示がずれないように）
   let resizeTimer = null;
   const onResize = () => {
@@ -10473,7 +10623,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.23</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.26</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
