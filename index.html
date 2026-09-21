@@ -10685,7 +10685,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.27</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.28</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
@@ -10709,7 +10709,7 @@ else init();
     location.reload();
   });
   addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').then((reg) => {
+    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
       if (reg.waiting && navigator.serviceWorker.controller) show(reg);
       reg.addEventListener('updatefound', () => {
         const w = reg.installing;
@@ -10717,6 +10717,15 @@ else init();
         w.addEventListener('statechange', () => {
           if (w.state === 'installed' && navigator.serviceWorker.controller) show(reg);
         });
+      });
+      // スマホは、ほかのアプリから戻ってきたときにページを読み込み直さない（新しい版の確認が走らない）。
+      // 画面に戻るたび・「戻る」で表示し直したときにも sw.js を確かめる（新しければ上の「更新」の帯が出る）
+      const check = () => reg.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') check();
+      });
+      addEventListener('pageshow', (e) => {
+        if (e.persisted) check();
       });
     }).catch(() => {});
   });

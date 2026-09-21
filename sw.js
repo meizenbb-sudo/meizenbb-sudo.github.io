@@ -6,7 +6,7 @@
  * VERSION は「版-中身の指紋」（例: v0.23-5c2262cea9ea）。指紋は公開用の一式（sw.js 以外）から作る。
  * 書体（Google Fonts）は使ったときに保存する。取れなくても端末の丸ゴシックで代替できるので必須にはしない。
  */
-const VERSION = 'v0.27-aee8c57c1fe7';
+const VERSION = 'v0.28-5b49d575ddb9';
 const CACHE = `haiyomi-${VERSION}`;
 const FONTS = 'haiyomi-fonts';
 const SHELL = new URL('./', self.registration.scope).href;
@@ -15,10 +15,12 @@ const CORE = ['./', './manifest.json', './icon-180.png', './icon-512.png', './ic
 const FONT_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
 
 self.addEventListener('install', (e) => {
-  // 1つでも取れないと全部失敗するので、1件ずつ入れて取れたものだけ残す
+  // 1つでも取れないと全部失敗するので、1件ずつ入れて取れたものだけ残す。
+  // ブラウザの HTTP キャッシュ（GitHub Pages は10分）を通さずにサーバーから取る。通すと、更新の直前に見た
+  // 前の版の本体を「新しい版」として保存してしまい、「更新」を押しても前の版のまま、ということが起きる
   e.waitUntil(
     caches.open(CACHE).then((c) =>
-      Promise.all(CORE.map((u) => c.add(u).catch(() => {}))),
+      Promise.all(CORE.map((u) => c.add(new Request(u, { cache: 'reload' })).catch(() => {}))),
     ),
   );
 });
@@ -51,8 +53,8 @@ async function shell() {
   const c = await caches.open(CACHE);
   const hit = await c.match(SHELL);
   if (hit) {
-    // 裏でこっそり取り直しておく（次に開いたときに新しくなる）
-    fetch(SHELL)
+    // 裏でこっそり取り直しておく（次に開いたときに新しくなる）。HTTP キャッシュは使わずサーバーに確かめる
+    fetch(SHELL, { cache: 'no-cache' })
       .then((res) => (res && res.ok ? c.put(SHELL, res.clone()) : null))
       .catch(() => {});
     return hit;
