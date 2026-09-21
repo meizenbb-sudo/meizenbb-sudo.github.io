@@ -3,9 +3,10 @@
  *
  * 本体は1ファイル（index.html・約770KB）なので、初回に丸ごと保存して、次からはそれを出す。
  * 本体が変わるとビルドが下の VERSION を書き換えるので、新しい版が入ったら画面に「更新」の帯を出す。
+ * VERSION は「版-中身の指紋」（例: v0.23-5c2262cea9ea）。指紋は公開用の一式（sw.js 以外）から作る。
  * 書体（Google Fonts）は使ったときに保存する。取れなくても端末の丸ゴシックで代替できるので必須にはしない。
  */
-const VERSION = '5c2262cea9ea';
+const VERSION = 'v0.23-955404714463';
 const CACHE = `haiyomi-${VERSION}`;
 const FONTS = 'haiyomi-fonts';
 const SHELL = new URL('./', self.registration.scope).href;
