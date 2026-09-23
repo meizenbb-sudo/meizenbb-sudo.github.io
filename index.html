@@ -25,6 +25,13 @@
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"],wait_for_update:500});
+gtag('js',new Date());
+gtag('config','G-SQBR6QXW86');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SQBR6QXW86"></script>
 <meta name="google-adsense-account" content="ca-pub-5521107706403454">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5521107706403454" crossorigin="anonymous"></script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}.sw-bar{position:fixed;left:50%;bottom:calc(66px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;white-space:nowrap;padding:7px 7px 7px 14px;border-radius:999px;background:#10352a;color:#fff;font:600 12.5px/1.4 system-ui,sans-serif;box-shadow:0 6px 20px rgb(0 0 0 /.4)}.sw-bar button{flex:none;border:0;border-radius:999px;padding:6px 14px;white-space:nowrap;background:#8fe3bd;color:#10352a;font:800 12.5px/1 system-ui,sans-serif}html,body{height:auto}body{display:flex;flex-direction:column;min-height:100svh}.app{height:auto;flex:1 1 auto;min-height:0}.site-foot{flex:none;display:flex;flex-direction:column;padding:6px 10px calc(4px + env(safe-area-inset-bottom,0px));background:var(--surface-2);border-top:1px solid var(--line)}.site-foot nav{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap}.site-foot a{color:var(--muted);font-size:11px;text-decoration:none}.site-foot i{color:var(--line);font-style:normal;font-size:10px}.site-ver{align-self:flex-end;margin-top:1px;color:var(--muted);font:500 9.5px/1.1 system-ui,sans-serif;letter-spacing:.03em;opacity:.8}</style>
@@ -7625,6 +7632,27 @@ function fuDetailsHTML(r) {
     .join('')}</ul></details>`;
 }
 
+/**
+ * 利用状況の計測（Google アナリティクス）。公開用のページにだけ計測のタグ（window.gtag）が入る。
+ * タグがないとき（手元の確認用のページなど）は何もしない。送るのは操作の名前だけで、写真や手牌の中身は送らない
+ */
+function track(name) {
+  try {
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') window.gtag('event', name);
+  } catch (e) {
+    // 計測の失敗でアプリを止めない
+  }
+}
+
+/** ホーム画面に追加したアプリとして開いているか（Safari のタブで開いているのではなく） */
+function isStandalone() {
+  try {
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // ---- src/ui/store.js ----
 // 状態・保存・操作（カメラ画面と手入力画面で共通）
 
@@ -8841,6 +8869,7 @@ async function startLive() {
     v.srcObject = stream;
     await v.play().catch(() => {});
     cam.live = 'on';
+    track('camera_open');
   } catch (e) {
     stopLive();
     liveError = (e && e.name) || 'Error';
@@ -8942,6 +8971,7 @@ function loadPhoto(file) {
   const reader = new FileReader();
   reader.onerror = () => toast('この画像は読み込めませんでした');
   reader.onload = () => {
+    track('photo_select');
     Object.assign(cam, { source: 'photo', photoUrl: String(reader.result), photoSize: null, zoom: 1, panX: 0, panY: 0, pop: null, note: '', read: false });
     // 別の写真を選んだら前の手牌は消す（「認識済み」でないのに牌のチップだけ残っていると紛らわしい）
     clearForNewCapture();
@@ -9248,6 +9278,7 @@ async function readOnDevice() {
   }
   cam.busy = false;
   if (!r || !r.ok) {
+    track('read_ng');
     cam.note = '手牌の列を見つけられませんでした。枠に手牌を合わせて撮り直すか、「＋」から入力してください';
     toast(cam.note);
     renderCamera(view.analysis);
@@ -9256,6 +9287,7 @@ async function readOnDevice() {
   // 手牌でない写真に無理やり牌を当てはめない（風景・人物など）
   const check = checkHand(r, { melds: state.melds.length, minP: MIN_P, flowers: !!state.rules.flowers });
   if (!check.ok) {
+    track('read_ng');
     cam.note = REJECT_TEXT[check.reason] || REJECT_TEXT.noRow;
     cam.cands = null;
     toast(cam.note);
@@ -9294,6 +9326,7 @@ async function readOnDevice() {
     setTimeout(() => toast(`三人麻雀の設定で2〜8萬を${manzu}枚認識しました。設定（四人麻雀／三人麻雀）を見直しますか？`, 6000), 50);
   }
   cam.cands = r.tiles.map((t) => t.top);
+  track('read_ok');
   cam.note = `端末内のAIで読み取りました（${((Date.now() - t0) / 1000).toFixed(1)}秒）`;
   cam.read = true; // 読み取り後は枠の外を暗くする
   // 確認用（ブラウザでの自動テストが読み取りの内訳を見る）
@@ -9496,6 +9529,8 @@ function onKey(id) {
     const cur = currentEditTile();
     const msg = limitMessage(id, cur);
     if (msg) return toast(msg);
+    // 利用状況: 読み取った牌を別の牌に直した（読み取りの間違いの目安）
+    if (cam.read && id !== cur) track('tile_fix');
     snapshot();
     if (cam.editIndex === 'win') state.win = id;
     else if (cam.draft) {
@@ -10600,6 +10635,8 @@ function render(a) {
   if (camera) syncKbSpace(); // 手入力のキーボードの余白を消す
   // 手入力に入ったとき（タブ・スタート画面・前回の続き）は、手牌がキーボードの下に隠れないようにする
   else if (lastMode !== 'manual') revealTable();
+  // 利用状況: 手入力を開いた（起動したときに前回の続きで手入力だった場合は数えない）
+  if (lastMode && lastMode !== 'manual' && state.mode === 'manual') track('manual_open');
   lastMode = state.mode;
   renderGuide();
 }
@@ -10662,6 +10699,8 @@ function init() {
   window.addEventListener('orientationchange', onResize);
   initCamera();
   update();
+  // 利用状況: ホーム画面のアプリとして開いたか、Safari などのブラウザで開いたか
+  track(isStandalone() ? 'launch_home' : 'launch_browser');
   // 外部（今後の端末内認識モデルなど）からの入力口
   window.haiyomi = {
     setHand: (hand) => setHand(hand),
@@ -10685,7 +10724,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.28</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.29</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
