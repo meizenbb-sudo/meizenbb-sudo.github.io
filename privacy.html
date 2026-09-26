@@ -20,6 +20,11 @@
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <script>
+(function(){var k='nm-ga-off',s=location.search,m=/[?&]ga=(off|on)(?=&|$)/.exec(s),off=false;
+try{if(m){if(m[1]==='off')localStorage.setItem(k,'1');else localStorage.removeItem(k);}off=localStorage.getItem(k)==='1';}catch(e){}
+window['ga-disable-G-SQBR6QXW86']=off;window.nmGa={off:off,mark:m?m[1]:''};
+if(off)document.documentElement.setAttribute('data-ga','off');
+if(m)try{history.replaceState(history.state,'',location.pathname+s.replace(/([?&])ga=(?:off|on)(&|$)/,function(x,a,b){return b?a:''}).replace(/^\?$/,'')+location.hash);}catch(e){}})();
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
 gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"],wait_for_update:500});
 gtag('js',new Date());
@@ -237,7 +242,8 @@ td:first-child { width: 34%; font-weight: 700; }
   <li>あわせて、アプリの主な操作の回数（ホーム画面から開いたか、写真を選んだ・回した、読み取りに成功・失敗した、読み取った牌を直した、手入力・カメラを使った）を送信します。<b>写真や手牌の内容は送信しません。</b></li>
   <li>これらの情報は個人を特定するものではなく、統計として利用します。</li>
   <li>欧州経済領域（EEA）・英国・スイスの利用者については、同意をいただくまで Cookie を使用しません。</li>
-  <li>計測を望まない場合は、ブラウザの設定で Cookie をブロックしてください。パソコンのブラウザでは <a href="https://tools.google.com/dlpage/gaoptout?hl=ja" rel="noopener nofollow" target="_blank">Google アナリティクス オプトアウト アドオン</a> も使えます。</li>
+  <li>計測を望まない場合は、<a href="./?ga=off" rel="nofollow">この端末での計測を止める</a> を開いてください。アプリが開き、以後この端末（このブラウザ）からは何も送信しません。ホーム画面に追加したアプリで止めるときは、アプリの中からこのページを開いてリンクを押してください。再開するときは <a href="./?ga=on" rel="nofollow">計測を再開する</a> を開きます（ブラウザのデータを消したときも元に戻ります）。</li>
+  <li>ブラウザの設定で Cookie をブロックする方法や、パソコンのブラウザで <a href="https://tools.google.com/dlpage/gaoptout?hl=ja" rel="noopener nofollow" target="_blank">Google アナリティクス オプトアウト アドオン</a> を使う方法もあります。</li>
 </ul>
 <p>Google による情報の取り扱いについては、<a href="https://policies.google.com/technologies/partner-sites?hl=ja" rel="noopener nofollow" target="_blank">Google のサービスを使用するサイトやアプリから収集した情報の Google による使用</a> をご覧ください。</p>
 
@@ -251,7 +257,7 @@ td:first-child { width: 34%; font-weight: 700; }
 <p>本ポリシーの内容は、必要に応じて予告なく変更することがあります。変更後の内容は、本ページに掲載した時点から適用されます。</p>
 
 <hr>
-<p><small>制定日: 2026年9月20日 ／ 改定日: 2026年9月23日（アクセス解析の導入）・2026年9月26日（送信する操作に「写真を回した」を追加）</small></p>
+<p><small>制定日: 2026年9月20日 ／ 改定日: 2026年9月23日（アクセス解析の導入）・2026年9月26日（送信する操作に「写真を回した」を追加・この端末での計測を止める方法を追加）</small></p>
 
 <a class="cta" href="./">アプリを開く</a>
 

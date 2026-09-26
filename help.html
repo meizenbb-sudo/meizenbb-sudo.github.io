@@ -20,6 +20,11 @@
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <script>
+(function(){var k='nm-ga-off',s=location.search,m=/[?&]ga=(off|on)(?=&|$)/.exec(s),off=false;
+try{if(m){if(m[1]==='off')localStorage.setItem(k,'1');else localStorage.removeItem(k);}off=localStorage.getItem(k)==='1';}catch(e){}
+window['ga-disable-G-SQBR6QXW86']=off;window.nmGa={off:off,mark:m?m[1]:''};
+if(off)document.documentElement.setAttribute('data-ga','off');
+if(m)try{history.replaceState(history.state,'',location.pathname+s.replace(/([?&])ga=(?:off|on)(&|$)/,function(x,a,b){return b?a:''}).replace(/^\?$/,'')+location.hash);}catch(e){}})();
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
 gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"],wait_for_update:500});
 gtag('js',new Date());
@@ -195,14 +200,14 @@ td:first-child { width: 34%; font-weight: 700; }
     <img src="help1.png" width="393" height="128" loading="lazy" decoding="async" alt="アプリの写真タブ。中央に「アルバムから選ぶ」ボタンがある">
     <figcaption><span class="mark">1</span> ここを押すとアルバムが開きます。「カメラ」タブを選べば、その場で手牌にかざして読み取ることもできます。</figcaption>
   </figure>
-  <p><small>「カメラ」で撮るときは、<b>スマホを横にする</b>と、カメラだけの画面になって手牌の列が大きく写るので、近くから撮れます（右端の大きな「認識する」で撮ります）。縦のままだと、手牌を枠に入れるために少し離れて上から撮る必要があります。iPhone で横にしても画面が変わらないときは、コントロールセンターの「画面縦向きのロック」をオフにしてください。読み取ったら、スマホを縦に戻すと待ち・点数が見られます。</small></p>
+  <p><small>「カメラ」で撮るときは、読み取り枠が画面の上（スマホの裏のカメラに近い所）にあるので、スマホを高く構えなくても手牌を枠に入れられます。もっと近くから撮りたいときは、<b>スマホを横にする</b>と、カメラだけの画面になって手牌の列が大きく写ります（右端の大きな「認識する」で撮ります）。iPhone で横にしても画面が変わらないときは、コントロールセンターの「画面縦向きのロック」をオフにしてください。読み取ったら、スマホを縦に戻すと待ち・点数が見られます。</small></p>
 </div>
 
 <div class="step">
   <h3><span class="num">2</span>手牌を枠の中に入れる</h3>
-  <p>写真を指でドラッグして動かし、2本指で広げると拡大できます。<b>手牌の列が枠いっぱいに入る</b>ように合わせてください。手牌が斜めに写っているとき（テレビ中継の画面など）は、<b>2本指で回して手牌を枠と平行に</b>します（枠の左上の「戻す」で0°に戻ります）。</p>
+  <p>写真を指でドラッグして動かし、2本指で広げると、指の間の所を中心に拡大できます。<b>手牌の列が枠いっぱいに入る</b>ように合わせてください。手牌が斜めに写っているとき（テレビ中継の画面など）は、<b>2本指で回して手牌を枠と平行に</b>します（枠の左上の「戻す」で0°に戻ります）。</p>
   <figure>
-    <img src="help2.png" width="373" height="122" loading="lazy" decoding="async" alt="読み取り枠に手牌を合わせたところ。右上に90°回転ボタンがある">
+    <img src="help2.png" width="385" height="122" loading="lazy" decoding="async" alt="読み取り枠に手牌を合わせたところ。右上に90°回転ボタンがある">
     <figcaption><span class="mark">2</span> この枠の中だけを読み取ります。&nbsp; <span class="mark">3</span> 縦向きで撮った写真は、ここを押すと90°回ります。</figcaption>
   </figure>
   <p><small>牌が小さく写っていると読み間違えます。手牌が枠の横幅いっぱいになるくらいが目安です。</small></p>
@@ -219,18 +224,18 @@ td:first-child { width: 34%; font-weight: 700; }
 
 <div class="step">
   <h3><span class="num">4</span>読み取りを確かめる</h3>
-  <p>読み取った牌が並びます。違う牌があれば<b>その牌をタップ</b>すると選び直せます。読み取れなかった牌は「？」になります。全部やり直したいときは、左上の<b>「リセット」</b>で牌を消してから、もう一度「認識する」を押します（写真はそのまま残ります。カメラのときは映像が動き出すので、そのまま撮り直せます）。</p>
+  <p>読み取った牌が<b>枠のすぐ下</b>に並ぶので、写真と見比べられます。違う牌があれば<b>その牌をタップ</b>すると選び直せます。読み取れなかった牌は「？」になります。全部やり直したいときは、牌の下の<b>「リセット」</b>で牌を消してから、もう一度「認識する」を押します（写真はそのまま残ります。カメラのときは映像が動き出すので、そのまま撮り直せます）。</p>
   <figure>
-    <img src="help4.png" width="369" height="62" loading="lazy" decoding="async" alt="読み取った13枚の牌が並んでいる">
+    <img src="help4.png" width="381" height="49" loading="lazy" decoding="async" alt="読み取った13枚の牌が並んでいる">
     <figcaption><span class="mark">5</span> 牌をタップすると、候補から選んで直せます。並び順は写真のままです（左の「配牌整理」を押すと種類順に並べ替えできます）。<b>逆さまに置かれた牌もそのまま読めます。</b></figcaption>
   </figure>
 </div>
 
 <div class="step">
   <h3><span class="num">5</span>待ち牌を見る</h3>
-  <p>13枚そろうと、左上に<b>テンパイかどうか</b>が出て、その下に<b>待ち牌</b>が牌の絵で並びます。ここまでは設定なしで見られます。</p>
+  <p>13枚そろうと、読み取った牌の下に<b>テンパイかどうか</b>が出て、その下に<b>待ち牌</b>が牌の絵で並びます。ここまでは設定なしで見られます。</p>
   <figure>
-    <img src="help5.png" width="365" height="152" loading="lazy" decoding="async" alt="左上にテンパイと大きく表示され、下に待ち牌の6筒と中が並んでいる">
+    <img src="help5.png" width="377" height="147" loading="lazy" decoding="async" alt="テンパイと大きく表示され、その下に待ち牌の6筒と中が並んでいる">
     <figcaption><span class="mark">6</span> この手は6筒と中の2種待ちです。待ち牌をタップすると、その待ちに関係する牌が浮き上がり、関係ない牌は薄くなります。</figcaption>
   </figure>
   <p><small>テンパイでないときは「1シャンテン」「2シャンテン」のように、あと何回の入れ替えが要るかが出ます。1シャンテンなら、テンパイになる牌も1枚ずつ絵で並びます。</small></p>
@@ -238,7 +243,7 @@ td:first-child { width: 34%; font-weight: 700; }
 
 <div class="step">
   <h3><span class="num">6</span>条件を入れて「OK」を押す</h3>
-  <p>点数を出すには、場風・自分の家・リーチの有無・ドラなどを入れます。上の「条件/ルール 設定」の<b>＋</b>を押すと開きます。</p>
+  <p>点数を出すには、場風・自分の家・リーチの有無・ドラなどを入れます。写真の下の「条件/ルール 設定」で入れます（たたんであるときは<b>＋</b>を押すと開きます）。</p>
   <figure>
     <img src="help6.png" width="389" height="156" loading="lazy" decoding="async" alt="条件の設定。場の設定とアガリ想定の2段があり、右にリセットとOKボタン">
     <figcaption><span class="mark">7</span> 入れ終えたら「OK」を押します。押すまで点数は出ません（入れ忘れたまま点数を信じてしまわないようにするためです）。</figcaption>
@@ -249,12 +254,12 @@ td:first-child { width: 34%; font-weight: 700; }
   <h3><span class="num">7</span>点数が出る</h3>
   <p>待ち牌の下に点数が出ます。<b>待ちが何種類かあるときは、牌ごとに出る</b>ので、どれでアガるのが得かを見比べられます。点数はアガリ想定の「ロン／ツモ」に合わせて出ます。ツモは支払いの形で、子なら「子 2,000・親 4,000」、親なら「4,000 オール」のように出ます。</p>
   <figure>
-    <img src="help7.png" width="377" height="107" loading="lazy" decoding="async" alt="待ち牌の6筒には「ツモのみ」、中には1,300と表示されている">
+    <img src="help7.png" width="389" height="107" loading="lazy" decoding="async" alt="待ち牌の6筒には「ツモのみ」、中には1,300と表示されている">
     <figcaption><span class="mark">8</span> この手は、中でアガれば1,300点。6筒は役がつかないので「ツモのみ」と出ています。</figcaption>
   </figure>
   <p>牌をタップすると、下の枠に中身が出ます。</p>
   <figure>
-    <img src="help8.png" width="381" height="470" loading="lazy" decoding="async" alt="下の枠に「6筒でアガリ・シャンポン待ち」「ロン 役なし／ツモ 1,100」と、役がないためロンではアガれないという説明、面子の分け方が出ている">
+    <img src="help8.png" width="393" height="470" loading="lazy" decoding="async" alt="下の枠に「6筒でアガリ・シャンポン待ち」「ロン 役なし／ツモ 1,100」と、役がないためロンではアガれないという説明、面子の分け方が出ている">
     <figcaption>ロンとツモの両方の点数、翻数と符、面子の分け方まで出ます。<b>役がなくてアガれないときは、その理由とどうすればアガれるかも出ます。</b>本場や供託を入れていれば、受け取る合計点も出ます。</figcaption>
   </figure>
 </div>
@@ -272,7 +277,7 @@ td:first-child { width: 34%; font-weight: 700; }
 <h2>うまく読み取れないとき</h2>
 <table>
   <tr><th>症状</th><th>試すこと</th></tr>
-  <tr><td>枚数が合わない</td><td>左上の「リセット」を押してから、手牌の列が枠いっぱいに入るまで拡大して、もう一度「認識する」を押してください。牌が小さいと区切りを間違えます。</td></tr>
+  <tr><td>枚数が合わない</td><td>「リセット」を押してから、手牌の列が枠いっぱいに入るまで拡大して、もう一度「認識する」を押してください。牌が小さいと区切りを間違えます。</td></tr>
   <tr><td>牌を読み違える</td><td>その牌をタップして選び直してください。候補が3つ出ます。</td></tr>
   <tr><td>「手牌が見つかりません」と出る</td><td>手牌が横一列に並んで写っているか確認してください。斜めから撮った写真や、牌が重なっている写真は読めません。</td></tr>
   <tr><td>暗くてうまくいかない</td><td>手元の影が牌にかからないように撮り直すと読みやすくなります。</td></tr>

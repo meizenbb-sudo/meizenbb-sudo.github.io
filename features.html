@@ -20,6 +20,11 @@
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <script>
+(function(){var k='nm-ga-off',s=location.search,m=/[?&]ga=(off|on)(?=&|$)/.exec(s),off=false;
+try{if(m){if(m[1]==='off')localStorage.setItem(k,'1');else localStorage.removeItem(k);}off=localStorage.getItem(k)==='1';}catch(e){}
+window['ga-disable-G-SQBR6QXW86']=off;window.nmGa={off:off,mark:m?m[1]:''};
+if(off)document.documentElement.setAttribute('data-ga','off');
+if(m)try{history.replaceState(history.state,'',location.pathname+s.replace(/([?&])ga=(?:off|on)(&|$)/,function(x,a,b){return b?a:''}).replace(/^\?$/,'')+location.hash);}catch(e){}})();
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
 gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"],wait_for_update:500});
 gtag('js',new Date());

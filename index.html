@@ -27,6 +27,11 @@
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <script>
+(function(){var k='nm-ga-off',s=location.search,m=/[?&]ga=(off|on)(?=&|$)/.exec(s),off=false;
+try{if(m){if(m[1]==='off')localStorage.setItem(k,'1');else localStorage.removeItem(k);}off=localStorage.getItem(k)==='1';}catch(e){}
+window['ga-disable-G-SQBR6QXW86']=off;window.nmGa={off:off,mark:m?m[1]:''};
+if(off)document.documentElement.setAttribute('data-ga','off');
+if(m)try{history.replaceState(history.state,'',location.pathname+s.replace(/([?&])ga=(?:off|on)(&|$)/,function(x,a,b){return b?a:''}).replace(/^\?$/,'')+location.hash);}catch(e){}})();
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
 gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',region:["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"],wait_for_update:500});
 gtag('js',new Date());
@@ -35,7 +40,7 @@ gtag('config','G-SQBR6QXW86');
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SQBR6QXW86"></script>
 <meta name="google-adsense-account" content="ca-pub-5521107706403454">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5521107706403454" crossorigin="anonymous"></script>
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}.sw-bar{position:fixed;left:50%;bottom:calc(66px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;white-space:nowrap;padding:7px 7px 7px 14px;border-radius:999px;background:#10352a;color:#fff;font:600 12.5px/1.4 system-ui,sans-serif;box-shadow:0 6px 20px rgb(0 0 0 /.4)}.sw-bar button{flex:none;border:0;border-radius:999px;padding:6px 14px;white-space:nowrap;background:#8fe3bd;color:#10352a;font:800 12.5px/1 system-ui,sans-serif}html,body{height:auto}body{display:flex;flex-direction:column;min-height:100svh}.app{height:auto;flex:1 1 auto;min-height:0}.site-foot{flex:none;display:flex;flex-direction:column;padding:6px 10px calc(4px + env(safe-area-inset-bottom,0px));background:var(--surface-2);border-top:1px solid var(--line)}.site-foot nav{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap}.site-foot a{color:var(--muted);font-size:11px;text-decoration:none}.site-foot i{color:var(--line);font-style:normal;font-size:10px}.site-ver{align-self:flex-end;margin-top:1px;color:var(--muted);font:500 9.5px/1.1 system-ui,sans-serif;letter-spacing:.03em;opacity:.8}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}.sw-bar{position:fixed;left:50%;bottom:calc(66px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;white-space:nowrap;padding:7px 7px 7px 14px;border-radius:999px;background:#10352a;color:#fff;font:600 12.5px/1.4 system-ui,sans-serif;box-shadow:0 6px 20px rgb(0 0 0 /.4)}.sw-bar button{flex:none;border:0;border-radius:999px;padding:6px 14px;white-space:nowrap;background:#8fe3bd;color:#10352a;font:800 12.5px/1 system-ui,sans-serif}html,body{height:auto}body{display:flex;flex-direction:column;min-height:100svh}.app{height:auto;flex:1 1 auto;min-height:0}.site-foot{flex:none;display:flex;flex-direction:column;padding:6px 10px calc(4px + env(safe-area-inset-bottom,0px));background:var(--surface-2);border-top:1px solid var(--line)}.site-foot nav{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap}.site-foot a{color:var(--muted);font-size:11px;text-decoration:none}.site-foot i{color:var(--line);font-style:normal;font-size:10px}.site-ver{align-self:flex-end;margin-top:1px;color:var(--muted);font:500 9.5px/1.1 system-ui,sans-serif;letter-spacing:.03em;opacity:.8}html[data-ga=off] .site-ver::after{content:'・計測オフ'}</style>
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1817,7 +1822,7 @@ details.more[open] > summary::before {
   left: 50%;
   top: calc(env(safe-area-inset-top, 0px) + 10px);
   transform: translateX(-50%);
-  z-index: 10;
+  z-index: 21; /* スタート画面（20）の上にも出す（?ga=off で開いたときのお知らせなど） */
   /* left:50% だと使える幅が画面の半分になり、短い文でも折り返してしまう。中身の幅にそろえて上限だけ決める */
   width: max-content;
   max-width: min(92vw, 420px);
@@ -1910,20 +1915,33 @@ details.more[open] > summary::before {
 }
 
 /* ---------- カメラ画面 ---------- */
-/* スマホは縦向きのまま使う前提。横にしても同じ積み方（上＝写真／下＝結果）にする。
-   写真の枠は中身（操作ボタン・待ち牌・手牌・読み取り枠）の高さで決め、画面に入りきらなければ全体がスクロールする
+/* スマホは縦向きのまま使う前提。上から 写真（読み取り枠は写真のいちばん上）→ 条件/ルール 設定 → 何待ち 判断（結果）の順（v0.33）。
+   読み取り枠を画面の上（スマホの背面カメラの近く）に置くと、スマホを高く構えずに手牌を写せて、ほかの牌も入りにくい。
+   「条件/ルール 設定」と「何待ち 判断」の見出しは、写真の画面のときだけ main.js がこの中へ移す（手入力の画面では写真の上）。
+   写真の枠は中身（読み取り枠・手牌・操作ボタン・待ち牌）の高さで決め、画面に入りきらなければ全体がスクロールする
    （高さを割合で決めると、Safari のツールバーぶん低い画面で手牌のチップが読み取り枠の裏に隠れてしまう） */
 .cam {
   height: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: max-content max-content;
+  grid-auto-rows: max-content;
   align-content: start;
   gap: 6px;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-block: 2px 8px;
-  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+  padding-inline: max(10px, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-right, 0px));
+}
+/* 移してきた見出しと設定の帯は、写真の枠と同じ幅にそろえる（間は .cam の gap） */
+.cam > .area-head,
+.cam > .rules-bar {
+  margin: 0;
+}
+.cam > .setup-head {
+  margin-top: 6px;
+}
+.cam > .judge-head {
+  margin-top: 4px;
 }
 /* 写真を枠に合わせている間（とカメラ・写真なし）は写真を見る場所を確保し、読み取った後は中身の高さだけにする */
 .cam-stage {
@@ -1939,19 +1957,38 @@ details.more[open] > summary::before {
 .side-body {
   overflow: visible;
 }
-/* 十分に大きい画面（タブレット・PC）のときだけ横に2枚並べる */
+/* 十分に大きい画面（タブレット・PC）のときだけ横に2枚並べる。
+   左の列は スマホと同じ順（写真（読み取り枠が上）→ 条件/ルール 設定）、右の列は 何待ち 判断（結果） */
 @media (min-width: 720px) and (min-height: 600px) {
   .cam {
-    grid-template-columns: minmax(0, 1fr) clamp(236px, 31%, 340px);
-    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 34%, 400px);
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    grid-auto-rows: auto;
+    grid-template-areas:
+      'stage judge'
+      'stage side'
+      'head side'
+      'rules side';
     align-content: stretch;
     overflow: visible;
-    gap: 10px;
+    gap: 6px 12px;
   }
   .cam-stage {
+    grid-area: stage;
     min-height: 0;
   }
+  .cam > .setup-head {
+    grid-area: head;
+  }
+  .cam > .rules-bar {
+    grid-area: rules;
+  }
+  .cam > .judge-head {
+    grid-area: judge;
+    margin-top: 0;
+  }
   .cam-side {
+    grid-area: side;
     min-height: 0;
   }
   .side-body {
@@ -1985,11 +2022,11 @@ details.more[open] > summary::before {
   /* 高さは外から決める（size にすると中身の高さが枠に伝わらず、横向きで手牌がはみ出す） */
   container-type: inline-size;
   isolation: isolate;
-  /* 設定チップ → 案内 → 手牌 の順に積む。下は読み取り枠のぶんを空ける（重ならないように） */
+  /* 読み取り枠（いちばん上）→ 手牌 → 状態と操作ボタン → 待ち牌 の順に積む。上は読み取り枠のぶんを空ける（重ならないように） */
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 6px 6px calc(var(--roi-inset) + var(--roi-h) + 2px);
+  padding: calc(var(--roi-inset) + var(--roi-h) + 6px) 6px 8px;
 }
 .cam-stage[data-source='photo'] {
   touch-action: none;
@@ -2025,7 +2062,7 @@ details.more[open] > summary::before {
   position: absolute;
   left: var(--roi-inset);
   right: var(--roi-inset);
-  bottom: var(--roi-inset);
+  top: var(--roi-inset);
   height: var(--roi-h);
   display: flex;
   align-items: center;
@@ -2072,7 +2109,7 @@ details.more[open] > summary::before {
   display: none;
 }
 .cam-stage[data-empty] {
-  padding-bottom: 8px;
+  padding-top: 6px;
 }
 .btn-row {
   display: flex;
@@ -2122,7 +2159,7 @@ details.more[open] > summary::before {
   z-index: 1;
   left: var(--roi-inset);
   right: var(--roi-inset);
-  bottom: var(--roi-inset);
+  top: var(--roi-inset);
   height: var(--roi-h);
   overflow: hidden;
   border-radius: 12px;
@@ -2202,7 +2239,7 @@ details.more[open] > summary::before {
   position: absolute;
   z-index: 2;
   right: calc(var(--roi-inset) + 5px);
-  bottom: calc(var(--roi-inset) + var(--roi-h) - 4px - 28px);
+  top: calc(var(--roi-inset) + 4px);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -2665,7 +2702,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: none;
-  margin-top: auto;
   z-index: 2;
   padding-inline: 0;
   display: flex;
@@ -2676,9 +2712,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
 .cam-overlay > * {
   pointer-events: auto;
   flex: none;
-}
-.cam-stage[data-framing] .cam-overlay {
-  margin-top: 0;
 }
 .band {
   display: grid;
@@ -4098,7 +4131,7 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   <small><em class="st-mini">未設定</em>でも<span class="ref-head">何待ち 判断</span>は使用可能<br>点数は<span class="ok-mini">OK</span>を押すと算出</small>
 </div>
 <section class="rules-bar" id="rules-bar" aria-label="条件の設定"></section>
-<div class="area-head judge-head">
+<div class="area-head judge-head" id="judge-head">
   <b>何待ち 判断</b>
   <small>手牌を認識し、待ち牌をサポート<br><span class="ref-head">条件/ルール 設定</span>が<em class="st-mini">未設定</em>でも使用可能</small>
 </div>
@@ -4128,7 +4161,9 @@ html[data-cam-land] .land-hint:not([hidden])::before {
       <span>90°回転</span>
     </button>
     <div class="cam-empty" id="cam-empty" hidden></div>
+    <!-- 枠の下は 読み取った牌（写真と見比べられるように枠のすぐ下）→ 状態（テンパイなど）と操作ボタン → 待ち牌 の順（v0.33） -->
     <div class="cam-overlay" id="cam-overlay">
+      <div class="twin" id="twin"></div>
       <div class="cam-top">
         <div class="cam-head-col">
           <div class="band-head-slot" id="band-head"></div>
@@ -4152,7 +4187,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
         </div>
       </div>
       <div class="band" id="band" aria-live="polite"></div>
-      <div class="twin" id="twin"></div>
       <!-- スマホを横にして撮ったあと（カメラだけの画面）に出す -->
       <p class="land-hint" id="land-hint" hidden>スマホを縦に戻すと、待ち・点数が見られます</p>
     </div>
@@ -8111,6 +8145,7 @@ const state = {
     zoom: 1,
     panX: 0,
     panY: 0,
+    photoY0: null, // 写真の最初の上端の位置（camera.js の photoRect が決める）
     scanning: false,
     read: false, // 写真から読み取り済み（枠の外を暗くする）
     sorted: false, // 配牌整理（理牌）ON/OFF。既定は OFF＝写真と同じ並び
@@ -8528,11 +8563,11 @@ const GICON = {
 };
 
 const STEPS = [
-  ['rotate', 'スマホは縦のままでOK', '下の横長の枠に、手牌が一列に入るように写します（並び順はバラバラでも大丈夫）。カメラで撮るときは、スマホを横にすると近くから撮れます'],
+  ['rotate', 'スマホは縦のままでOK', '画面の上の横長の枠に、手牌が一列に入るように写します（並び順はバラバラでも大丈夫）。カメラで撮るときは、スマホを横にすると近くから撮れます'],
   ['read', '「認識する」を押す', '牌の判別は端末の中だけで行います（通信なし・1〜2秒）。オフライン環境でも使用可能'],
-  ['fix', '違う牌はタップで直す', '読み違えた牌をタップすると、候補から選び直せます。全部やり直すときは左上の「リセット」'],
-  ['wait', '待ち牌が手牌の上に出る', '待ち牌をタップすると、役と点数が出ます'],
-  ['gear', '条件を合わせて「OK」', '上の「場の設定」「アガリ想定」をタップで合わせ、右下の「OK」で点数が出ます。待ちとシャンテン数は設定なしでも出ます。人数は見出し横の「4人／3人」'],
+  ['fix', '違う牌はタップで直す', '読み取った牌は枠のすぐ下に並びます。読み違えた牌をタップすると、候補から選び直せます。全部やり直すときは「リセット」'],
+  ['wait', '待ち牌が手牌の下に出る', '待ち牌をタップすると、役と点数が出ます'],
+  ['gear', '条件を合わせて「OK」', '「条件/ルール 設定」の「場の設定」「アガリ想定」をタップで合わせ、右下の「OK」で点数が出ます。待ちとシャンテン数は設定なしでも出ます。人数は見出し横の「4人／3人」'],
 ];
 
 function bigButton(kind, icon, label, note) {
@@ -9441,7 +9476,7 @@ function loadPhoto(file) {
   reader.onerror = () => toast('この画像は読み込めませんでした');
   reader.onload = () => {
     track('photo_select');
-    Object.assign(cam, { source: 'photo', photoUrl: String(reader.result), photoSize: null, zoom: 1, panX: 0, panY: 0, angle: 0, pop: null, note: '', read: false });
+    Object.assign(cam, { source: 'photo', photoUrl: String(reader.result), photoSize: null, zoom: 1, panX: 0, panY: 0, photoY0: null, angle: 0, pop: null, note: '', read: false });
     // 別の写真を選んだら前の手牌は消す（「認識済み」でないのに牌のチップだけ残っていると紛らわしい）
     clearForNewCapture();
     update();
@@ -9494,7 +9529,7 @@ function rotatePhoto() {
   }
   if (!url || url.length < 64) return toast('この写真は回転できませんでした');
   cam.rotation = ((cam.rotation | 0) + 90) % 360;
-  Object.assign(cam, { photoUrl: url, photoSize: null, zoom: 1, panX: 0, panY: 0, angle: 0, read: false, note: '' });
+  Object.assign(cam, { photoUrl: url, photoSize: null, zoom: 1, panX: 0, panY: 0, photoY0: null, angle: 0, read: false, note: '' });
   img.onload = () => {
     cam.photoSize = { w: img.naturalWidth, h: img.naturalHeight };
     renderCamera(view.analysis);
@@ -9504,14 +9539,49 @@ function rotatePhoto() {
   return undefined;
 }
 
+/**
+ * 写真の表示位置（ステージの中の座標）。幅はステージの幅×倍率、左右は真ん中、上下は cam.photoY0 ＋ 動かした量。
+ * cam.photoY0（最初の上端の位置）は、写真を選んだ・回した直後の枠合わせの画面で決めて覚えておく
+ * （読み取ったあとにステージの高さが変わっても、読み取り枠に見えている所が動かないように。v0.33 で枠を上に移した）。
+ * 縦長の写真は下端をステージの下にそろえ、低い写真は上端をステージの上にそろえる（手牌は写真の下のほうに写っていることが多い）
+ */
 function photoRect() {
   const st = $('cam-stage');
   if (!cam.photoSize || !st) return null;
   const W = st.clientWidth;
-  const H = st.clientHeight;
+  const h1 = (W * cam.photoSize.h) / cam.photoSize.w; // 等倍（幅＝ステージの幅）のときの高さ
+  if (cam.photoY0 == null) cam.photoY0 = Math.min(0, st.clientHeight - h1);
   const w = W * cam.zoom;
+  const h = h1 * cam.zoom;
+  return { left: (W - w) / 2 + cam.panX, top: cam.photoY0 + cam.panY, w, h };
+}
+
+/** 画面の点（clientX/Y）の下にある写真の点。写真の真ん中からのずれを、回す前・等倍の大きさで返す */
+function photoPointAt(p) {
+  const r = photoRect();
+  const sr = $('cam-stage').getBoundingClientRect();
+  const a = (-(cam.angle || 0) * Math.PI) / 180;
+  const dx = p.x - sr.left - (r.left + r.w / 2);
+  const dy = p.y - sr.top - (r.top + r.h / 2);
+  return { x: (dx * Math.cos(a) - dy * Math.sin(a)) / cam.zoom, y: (dx * Math.sin(a) + dy * Math.cos(a)) / cam.zoom };
+}
+
+/**
+ * 写真の点 q（photoPointAt の形）が画面の点 p に来るように写真を動かす。
+ * 2本指の拡大・回転は指の下の所を中心にする（指で押さえた牌が指から離れない）。ホイールの拡大はマウスの位置が中心
+ */
+function pinPhotoPoint(q, p) {
+  const st = $('cam-stage');
+  const sr = st.getBoundingClientRect();
+  const a = ((cam.angle || 0) * Math.PI) / 180;
+  const qx = q.x * cam.zoom;
+  const qy = q.y * cam.zoom;
+  const cx = p.x - sr.left - (qx * Math.cos(a) - qy * Math.sin(a));
+  const cy = p.y - sr.top - (qx * Math.sin(a) + qy * Math.cos(a));
+  const W = st.clientWidth;
   const h = ((W * cam.photoSize.h) / cam.photoSize.w) * cam.zoom;
-  return { left: (W - w) / 2 + cam.panX, top: H - h + cam.panY, w, h };
+  cam.panX = cx - W / 2;
+  cam.panY = cy - h / 2 - (cam.photoY0 || 0);
 }
 
 function applyPhotoTransform() {
@@ -9555,7 +9625,8 @@ function gestureBaseline() {
   const mid = pts.reduce((m, p) => ({ x: m.x + p.x / pts.length, y: m.y + p.y / pts.length }), { x: 0, y: 0 });
   const dist = pts.length > 1 ? Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) : 0;
   const ang = pts.length > 1 ? Math.atan2(pts[1].y - pts[0].y, pts[1].x - pts[0].x) : 0;
-  gesture = { mid, dist, ang, angle: cam.angle || 0, panX: cam.panX, panY: cam.panY, zoom: cam.zoom };
+  // 指（2本なら真ん中）の下にある写真の点。動かしても拡大・回転しても、この点が指の下に付いてくる
+  gesture = { mid, dist, ang, angle: cam.angle || 0, zoom: cam.zoom, grip: photoPointAt(mid) };
 }
 function onPointerDown(e) {
   if (cam.source !== 'photo' || !cam.photoSize || cam.busy || cam.pop) return;
@@ -9585,8 +9656,7 @@ function onPointerMove(e) {
     if (next && !cam.angle) cam.tilted = true;
     cam.angle = next;
   }
-  cam.panX = gesture.panX + (mid.x - gesture.mid.x);
-  cam.panY = gesture.panY + (mid.y - gesture.mid.y);
+  pinPhotoPoint(gesture.grip, mid);
   applyPhotoTransform();
 }
 function onPointerUp(e) {
@@ -9611,7 +9681,11 @@ function onWheel(e) {
     applyPhotoTransform();
     return;
   }
+  // マウスの位置を中心に拡大・縮小する
+  const p = { x: e.clientX, y: e.clientY };
+  const grip = photoPointAt(p);
   cam.zoom = Math.max(1, Math.min(5, cam.zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)));
+  pinPhotoPoint(grip, p);
   applyPhotoTransform();
 }
 
@@ -10295,7 +10369,7 @@ function bandHTML(a) {
   const ids = handIds();
   if (!ids.length && state.win == null && !state.melds.length) {
     if (mediaMessage()) return '';
-    return bandHead('手牌なし', '下の枠に手牌を横一列に入れて読み取ります');
+    return bandHead('手牌なし', '上の枠に手牌を横一列に入れて読み取ります');
   }
   if (cam.draft) {
     const q = cam.draft.tiles.filter((x) => x == null).length;
@@ -10636,9 +10710,9 @@ function summaryHTML(a) {
   const k = state.melds.length;
   if (!a || cam.draft || a.phase === 'error' || a.phase === 'incomplete') {
     const lines = [
-      'スマホは縦のままでOK。下の枠に手牌が横一列に入るように写します（カメラはスマホを横にすると近くから撮れます）',
+      'スマホは縦のままでOK。上の枠に手牌が横一列に入るように写します（カメラはスマホを横にすると近くから撮れます）',
       getTileModel() ? '「認識する」を押すと、端末内のAIが牌を読みます' : sampleImages ? '「認識する」でAIが牌を読みます（β）' : '読み取れない場合は「＋」から牌をタップで入力',
-      '手牌の上に待ち牌が出ます。タップするとここに役と点数',
+      '手牌の下に待ち牌が出ます。タップするとここに役と点数',
     ];
     return `<div class="s-sum"><span class="eyebrow">使い方</span><ol class="howto">${lines.map((l) => `<li>${l}</li>`).join('')}</ol></div>`;
   }
@@ -10788,7 +10862,7 @@ function popHTML() {
         ruleRow(RULE_LABELS.ryuuiisouNeedsHatsu, 'ryuuiisouNeedsHatsu', [[0, 'なくてよい'], [1, '必須']], r.ryuuiisouNeedsHatsu ? 1 : 0) +
         ruleRow(RULE_LABELS.doubleWindPairFu, 'doubleWindPairFu', [[2, '2符'], [4, '4符']], r.doubleWindPairFu === 2 ? 2 : 4) +
         ruleRow('花牌', 'flowers', [[0, '使わない'], [1, '使う']], r.flowers ? 1 : 0) +
-        `<p class="muted">場風・家・本場・供託・ドラは上の「場の設定」、リーチ・ロン/ツモ・一発・裏ドラ（枚数）・抜きドラは「アガリ想定」でタップして変えられます。</p>`;
+        `<p class="muted">場風・家・本場・供託・ドラは「条件/ルール 設定」の「場の設定」、リーチ・ロン/ツモ・一発・裏ドラ（枚数）・抜きドラは「アガリ想定」でタップして変えられます。</p>`;
       return popShell('その他の設定', body);
     }
     case 'dora': {
@@ -11060,7 +11134,7 @@ let lastLandscape = null;
 function onViewportChange() {
   const land = window.innerWidth > window.innerHeight;
   if (lastLandscape !== null && land !== lastLandscape && cam.photoSize) {
-    Object.assign(cam, { zoom: 1, panX: 0, panY: 0 });
+    Object.assign(cam, { zoom: 1, panX: 0, panY: 0, photoY0: null });
   }
   lastLandscape = land;
   if (state.mode === 'camera') renderCamera(view.analysis);
@@ -11264,11 +11338,27 @@ function syncSetupHead() {
   if (bar) bar.hidden = !open;
 }
 
+/**
+ * 「条件/ルール 設定」（見出しと帯）と「何待ち 判断」の見出しの置き場所（v0.33）。
+ * 写真の画面: 写真（読み取り枠）の下、結果の上へ移す。手入力の画面: 今までどおり画面の上（手牌の上）
+ */
+const SETUP_PARTS = ['setup-head', 'rules-bar', 'judge-head'];
+function placeSetup(camera) {
+  const parent = camera ? $('cam-view') : $('app');
+  const before = camera ? $('cam-side') : document.querySelector('#app > .rotate-hint');
+  if (!parent || !before) return;
+  SETUP_PARTS.forEach((id) => {
+    const el = $(id);
+    if (el && el.parentNode !== parent) parent.insertBefore(el, before);
+  });
+}
+
 let lastMode = null;
 function render(a) {
   const camera = state.mode === 'camera';
   $('app').dataset.mode = state.mode;
   document.documentElement.dataset.mode = state.mode; // 手入力はページごとスクロールする（CSS）
+  placeSetup(camera);
   $('cam-view').hidden = !camera;
   $('manual-view').hidden = camera;
   syncViewTabs(state.mode, state.cam.source);
@@ -11343,6 +11433,10 @@ function init() {
   window.addEventListener('orientationchange', onResize);
   initCamera();
   update();
+  // この端末での計測を止めた／再開した（?ga=off ／ ?ga=on で開いた）ときのお知らせ。印は <head> の計測のタグの前で付ける（build.mjs）
+  const ga = window.nmGa;
+  if (ga && ga.mark === 'off') toast('この端末での利用状況の計測を止めました（画面の下の版の横に「計測オフ」と出ます）', 5000);
+  else if (ga && ga.mark === 'on') toast('この端末での利用状況の計測を再開しました', 4000);
   // 利用状況: ホーム画面のアプリとして開いたか、Safari などのブラウザで開いたか
   track(isStandalone() ? 'launch_home' : 'launch_browser');
   // 外部（今後の端末内認識モデルなど）からの入力口
@@ -11368,7 +11462,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.32</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.33</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
