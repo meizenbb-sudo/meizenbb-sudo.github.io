@@ -253,53 +253,6 @@ h2 {
   flex: none;
 }
 
-/* 見出しの帯: 「何待ち 判断」（判断エリアの上）。背景つきのヘッダー、右に2行の補足 */
-.area-head {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: 2px max(8px, env(safe-area-inset-left, 0px)) 4px;
-  padding: 4px 9px;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  box-shadow: inset 4px 0 0 var(--accent);
-}
-
-.area-head b {
-  flex: none;
-  font-family: var(--font-brand);
-  font-size: 14.5px;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  color: var(--accent);
-  white-space: nowrap;
-}
-/* 画面の幅に合わせて少しずつ縮め、どの端末でも2行に収まるようにする */
-.area-head small {
-  flex: 1 1 auto;
-  min-width: 0;
-  font-size: clamp(9px, 2.65vw, 11px);
-  line-height: 1.5;
-  color: var(--ink);
-}
-/* 補足の中の「条件なし」（札の見た目） */
-.area-head small .st-mini {
-  display: inline-block;
-  font-style: normal;
-  font-size: 0.9em;
-  font-weight: 800;
-  line-height: 15px;
-  padding: 0 4px;
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--muted);
-  box-shadow: inset 0 0 0 1px var(--line);
-  vertical-align: 1px;
-}
-
-.judge-head {
-  margin-top: 4px;
-}
 /* 点数を出す前の案内 */
 .score-wait {
   display: grid;
@@ -1503,7 +1456,7 @@ details.more[open] > summary::before {
 /* ---------- カメラ画面 ---------- */
 /* スマホは縦向きのまま使う前提。上から 写真（読み取り枠は写真のいちばん上）→ 条件のまとめ → 何待ち 判断（結果）の順（v0.33）。
    読み取り枠を画面の上（スマホの背面カメラの近く）に置くと、スマホを高く構えずに手牌を写せて、ほかの牌も入りにくい。
-   「条件」のまとめと「何待ち 判断」の見出しは、写真の画面のときだけ main.js がこの中へ移す（手入力の画面では写真の上）。
+   「点数条件」の枠は、写真の画面のときだけ main.js がこの中へ移す（手入力の画面では手牌の上）。
    写真の枠は中身（読み取り枠・手牌・操作ボタン・待ち牌）の高さで決め、画面に入りきらなければ全体がスクロールする
    （高さを割合で決めると、Safari のツールバーぶん低い画面で手牌のチップが読み取り枠の裏に隠れてしまう） */
 .cam {
@@ -1518,14 +1471,9 @@ details.more[open] > summary::before {
   padding-block: 2px 8px;
   padding-inline: max(10px, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-right, 0px));
 }
-/* 移してきた見出しと条件のまとめは、写真の枠と同じ幅にそろえる（間は .cam の gap） */
-.cam > .area-head,
+/* 移してきた点数条件の枠は、写真の枠と同じ幅にそろえる（間は .cam の gap） */
 .cam > .setup-bar {
   margin: 0;
-}
-
-.cam > .judge-head {
-  margin-top: 4px;
 }
 /* 写真の枠の高さは中身（読み取り枠・手牌・ボタン・待ち）の分だけ（v0.34。読み取り前だけ高さを確保するのはやめた）。
    写真なし（アルバムから選ぶ）のときは、写真を選んだ直後と同じくらいの高さにそろえる */
@@ -1535,44 +1483,12 @@ details.more[open] > summary::before {
 .cam-stage[data-empty] {
   min-height: calc(var(--roi-inset) + var(--roi-h) + 150px);
 }
-.cam-side {
-  min-height: 200px;
-}
-.side-body {
-  overflow: visible;
-}
-/* 十分に大きい画面（タブレット・PC）のときだけ横に2枚並べる。
-   左の列は スマホと同じ順（写真（読み取り枠が上）→ 条件のまとめ）、右の列は 何待ち 判断（結果） */
+/* 十分に大きい画面（タブレット・PC）: 下の結果の枠をなくした（v0.35）ので1列のまま、幅だけ広げすぎない */
 @media (min-width: 720px) and (min-height: 600px) {
   .cam {
-    grid-template-columns: minmax(0, 1fr) clamp(280px, 34%, 400px);
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    grid-auto-rows: auto;
-    grid-template-areas:
-      'stage judge'
-      'stage side'
-      'rules side';
-    align-content: stretch;
+    width: min(100%, 720px);
+    margin-inline: auto;
     overflow: visible;
-    gap: 6px 12px;
-  }
-  .cam-stage {
-    grid-area: stage;
-    min-height: 0;
-  }
-  .cam > .setup-bar {
-    grid-area: rules;
-  }
-  .cam > .judge-head {
-    grid-area: judge;
-    margin-top: 0;
-  }
-  .cam-side {
-    grid-area: side;
-    min-height: 0;
-  }
-  .side-body {
-    overflow-y: auto;
   }
 }
 /* 横向きのときだけ「縦にすると使いやすい」と出す */
@@ -1723,12 +1639,6 @@ details.more[open] > summary::before {
 .btn.small {
   padding: 5px 10px;
   font-size: 12px;
-}
-.cam-side .btn.ghost {
-  background: var(--surface-2);
-  color: var(--ink);
-  box-shadow: none;
-  justify-self: start;
 }
 
 .cam-stage[data-read] .roi {
@@ -2637,55 +2547,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   overflow: hidden;
 }
 
-/* 右の枠 */
-.cam-side {
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.side-body {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  display: grid;
-  align-content: start;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 14px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
-}
-.s-sum {
-  display: grid;
-  gap: 2px;
-}
-.s-big {
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 800;
-  line-height: 1.2;
-}
-.s-big.ok {
-  color: var(--accent);
-}
-.s-big.win {
-  color: var(--danger);
-}
-.s-head .s-sub {
-  align-self: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.howto {
-  margin: 4px 0 0;
-  padding-left: 1.2em;
-  display: grid;
-  gap: 4px;
-  font-size: 13px;
-}
 .sel-head {
   display: flex;
   align-items: center;
@@ -2724,10 +2585,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   font-size: 12px;
   vertical-align: 0.45em;
 }
-.side-body .sub,
-.side-body .section-title {
-  margin: 0;
-}
 
 .opt {
   display: grid;
@@ -2749,22 +2606,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   color: var(--muted);
 }
 
-.s-note {
-  display: grid;
-  gap: 4px;
-  padding-top: 10px;
-  border-top: 1px solid var(--surface-2);
-  font-size: 12px;
-}
-.s-note p {
-  margin: 0;
-}
-.s-note-head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
 .linkish {
   margin-left: auto;
   border: 0;
@@ -2777,11 +2618,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
 .muted {
   color: var(--muted);
   font-size: 12px;
-}
-.warn-list {
-  margin: 0;
-  padding-left: 1.2em;
-  color: var(--warn);
 }
 
 /* 1シャンテンの「引けばテンパイ」一覧（手入力画面） */
@@ -3020,20 +2856,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   box-shadow: none;
 }
 
-/* テンパイの見出しのすぐ横にアガリ牌 */
-.s-head {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-}
-.s-waits {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2px;
-}
-
 /* 画面が低いとき（横向きのスマホ）は使い方カードを詰める */
 @media (max-height: 480px) {
   .guide-card {
@@ -3098,11 +2920,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
 /* まだ認識していないときは「押しても効かない」ことが分かるように薄く */
 #cam-sort[data-ready='false'] {
   opacity: 0.55;
-}
-.s-waits small {
-  font-size: 11px;
-  color: var(--muted);
-  margin-right: 2px;
 }
 
 /* ---------- 画面が低いとき（横向きのスマホ）の手入力画面 ---------- */
@@ -3617,55 +3434,63 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   font-weight: 600;
   color: var(--muted);
 }
-.su-next {
+/* ルール設定: 押せるボタンに見える枠つき。中に今のルールを文字で（v0.35） */
+.su-rules {
   display: flex;
   align-items: center;
-  gap: 7px;
-}
-.su-next > span {
-  flex: none;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--muted);
-}
-.su-next button {
-  flex: 1 1 0;
-  min-height: 40px;
-  border: 0;
-  border-radius: 11px;
-  padding: 3px 4px;
+  gap: 9px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 10px 6px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
   background: var(--surface-2);
   color: var(--ink);
-  font-size: 12.5px;
-  font-weight: 800;
-  line-height: 1.15;
+  text-align: left;
 }
-.su-next button small {
-  display: block;
-  font-size: 10.5px;
+.su-rules:active {
+  background: var(--line);
+}
+.su-rules-ic {
+  flex: none;
+  font-size: 17px;
+  line-height: 1;
   color: var(--muted);
+}
+.su-rules-t {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+.su-rules-t b {
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.su-rules-t small {
+  font-size: 11px;
   font-weight: 700;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.su-rules i {
+  flex: none;
+  font-style: normal;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--muted);
 }
 .su-foot {
   display: flex;
+  justify-content: flex-end;
   gap: 14px;
 }
 .su-foot .linkish {
   font-size: 12px;
   color: var(--muted);
   padding: 2px 0;
-}
-.su-foot .dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-left: 3px;
-  border-radius: 50%;
-  background: var(--warn);
-  vertical-align: 2px;
-}
-.judge-head small .st-mini {
-  vertical-align: 1px;
 }
 
 /* ---------- v0.34: 下から出るシート（条件のステップ入力・内訳） ---------- */
@@ -3909,6 +3734,9 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   color: #fff;
   font-size: 18px;
 }
+.sh-opt.go small {
+  color: rgb(255 255 255 / 0.82);
+}
 .sh-opt[aria-pressed='true'] {
   background: var(--accent);
   box-shadow: 0 0 0 4px rgb(28 90 71 / 0.22), 0 6px 16px rgb(0 0 0 / 0.2);
@@ -4024,6 +3852,9 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+.sh-row2 > :only-child {
+  grid-column: 1 / -1;
 }
 .sh-sec {
   min-height: 44px;
@@ -4346,6 +4177,162 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   container-type: inline-size;
 }
 
+/* ---------- v0.35: 補足の行の注意書き・アガリのカード・鳴きの見出し ---------- */
+/* 七対子・国士のシャンテン数、読み取りの注意、風の役の注意（下の結果の枠をなくして、ここへ移した） */
+.band-notes {
+  display: grid;
+  gap: 2px;
+  margin: -2px 0 4px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: rgb(255 255 255 / 0.72);
+}
+.band-notes > div::before {
+  content: '・';
+  opacity: 0.7;
+}
+/* アガリ形のカード: アガリ牌と待ち・役を全部・点数を大きく・翻符・受け取り。押すと下から内訳 */
+.ag-card {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px 9px;
+  border: 0;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 0.08);
+  color: #f3f6f4;
+  text-align: left;
+  box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.12);
+}
+.ag-card[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 2px #ffb4a9;
+  background: rgb(255 180 169 / 0.14);
+}
+.ag-card.warn {
+  box-shadow: inset 0 0 0 1.5px rgb(255 200 120 / 0.55);
+}
+.ag-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.ag-h .tile {
+  --w: 26px;
+  --edge: 2px;
+  flex: none;
+}
+.ag-h b {
+  font-size: 16px;
+  font-weight: 900;
+}
+.ag-h span {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgb(255 255 255 / 0.72);
+}
+.ag-yaku .yk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #cdebd9;
+}
+.ag-yaku .yk i {
+  font-style: normal;
+  padding: 0 3px;
+  color: rgb(255 255 255 / 0.45);
+}
+.ag-yaku .yk .dora {
+  color: #ffb4a9;
+}
+.ag-pts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+.ag-big {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1;
+  color: #ffd2c9;
+  letter-spacing: 0.01em;
+}
+.ag-big small {
+  margin-left: 2px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.ag-limit {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ffb4a9;
+  color: #3a1410;
+  font-size: 12px;
+  font-weight: 900;
+}
+.ag-hf {
+  font-size: 13px;
+  font-weight: 800;
+  color: rgb(255 255 255 / 0.85);
+}
+.ag-hf small {
+  font-size: 11px;
+  font-weight: 800;
+}
+.ag-total {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgb(255 255 255 / 0.85);
+}
+.ag-total b {
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+}
+.ag-none {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffd9a8;
+}
+.ag-hints {
+  margin-top: 4px;
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgb(255 255 255 / 0.8);
+}
+.ag-more {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgb(255 255 255 / 0.55);
+  text-align: right;
+}
+/* 鳴きの入力の見出し「鳴き 1組目」を大きく（何組目を入れているかが分かるように） */
+.pop-head .pop-big {
+  font-size: 19px;
+  font-weight: 900;
+}
+.pop-head .pop-big em {
+  font-style: normal;
+  color: var(--accent);
+}
+.pop-head .pop-of {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+/* ドラの枚数の「なし」は薄く */
+.sh-opt.sq.dim {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
 </style>
 <noscript>
   <div class="noscript-note">
@@ -4377,12 +4364,8 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   </div>
   <button type="button" class="help-btn light" data-action="guide-open" data-kind="help" aria-label="使い方">？</button>
 </header>
-<!-- 条件のまとめ（v0.34: 場風・自風・ドラ・リーチ… は読み取ったあとに下から出るシートで1問ずつ聞く。ここには答えた内容と「変更」） -->
-<section class="setup-bar" id="rules-bar" aria-label="点数を出す条件"></section>
-<div class="area-head judge-head" id="judge-head">
-  <b>何待ち 判断</b>
-  <small>手牌を認識し、待ち牌をサポート<br>待ち・シャンテン数は<em class="st-mini">条件なし</em>でも表示</small>
-</div>
+<!-- 点数条件の枠（v0.34: 場風・自風・ドラ・リーチ… は読み取ったあとに下から出るシートで1問ずつ聞く。ここには答えた内容と「変更」・ルール設定） -->
+<section class="setup-bar" id="rules-bar" aria-label="点数条件"></section>
 <p class="rotate-hint">縦向きにすると使いやすくなります</p>
 <section class="cam" id="cam-view" aria-label="カメラで読み取る">
   <div class="cam-stage" id="cam-stage" data-source="demo">
@@ -4439,9 +4422,6 @@ html[data-cam-land] .land-hint:not([hidden])::before {
       <p class="land-hint" id="land-hint" hidden>スマホを縦に戻すと、待ち・点数が見られます</p>
     </div>
   </div>
-  <aside class="cam-side" id="cam-side" aria-label="役と点数">
-    <div class="side-body" id="side-body" aria-live="polite"></div>
-  </aside>
   <input type="file" id="file-pick" accept="image/*" hidden>
 </section>
 
@@ -8339,10 +8319,10 @@ function rulesChanged(r) {
 
 /** 点数を出す前の案内（条件のステップ入力を終えてもらう。v0.34） */
 function pendingScoreHTML(compact = false) {
-  if (compact) return '<small class="pending">点数は条件を入れると表示</small>';
+  if (compact) return '<small class="pending">点数は点数条件を入れると表示</small>';
   return (
-    '<div class="score-wait"><b>点数は条件を入れると出ます</b>' +
-    '<span>「条件」の「点数を出す」から、場風・自風・ドラ・リーチなどを1問ずつ答えてください。待ちとシャンテン数は条件なしで出ています</span></div>'
+    '<div class="score-wait"><b>点数は点数条件を入れると出ます</b>' +
+    '<span>「点数条件」の「点数を出す」から、場風・自風・本場・ドラ・リーチなどを1問ずつ答えてください。待ちとシャンテン数は条件なしで出ています</span></div>'
   );
 }
 
@@ -8465,14 +8445,13 @@ const DEFAULT_SITUATION = Object.freeze({
   uraDora: 0, // 帯の「裏ドラ」±で入れる枚数（リーチ時だけ点数に入る）
 });
 /**
- * 条件の確認状態（v0.34: ステップ入力）。
+ * 点数条件の確認状態（v0.34: ステップ入力。v0.35: 毎局すべて聞き直す）。
  *   ok = 質問に答え終えて「この条件で点数を見る」を押した（点数を出してよい。待ち・シャンテン数は関係なく出す）
- *   a  = 答えた質問（roundWind・seatWind・dora・nuki・riichi・ippatsu・ura・tsumo・winTile・honba・special）
- *   rot = 場風を決めてから「親が流れた」で席を進めた回数（人数ぶん進んだら次の場風へ）
- * 場風・自風・本場・供託は次の手牌にも引き継ぐ（sticky）。ドラ・リーチなどは手牌ごとに聞き直す
+ *   a  = 答えた質問（roundWind・seatWind・honba・dora・nuki・riichi・ippatsu・tsumo・winTile・special・ura）
+ *   doraN = めくれているドラ表示牌の枚数（先に枚数を聞き、その枚数ぶん表示牌を選ぶ。裏ドラも同じ枚数）
+ * 場風・自風・本場・供託・ドラも新しい手牌ごとに聞き直す（前の局の答えは引き継がない。v0.34 のFB）
  */
-const DEFAULT_SETUP = Object.freeze({ ok: false, a: {}, rot: 0 });
-const SETUP_STICKY = ['roundWind', 'seatWind', 'honba', 'kyotaku'];
+const DEFAULT_SETUP = Object.freeze({ ok: false, a: {}, doraN: 0 });
 const SETUP_KEY = { uraDora: 'ura', ura: 'ura', kyotaku: 'honba', honba: 'honba', dora: 'dora' };
 
 /** デモ場面（写真の代わりに使う手牌） */
@@ -8492,15 +8471,15 @@ const state = {
   ura: [],
   situation: { ...DEFAULT_SITUATION },
   situationTouched: false,
-  setup: { ok: false, a: {}, rot: 0 },
+  setup: { ok: false, a: {}, doraN: 0 },
   rules: { ...DEFAULT_RULES },
   sample: false,
   seenStart: false, // スタート画面を見たか（初回だけ出す）
   overlay: null, // 重ねて出す画面: 'start' | 'help' | null
   // 下から出るシート（保存しない）: mode = 'setup'（条件のステップ入力）| 'detail'（待ち・切り方の内訳）| null
-  //   q = 今の質問、kan = ドラ表示牌を続けて選ぶ（カンドラ）、dismissed = ×で閉じたときの形（'tenpai' など。同じ形のうちは牌を直しても
-  //   開き直さない。'all' は開き直さない。次の読み取りで消える）
-  sheet: { mode: null, q: null, kan: false, dismissed: '', detail: null },
+  //   q = 今の質問（'gate' = 1シャンテンの入口「アガリ想定に進みますか？」）、dismissed = ×で閉じたときの形（'tenpai' など。
+  //   同じ形のうちは牌を直しても開き直さない。'all' は開き直さない。次の読み取りで消える）
+  sheet: { mode: null, q: null, dismissed: '', detail: null },
   // 手入力画面
   target: 'hand',
   meldRed: false,
@@ -8618,14 +8597,30 @@ function load() {
   state.cam.winAt = Number.isInteger(c.winAt) ? c.winAt : null;
 }
 
-/** 保存していた条件の確認状態。v0.33 までの { ok, table, agari } は、OK済みなら全部答えた扱いにする */
+/** 保存していた点数条件の確認状態。v0.33 までの { ok, table, agari } は、OK済みなら全部答えた扱いにする */
 function loadSetup(raw) {
   const s = raw || {};
-  if (s.a && typeof s.a === 'object') return { ok: !!s.ok, a: { ...s.a }, rot: s.rot | 0 };
+  if (s.a && typeof s.a === 'object') return { ok: !!s.ok, a: { ...s.a }, doraN: Math.max(0, Math.min(5, s.doraN | 0)) };
   const a = {};
   if (s.ok) for (const k of ['roundWind', 'seatWind', 'dora', 'nuki', 'riichi', 'ippatsu', 'ura', 'tsumo', 'honba', 'special']) a[k] = true;
-  return { ok: !!s.ok && !s.table && !s.agari, a, rot: 0 };
+  return { ok: !!s.ok && !s.table && !s.agari, a, doraN: 0 };
 }
+
+/**
+ * 点数の計算に使う状況。場風・自風にまだ答えていないときは、既定の東場・南家で決めつけずに風の役を出さない
+ * （実際と違う風が結果にのらないように。v0.34 のFB）。答えると本当の風で計算し直す
+ */
+function effectiveSituation() {
+  const s = state.situation;
+  if (state.setup.ok) return s;
+  return {
+    ...s,
+    roundWind: state.setup.a.roundWind ? s.roundWind : -1,
+    seatWind: state.setup.a.seatWind ? s.seatWind : -1,
+  };
+}
+/** 点数の計算に渡す状態（風の扱いだけ effectiveSituation） */
+const effectiveState = () => ({ ...state, situation: effectiveSituation() });
 
 function update() {
   view.analysis = analyze({
@@ -8634,7 +8629,7 @@ function update() {
     melds: state.melds,
     dora: state.dora,
     ura: state.ura,
-    situation: state.situation,
+    situation: effectiveSituation(),
     rules: state.rules,
   });
   renderer(view.analysis);
@@ -8692,14 +8687,13 @@ function markSetup(key) {
 /** 条件の項目に答えているか */
 const setupAnswered = (key) => !!state.setup.a[SETUP_KEY[key] || key];
 /**
- * 新しい手牌になった: 手牌ごとの条件（ドラ・リーチ・一発・裏ドラ・ロン/ツモ・抜きドラ・アガリ牌・特別な役）は聞き直す。
- * 場風・自風・本場・供託は引き継ぐ。点数はもう一度答え終わってから出す
+ * 新しい手牌になった: 点数条件は全部聞き直す（場風・自風・本場・供託・ドラも。前の局の答えは引き継がない）。
+ * 場風・自風の値は残す（質問のページで前の答えが選ばれた見た目にはしない。答え直すだけ）。点数はもう一度答え終わってから出す
  */
 function newHandSetup() {
-  const a = {};
-  for (const k of SETUP_STICKY) if (state.setup.a[k]) a[k] = true;
-  state.setup = { ok: false, a, rot: state.setup.rot | 0 };
-  Object.assign(state.situation, { tsumo: false, riichi: 0, ippatsu: false, special: '', uraDora: 0, nuki: 0 });
+  state.setup = { ok: false, a: {}, doraN: 0 };
+  Object.assign(state.situation, { tsumo: false, riichi: 0, ippatsu: false, special: '', uraDora: 0, nuki: 0, honba: 0, kyotaku: 0 });
+  state.dora = [];
   state.ura = [];
   state.sheet.dismissed = '';
 }
@@ -8810,56 +8804,16 @@ function confirmSetup() {
   update();
 }
 
-/** 「リセット」: 場の設定・アガリ想定・ドラを初期値に戻す（人数や符などのルールは残す） */
+/** 「点数条件をリセット」: 場の設定・アガリ想定・ドラを初期値に戻す（人数や符などのルールは残す） */
 function resetSetup() {
   state.situation = { ...DEFAULT_SITUATION };
   state.dora = [];
   state.ura = [];
-  state.setup = { ok: false, a: {}, rot: 0 };
+  state.setup = { ok: false, a: {}, doraN: 0 };
   state.situationTouched = false;
   state.cam.sel = null;
   update();
-  toast('条件をリセットしました（東場・南家・ドラなし・リーチなし・ロン）');
-}
-
-/**
- * 「次の局へ」（v0.34）。stays = 親が続いた（連荘: 本場+1）／moves = 親が流れた（席が1つ進む・本場0・供託0）。
- * 席は 南→東→北→西→南（三人麻雀は 南→東→西→南）。人数ぶん進んだら場風を次へ（東→南→西）
- */
-function nextHand(kind) {
-  const s = state.situation;
-  const sanma = !!state.rules.sanma;
-  // 前の局の手牌・ドラは消す（そのまま残すと、本場を足した点数が前の手牌に付いて紛らわしい）。「戻す」で戻せる
-  snapshot();
-  Object.assign(state, { concealed: [], win: null, melds: [], dora: [], ura: [], sample: false, lastAdded: null, cursor: null, kbFolded: false });
-  Object.assign(state.cam, { draft: null, sel: null, recog: null, cands: null, sortPerm: null, pop: null, note: '', read: false, winAt: null });
-  newHandSetup();
-  if (kind === 'stays') {
-    s.honba = Math.min(20, (s.honba | 0) + 1);
-    markSetup('honba');
-    update();
-    toast(`${s.honba}本場にしました。次の手牌を入れてください`, 3500);
-    return;
-  }
-  const seats = sanma ? [27, 28, 29] : [27, 28, 29, 30];
-  const i = seats.indexOf(s.seatWind);
-  s.seatWind = seats[(i - 1 + seats.length) % seats.length]; // 南家 → 東家 → 北家 → 西家 → 南家
-  s.honba = 0;
-  s.kyotaku = 0;
-  state.setup.rot = (state.setup.rot | 0) + 1;
-  const notes = [`自風を${windLabel(s.seatWind)}${s.seatWind === 27 ? '（親）' : ''}に`];
-  if (state.setup.rot >= seats.length) {
-    state.setup.rot = 0;
-    if (s.roundWind < 29) {
-      s.roundWind += 1;
-      notes.push(`${windLabel(s.roundWind)}場に`);
-    }
-  }
-  markSetup('seatWind');
-  markSetup('roundWind');
-  markSetup('honba');
-  update();
-  toast(`${notes.join('、')}しました。次の手牌を入れてください（違うときは「変更」で直せます）`, 4000);
+  toast('点数条件をリセットしました');
 }
 
 function setSituation(key, value) {
@@ -9013,11 +8967,13 @@ function hideToast() {
 }
 
 // ---- src/ui/setup.js ----
-// 条件のステップ入力（v0.34）
+// 点数条件のステップ入力（v0.34。v0.35 で聞き方を見直し）
 //   読み取ったあと（1シャンテン・テンパイ・アガリ形）に下からシートが出て、1画面1問・押すと次の質問へ。
-//   要らない質問は飛ばす（風牌がなければ場風は聞かず「親か子か」だけ、鳴いていたらリーチは聞かない、など）。
-//   答え終わると「この条件で点数を見る」で点数が出る。答えた内容は1行のまとめ（写真の下）に出て「変更」で直せる。
-//   写真の画面と手入力の画面で共通
+//   毎局すべて聞き直す（場風・自風・本場・供託・ドラも。前の局の答えは引き継がない）。
+//   並び: 場風 → 自風 → 本場・供託 → ドラ（枚数 → 表示牌）→（抜きドラ）→ リーチ → アガリ形だけ 一発 → ロン/ツモ →
+//   （どの牌でアガった？）→ 特別な役 → 裏ドラ → まとめ「この条件で点数を見る」。
+//   1シャンテンは先に「アガリ想定に進みますか？」の入口（不要なら待ちだけ見る）。
+//   答えた内容は「点数条件」の枠（写真の下・手入力では手牌の上）に1行で出て「変更」で直せる。写真の画面と手入力の画面で共通
 
 
 
@@ -9028,6 +8984,7 @@ function hideToast() {
 
 const sheet = () => state.sheet;
 const S = () => state.situation;
+const MAX_DORA = 5;
 
 // ---------- どの形か・どの質問が要るか ----------
 /** 読み取った手牌の形: 'agari' | 'tenpai' | 'ishanten' | null（2シャンテン以上・入力中・鳴きの入力待ちなど） */
@@ -9050,42 +9007,32 @@ function setupPhase(a) {
 const Q_TITLE = {
   roundWind: '場風',
   seatWind: '自風',
-  dealer: '親か子か',
+  honba: '本場・供託',
   dora: 'ドラ',
   nuki: '抜きドラ',
   riichi: 'リーチ',
   ippatsu: '一発',
-  ura: '裏ドラ',
   tsumo: 'ロン・ツモ',
   winTile: 'アガリ牌',
-  honba: '本場・供託',
   special: '特別な役',
+  ura: '裏ドラ',
   summary: '確認',
 };
 
 /** 質問の並び（この手牌で要るものだけ）。answered は答えているか */
 function setupQuestions(a) {
   const phase = setupPhase(a);
-  const q = [];
-  const winds = windsMatter({
-    concealed: state.concealed,
-    win: state.win,
-    melds: state.melds,
-    waits: (a && a.waits) || (a && a.discards ? a.discards.flatMap((d) => d.waits || []) : []),
-    draws: (a && a.tenpaiDraws) || [],
-  });
-  if (winds) q.push('roundWind', 'seatWind');
-  else q.push('dealer');
-  q.push('dora');
+  const q = ['roundWind', 'seatWind', 'honba', 'dora'];
   if (state.rules.sanma || state.rules.flowers) q.push('nuki');
   if ((phase === 'tenpai' || phase === 'agari') && !hasOpenMeld()) q.push('riichi');
   if (phase === 'agari') {
-    if (S().riichi) q.push('ippatsu', 'ura');
+    if (S().riichi) q.push('ippatsu');
     if (!TSUMO_ONLY.has(S().special) && !RON_ONLY.has(S().special)) q.push('tsumo');
-    if (winTileOptions(state.concealed, state.win, scoringContext(state)).matters) q.push('winTile');
-    q.push('honba', 'special');
+    if (state.win != null && winTileOptions(state.concealed, state.win, scoringContext(effectiveState())).matters) q.push('winTile');
+    q.push('special');
+    if (S().riichi) q.push('ura');
   }
-  return q.map((key) => ({ key, answered: setupAnswered(key === 'dealer' ? 'seatWind' : key) }));
+  return q.map((key) => ({ key, answered: setupAnswered(key) }));
 }
 
 /** 答えていない質問があるか（あれば点数はまだ出せない） */
@@ -9094,18 +9041,17 @@ function setupPending(a) {
 }
 
 // ---------- 開く・閉じる ----------
-function openSetup(q = null) {
+/** q を指定しなければ、答えていない最初の質問から（全部答えていればまとめ）。gate = 1シャンテンの入口から */
+function openSetup(q = null, { gate = false } = {}) {
   const a = view.analysis;
   const qs = setupQuestions(a);
   const sh = sheet();
   sh.mode = 'setup';
-  sh.kan = false;
   sh.detail = null;
   state.cam.pop = null;
   const first = qs.find((x) => !x.answered);
-  sh.q = q || (first ? first.key : qs.length ? qs[0].key : 'summary');
-  // 答え終わっていて「変更」から開いたときは、まとめから
-  if (!q && !first && qs.length) sh.q = 'summary';
+  sh.q = q || (first ? first.key : 'summary');
+  if (gate) sh.q = 'gate';
   update();
 }
 
@@ -9120,7 +9066,7 @@ function closeSetup(dismiss = true) {
 
 let firstRender = true;
 /**
- * 読み取り・入力のあとに呼ぶ。1シャンテン以上で、答えていない質問があれば自動で開く。
+ * 読み取り・入力のあとに呼ぶ。1シャンテン以上で、答えていない質問があれば自動で開く（1シャンテンは入口のページから）。
  * ×で閉じたら、同じ形のうちは（牌を直しても）開き直さない。手入力の画面では、牌のキーボードを閉じてから（入力の途中でかぶせない）
  */
 function maybeAutoOpen(a) {
@@ -9136,12 +9082,12 @@ function maybeAutoOpen(a) {
   const phase = setupPhase(a);
   if (!phase) return false;
   if (!setupPending(a)) return false;
-  // 一度閉じたら、同じ形（テンパイのまま など）のうちは牌を直しても開き直さない（条件のまとめの「点数を出す」で開ける）。
+  // 一度閉じたら、同じ形（テンパイのまま など）のうちは牌を直しても開き直さない（点数条件の枠の「点数を出す」で開ける）。
   // 形が変わったとき（テンパイ → アガリ形 など）は聞く質問も変わるので開く
   if (sh.dismissed === 'all' || sh.dismissed === phase) return false;
   // 足りない質問があるうちは点数を出さない（前の手牌の答えが残っていても、この手牌で聞き直す）
   state.setup.ok = false;
-  openSetup();
+  openSetup(null, { gate: phase === 'ishanten' });
   return true;
 }
 
@@ -9157,7 +9103,6 @@ function advance() {
   const i = qs.findIndex((x) => x.key === sh.q);
   const next = qs.slice(i + 1).find((x) => !x.answered);
   sh.q = next ? next.key : 'summary';
-  sh.kan = false;
   update();
 }
 
@@ -9165,61 +9110,62 @@ function back() {
   const a = view.analysis;
   const keys = order(a);
   const sh = sheet();
+  if (sh.q === 'gate') return closeSetup(true);
   const i = sh.q === 'summary' ? keys.length : keys.indexOf(sh.q);
   if (i <= 0) return closeSetup(true);
   sh.q = keys[i - 1];
-  sh.kan = false;
   return update();
 }
 
-// ---------- 表示: まとめ（写真の下の1行） ----------
+// ---------- 表示: 点数条件の枠（写真の下の1行） ----------
 function summaryParts(a) {
   const s = S();
   const parts = [];
-  const winds = setupQuestions(a).some((x) => x.key === 'roundWind');
-  if (winds) parts.push(`${windLabel(s.roundWind)}場`, `${windLabel(s.seatWind)}家（${s.seatWind === 27 ? '親' : '子'}）`);
-  else parts.push(s.seatWind === 27 ? '親' : '子');
-  // 局ごとの項目は答えたものだけ（次の局へ進んだ直後などは、まだ聞いていないので出さない）
+  if (setupAnswered('roundWind')) parts.push(`${windLabel(s.roundWind)}場`);
+  if (setupAnswered('seatWind')) parts.push(`${windLabel(s.seatWind)}家（${s.seatWind === 27 ? '親' : '子'}）`);
+  if (setupAnswered('honba') && (s.honba || s.kyotaku)) parts.push(`${s.honba | 0}本場・供託${s.kyotaku | 0}`);
   if (setupAnswered('dora')) parts.push(`ドラ${state.dora.length ? tilesInline(state.dora.map(doraFromIndicator), 'xxs') : 'なし'}`);
   if (s.nuki) parts.push(`抜きドラ${s.nuki}`);
   if (s.riichi) parts.push(s.riichi === 2 ? 'ダブルリーチ' : 'リーチ');
   if (s.riichi && s.ippatsu) parts.push('一発');
-  if (s.riichi && state.ura.length) parts.push(`裏${tilesInline(state.ura.map(doraFromIndicator), 'xxs')}`);
   if (a && a.phase === 'hand14' && a.agari && setupAnswered('tsumo')) parts.push(s.tsumo ? 'ツモ' : 'ロン');
-  if (s.honba) parts.push(`${s.honba}本場`);
-  if (s.kyotaku) parts.push(`供託${s.kyotaku}`);
   if (s.special) parts.push(SPECIAL_LABELS[s.special] || s.special);
+  if (s.riichi && setupAnswered('ura')) parts.push(`裏${state.ura.length ? tilesInline(state.ura.map(doraFromIndicator), 'xxs') : 'なし'}`);
   return parts;
 }
 
+/** 今のルールを短く（点数条件の枠の「ルール設定」ボタンに出す） */
+function rulesSummary(r) {
+  const parts = [r.sanma ? '三人麻雀' : '四人麻雀'];
+  if (r.sanma) parts.push(`ツモ損${r.tsumoLoss === false ? 'なし' : 'あり'}`);
+  parts.push(r.fuMode === 'fix30' ? '30符固定' : r.fuMode === 'fix40' ? '40符固定' : '符は正規');
+  if (r.kuitan === false) parts.push('喰いタンなし');
+  if (r.kiriage) parts.push('切り上げ満貫');
+  if (r.flowers) parts.push('花牌あり');
+  return parts.join('・');
+}
 
-/** 写真の下（手入力では手牌の上）の「条件」のまとめ。変更・次の局へ・ルール */
+/** 写真の下（手入力では手牌の上）の「点数条件」の枠。変更・ルール設定 */
 function setupBarHTML(a) {
   const ok = scoreReady();
   const phase = setupPhase(a);
-  const pending = setupPending(a);
   const answeredAny = Object.keys(state.setup.a).length > 0;
   const st = ok ? 'ok' : answeredAny ? 'edit' : 'none';
   const stLabel = ok ? '設定済' : answeredAny ? '入力中' : '未設定';
   let line;
-  if (ok || answeredAny) line = `<div class="su-line">${summaryParts(a).join('・')}</div>`;
-  else if (phase) line = '<div class="su-line muted">点数を出すには条件を入れます（待ち・シャンテン数は条件なしで出ます）</div>';
-  else if (a && a.hiddenMelds) line = '<div class="su-line muted">手牌の右の「鳴」から鳴いた面子を入れると、点数を出す条件を聞きます</div>';
-  else line = '<div class="su-line muted">手牌が1シャンテン・テンパイ・アガリ形になると、条件を聞きます。先に入れておくこともできます</div>';
+  if (ok || answeredAny) line = `<div class="su-line">${summaryParts(a).join('・') || '（まだ答えていません）'}</div>`;
+  else if (phase) line = '<div class="su-line muted">点数を出すには点数条件を入れます（待ち・シャンテン数は条件なしで出ます）</div>';
+  else if (a && a.hiddenMelds) line = '<div class="su-line muted">手牌の右の「鳴」から鳴いた面子を入れると、点数条件を聞きます</div>';
+  else line = '<div class="su-line muted">手牌が1シャンテン・テンパイ・アガリ形になると、点数条件を聞きます。先に入れておくこともできます</div>';
   const btnLabel = ok ? '変更' : phase ? '点数を出す' : answeredAny ? '続きを入れる' : '入れる';
-  const next = ok
-    ? `<div class="su-next"><span>次の局へ</span>` +
-      `<button type="button" data-action="su-next-hand" data-kind="stays">親が続いた<small>1本場にする</small></button>` +
-      `<button type="button" data-action="su-next-hand" data-kind="moves">親が流れた<small>席を1つ進める</small></button></div>`
-    : '';
   return (
     `<div class="su-bar" data-st="${st}">` +
-    `<div class="su-h"><b>条件</b><em class="su-st" data-st="${st}">${stLabel}</em>` +
+    `<div class="su-h"><b>点数条件</b><em class="su-st" data-st="${st}">${stLabel}</em>` +
     `<button type="button" class="su-edit${ok ? '' : ' go'}" data-action="su-open">${btnLabel}</button></div>` +
     line +
-    next +
-    `<div class="su-foot"><button type="button" class="linkish" data-action="cam-pop" data-pop="settings">ルール（人数・符など）${rulesChanged(state.rules) ? '<i class="dot"></i>' : ''}</button>` +
-    `<button type="button" class="linkish" data-action="setup-reset">条件をリセット</button></div>` +
+    `<button type="button" class="su-rules" data-action="cam-pop" data-pop="settings"><span class="su-rules-ic" aria-hidden="true">⚙</span>` +
+    `<span class="su-rules-t"><b>ルール設定</b><small>${rulesSummary(state.rules)}</small></span><i>›</i></button>` +
+    `<div class="su-foot"><button type="button" class="linkish" data-action="setup-reset">点数条件をリセット</button></div>` +
     `</div>`
   );
 }
@@ -9227,7 +9173,7 @@ function setupBarHTML(a) {
 // ---------- 表示: シート ----------
 // 選択肢。まだ答えていない質問では、今の値でも「選んだ」印は付けない（押した見た目と紛れないように）
 const opt = (key, value, main, sub = '', cls = '', pressed = false) =>
-  `<button type="button" class="sh-opt${cls ? ' ' + cls : ''}" data-action="su-pick" data-key="${key}" data-value="${value}" aria-pressed="${pressed && setupAnswered(key === 'dealer' ? 'seatWind' : key)}">` +
+  `<button type="button" class="sh-opt${cls ? ' ' + cls : ''}" data-action="su-pick" data-key="${key}" data-value="${value}" aria-pressed="${pressed && setupAnswered(key)}">` +
   `<b>${main}</b>${sub ? `<small>${sub}</small>` : ''}</button>`;
 const pill = (kind) => `<span class="sh-pill ${kind}">${kind === 'oya' ? '親' : '子'}</span>`;
 
@@ -9238,16 +9184,15 @@ function doneChips(a) {
     switch (key) {
       case 'roundWind': return `${windLabel(s.roundWind)}場`;
       case 'seatWind': return `${windLabel(s.seatWind)}家（${s.seatWind === 27 ? '親' : '子'}）`;
-      case 'dealer': return s.seatWind === 27 ? '親' : '子';
+      case 'honba': return `${s.honba | 0}本場・供託${s.kyotaku | 0}`;
       case 'dora': return `ドラ${state.dora.length ? tilesInline(state.dora.map(doraFromIndicator), 'xxs') : 'なし'}`;
       case 'nuki': return `抜きドラ${s.nuki | 0}`;
       case 'riichi': return ['リーチなし', 'リーチ', 'ダブルリーチ'][s.riichi | 0];
       case 'ippatsu': return s.ippatsu ? '一発' : '一発なし';
-      case 'ura': return `裏ドラ${state.ura.length ? tilesInline(state.ura.map(doraFromIndicator), 'xxs') : 'なし'}`;
       case 'tsumo': return s.tsumo ? 'ツモ' : 'ロン';
       case 'winTile': return `${tileLabel(state.win)}でアガリ`;
-      case 'honba': return `${s.honba | 0}本場・供託${s.kyotaku | 0}`;
       case 'special': return s.special ? SPECIAL_LABELS[s.special] : '特別な役なし';
+      case 'ura': return `裏ドラ${state.ura.length ? tilesInline(state.ura.map(doraFromIndicator), 'xxs') : 'なし'}`;
       default: return Q_TITLE[key];
     }
   };
@@ -9255,10 +9200,47 @@ function doneChips(a) {
   return `<div class="sh-done">${qs.map((x) => `<button type="button" data-action="su-jump" data-q="${x.key}">✓ ${text(x.key)}</button>`).join('')}</div>`;
 }
 
+/** 表示牌を選ぶページ（ドラ・裏ドラで共通）。picked = 今までに選んだ表示牌、n = 選ぶ枚数 */
+function indicatorPage(kind, picked, n) {
+  const dora = kind === 'dora';
+  const word = dora ? 'ドラ' : '裏ドラ';
+  const done = picked.length >= n;
+  const bar = picked.length
+    ? `<div class="sh-dora"><span>表示牌</span>${tilesInline(picked, 'xs')}<span class="arr">→</span><span>${word}</span>${tilesInline(picked.map(doraFromIndicator), 'xs')}<small>${countText(picked)}</small></div>`
+    : `<div class="sh-dora muted">${dora ? 'めくれている牌をタップ。ドラはその次の牌です' : 'ドラ表示牌の下の牌をタップ。乗った枚数は自動で数えます'}</div>`;
+  const btns =
+    `<div class="sh-row2">` +
+    (done
+      ? `<button type="button" class="sh-sec go" data-action="su-${kind}-next">このまま次へ →</button>`
+      : dora
+        ? `<button type="button" class="sh-sec" data-action="su-dora-count">枚数を変える（${n}枚）</button>`
+        : `<button type="button" class="sh-sec" data-action="su-ura-none">乗らなかった（裏ドラなし）</button>`) +
+    (picked.length ? `<button type="button" class="sh-sec" data-action="su-${kind}-undo">1枚外す</button>` : '') +
+    `</div>` +
+    (done && dora ? `<div class="sh-row2"><button type="button" class="sh-sec" data-action="su-dora-count">枚数を変える（${n}枚）</button></div>` : '');
+  return {
+    title: done ? `${word}表示牌 ${n}枚を選びました` : n > 1 ? `${word}表示牌 ${picked.length + 1}枚目は？` : `${word}表示牌は？`,
+    hint: dora ? `赤5は読み取った手牌から自動で数えます${n > 1 ? `（${picked.length}/${n}枚）` : ''}` : `${n > 1 ? `${picked.length}/${n}枚。` : ''}めくった裏ドラの表示牌です`,
+    body: bar + (done ? '' : tilePalette(`su-${kind}-add`, (id) => !!doraLimit(id))) + btns,
+    note: done ? '' : n > 1 && picked.length + 1 < n ? '選ぶと次の1枚へ' : '最後の1枚を選ぶと自動で次へ進みます',
+  };
+}
+
 function pageHTML(q, a) {
   const s = S();
   const sanma = !!state.rules.sanma;
   switch (q) {
+    case 'gate':
+      return {
+        title: '1シャンテンです',
+        hint: 'アガリ想定（場風・自風・本場・ドラなど）を入れると、テンパイになる牌ごとに役と最高点が出ます',
+        body:
+          `<div class="sh-list">` +
+          `<button type="button" class="sh-opt big" data-action="su-gate" data-value="0"><b>不要</b><small>待ちと受け入れだけ見る</small></button>` +
+          `<button type="button" class="sh-opt big go" data-action="su-gate" data-value="1"><b>アガリ想定へ</b><small>1問ずつ答えると点数が出ます</small></button>` +
+          `</div>`,
+        note: '',
+      };
     case 'roundWind':
       return {
         title: '今は何場？',
@@ -9285,42 +9267,36 @@ function pageHTML(q, a) {
           `</div>`,
         note: sanma ? '三人麻雀は 東・南・西 の3つ' : '',
       };
-    case 'dealer':
+    case 'honba': {
+      const stepper = (key, label) =>
+        `<div class="sh-step"><b>${label}</b><button type="button" data-action="su-step" data-key="${key}" data-delta="-1" aria-label="${label}を減らす">−</button>` +
+        `<output>${s[key] | 0}</output><button type="button" data-action="su-step" data-key="${key}" data-delta="1" aria-label="${label}を増やす">＋</button></div>`;
       return {
-        title: 'あなたは親？子？',
-        hint: '手牌にも待ちにも風牌（東南西北）がないので、場風と自風は聞きません。親はアガると点数が1.5倍',
-        body:
-          `<div class="sh-list">` +
-          opt('dealer', 1, `親${pill('oya')}`, '東家', 'big', s.seatWind === 27) +
-          opt('dealer', 0, `子${pill('ko')}`, '南家・西家・北家', 'big', s.seatWind !== 27) +
-          `</div>`,
+        title: '本場と供託は？',
+        hint: '本場は1本場ごとに300点（ツモは1人100点）、供託はリーチ棒の本数（1本1,000点）',
+        body: stepper('honba', '本場') + stepper('kyotaku', '供託') + `<button type="button" class="sh-opt big go" data-action="su-next"><b>${s.honba || s.kyotaku ? 'これで次へ' : '0本場・供託なしで次へ'}</b></button>`,
         note: '',
       };
+    }
     case 'dora': {
-      const inds = state.dora;
-      const bar = inds.length
-        ? `<div class="sh-dora"><span>表示牌</span>${tilesInline(inds, 'xs')}<span class="arr">→</span><span>ドラ</span>${tilesInline(inds.map(doraFromIndicator), 'xs')}<small>${doraCountText()}</small></div>`
-        : `<div class="sh-dora muted">表示牌（王牌でめくれている牌）をタップ。ドラはその次の牌です</div>`;
-      const btns =
-        `<div class="sh-row2">` +
-        `<button type="button" class="sh-sec" data-action="su-dora-none">ドラなし</button>` +
-        (inds.length
-          ? `<button type="button" class="sh-sec go" data-action="su-dora-next">${sheet().kan ? 'これで次へ' : 'このまま次へ'} →</button>`
-          : `<button type="button" class="sh-sec" data-action="su-dora-kan" aria-pressed="${sheet().kan}">＋ カンドラもある</button>`) +
-        `</div>` +
-        (inds.length ? `<div class="sh-row2"><button type="button" class="sh-sec" data-action="su-dora-kan" aria-pressed="${sheet().kan}">＋ もう1枚（カンドラ）</button><button type="button" class="sh-sec" data-action="su-dora-undo">1枚外す</button></div>` : '');
-      return {
-        title: 'ドラ表示牌は？',
-        hint: '赤5は読み取った手牌から自動で数えます',
-        body: bar + tilePalette('su-dora-add', (id) => !!doraLimit(id)) + btns,
-        note: sheet().kan ? '続けて選べます。選び終えたら「これで次へ」' : '牌を選ぶと自動で次へ進みます',
-      };
+      const n = state.setup.doraN | 0;
+      if (!n) {
+        return {
+          title: 'ドラ表示牌は何枚めくれている？',
+          hint: 'カンがなければ1枚です',
+          body:
+            `<div class="sh-grid3">${[1, 2, 3, 4, 5].map((k) => `<button type="button" class="sh-opt sq" data-action="su-dora-count" data-n="${k}"><b>${k}</b><small>枚</small></button>`).join('')}` +
+            `<button type="button" class="sh-opt sq dim" data-action="su-dora-none"><b>なし</b><small>ドラなし</small></button></div>`,
+          note: '枚数を選ぶと、表示牌を1枚ずつタップします',
+        };
+      }
+      return indicatorPage('dora', state.dora, n);
     }
     case 'nuki':
       return {
         title: '抜きドラは何枚？',
         hint: sanma ? '抜いた北の枚数です' : '花牌の枚数です',
-        body: `<div class="sh-grid3">${[0, 1, 2, 3, 4, 5].map((n) => opt('nuki', n, String(n), n ? '枚' : 'なし', 'sq', (s.nuki | 0) === n)).join('')}</div>`,
+        body: `<div class="sh-grid3">${[0, 1, 2, 3, 4, 5].map((k) => opt('nuki', k, String(k), k ? '枚' : 'なし', 'sq', (s.nuki | 0) === k)).join('')}</div>`,
         note: '',
       };
     case 'riichi':
@@ -9339,21 +9315,9 @@ function pageHTML(q, a) {
       return {
         title: '一発でアガった？',
         hint: 'リーチした次の自分のツモまでのアガリ（間に鳴きがないとき）',
-        body: `<div class="sh-list">${opt('ippatsu', 0, 'なし', '', 'row', !s.ippatsu)}${opt('ippatsu', 1, '一発あり', '', 'row', !!s.ippatsu)}</div>`,
+        body: `<div class="sh-list">${opt('ippatsu', 0, 'なし', '', 'row', !s.ippatsu)}${opt('ippatsu', 1, '一発', '', 'row', !!s.ippatsu)}</div>`,
         note: '',
       };
-    case 'ura': {
-      const inds = state.ura;
-      const bar = inds.length
-        ? `<div class="sh-dora"><span>表示牌</span>${tilesInline(inds, 'xs')}<span class="arr">→</span><span>裏ドラ</span>${tilesInline(inds.map(doraFromIndicator), 'xs')}<small>${uraCountText()}</small></div>`
-        : `<div class="sh-dora muted">裏ドラ表示牌（ドラ表示牌の下の牌）をタップ。乗った枚数は自動で数えます</div>`;
-      const btns =
-        `<div class="sh-row2"><button type="button" class="sh-sec" data-action="su-ura-none">裏ドラなし（乗らなかった）</button>` +
-        (inds.length ? `<button type="button" class="sh-sec go" data-action="su-ura-next">このまま次へ →</button>` : `<button type="button" class="sh-sec" data-action="su-ura-kan" aria-pressed="${sheet().kan}">＋ 2枚以上ある</button>`) +
-        `</div>` +
-        (inds.length ? `<div class="sh-row2"><button type="button" class="sh-sec" data-action="su-ura-kan" aria-pressed="${sheet().kan}">＋ もう1枚</button><button type="button" class="sh-sec" data-action="su-ura-undo">1枚外す</button></div>` : '');
-      return { title: '裏ドラ表示牌は？', hint: 'めくった裏ドラの表示牌です', body: bar + tilePalette('su-ura-add', (id) => !!doraLimit(id)) + btns, note: sheet().kan ? '続けて選べます' : '牌を選ぶと自動で次へ進みます' };
-    }
     case 'tsumo':
       return {
         title: 'ロン？ツモ？',
@@ -9364,7 +9328,7 @@ function pageHTML(q, a) {
     case 'winTile': {
       const row = rowTiles();
       const at = winAtIndex();
-      const opts = winTileOptions(state.concealed, state.win, scoringContext(state)).options;
+      const opts = winTileOptions(state.concealed, state.win, scoringContext(effectiveState())).options;
       const byBase = new Map(opts.map((o) => [tileBase(o.tile), o]));
       const seen = new Set();
       const btns = row
@@ -9381,17 +9345,6 @@ function pageHTML(q, a) {
         title: 'どの牌でアガった？',
         hint: 'アガった牌によって符や役（平和など）が変わるので聞いています。数字はロンの点数の目安',
         body: `<div class="sh-tiles">${btns}</div>`,
-        note: '',
-      };
-    }
-    case 'honba': {
-      const stepper = (key, label) =>
-        `<div class="sh-step"><b>${label}</b><button type="button" data-action="su-step" data-key="${key}" data-delta="-1" aria-label="${label}を減らす">−</button>` +
-        `<output>${s[key] | 0}</output><button type="button" data-action="su-step" data-key="${key}" data-delta="1" aria-label="${label}を増やす">＋</button></div>`;
-      return {
-        title: '本場と供託は？',
-        hint: '本場は1本場ごとに300点（ツモは1人100点）、供託はリーチ棒の本数（1本1,000点）',
-        body: stepper('honba', '本場') + stepper('kyotaku', '供託') + `<button type="button" class="sh-opt big go" data-action="su-next"><b>${s.honba || s.kyotaku ? 'これで次へ' : '0本場・供託なしで次へ'}</b></button>`,
         note: '',
       };
     }
@@ -9418,6 +9371,8 @@ function pageHTML(q, a) {
         note: '',
       };
     }
+    case 'ura':
+      return indicatorPage('ura', state.ura, Math.max(1, state.setup.doraN | 0));
     case 'summary': {
       const qs = setupQuestions(a);
       const rows = qs.map((x) => `<button type="button" class="sh-sum-row" data-action="su-jump" data-q="${x.key}"><span class="sh-k">${Q_TITLE[x.key]}</span><b>${answerText(x.key)}</b><i>›</i></button>`).join('');
@@ -9441,33 +9396,27 @@ function pageHTML(q, a) {
 function answerText(key) {
   const s = S();
   switch (key) {
-    case 'roundWind': return `${windLabel(s.roundWind)}場`;
-    case 'seatWind': return `${windLabel(s.seatWind)}家（${s.seatWind === 27 ? '親' : '子'}）`;
-    case 'dealer': return s.seatWind === 27 ? '親' : '子';
-    case 'dora': return state.dora.length ? tilesInline(state.dora.map(doraFromIndicator), 'xxs') : 'なし';
-    case 'nuki': return `${s.nuki | 0}枚`;
-    case 'riichi': return ['しない', 'リーチ', 'ダブルリーチ'][s.riichi | 0];
-    case 'ippatsu': return s.ippatsu ? 'あり' : 'なし';
-    case 'ura': return state.ura.length ? tilesInline(state.ura.map(doraFromIndicator), 'xxs') : 'なし';
-    case 'tsumo': return s.tsumo ? 'ツモ' : 'ロン';
-    case 'winTile': return state.win != null ? tileHTML(state.win, { size: 'xxs' }) : '—';
-    case 'honba': return `${s.honba | 0}本場・供託${s.kyotaku | 0}`;
-    case 'special': return s.special ? SPECIAL_LABELS[s.special] : 'なし';
+    case 'roundWind': return setupAnswered(key) ? `${windLabel(s.roundWind)}場` : '—';
+    case 'seatWind': return setupAnswered(key) ? `${windLabel(s.seatWind)}家（${s.seatWind === 27 ? '親' : '子'}）` : '—';
+    case 'honba': return setupAnswered(key) ? `${s.honba | 0}本場・供託${s.kyotaku | 0}` : '—';
+    case 'dora': return setupAnswered(key) ? (state.dora.length ? tilesInline(state.dora.map(doraFromIndicator), 'xxs') : 'なし') : '—';
+    case 'nuki': return setupAnswered(key) ? `${s.nuki | 0}枚` : '—';
+    case 'riichi': return setupAnswered(key) ? ['しない', 'リーチ', 'ダブルリーチ'][s.riichi | 0] : '—';
+    case 'ippatsu': return setupAnswered(key) ? (s.ippatsu ? 'あり' : 'なし') : '—';
+    case 'tsumo': return setupAnswered(key) ? (s.tsumo ? 'ツモ' : 'ロン') : '—';
+    case 'winTile': return state.win != null && setupAnswered(key) ? tileHTML(state.win, { size: 'xxs' }) : '—';
+    case 'special': return setupAnswered(key) ? (s.special ? SPECIAL_LABELS[s.special] : 'なし') : '—';
+    case 'ura': return setupAnswered(key) ? (state.ura.length ? tilesInline(state.ura.map(doraFromIndicator), 'xxs') : 'なし') : '—';
     default: return '';
   }
 }
 
-function doraCountText() {
-  const doras = state.dora.map(doraFromIndicator);
+/** 表示牌から決まるドラが手牌に何枚あるか */
+function countText(indicators) {
+  const doras = indicators.map(doraFromIndicator);
   const all = [...state.concealed, ...(state.win != null ? [state.win] : []), ...state.melds.flatMap((m) => m.tiles)].map(tileBase);
   const n = all.filter((b) => doras.includes(b)).length;
   return n ? `手牌に${n}枚` : '手牌にはなし';
-}
-function uraCountText() {
-  const doras = state.ura.map(doraFromIndicator);
-  const all = [...state.concealed, ...(state.win != null ? [state.win] : []), ...state.melds.flatMap((m) => m.tiles)].map(tileBase);
-  const n = all.filter((b) => doras.includes(b)).length;
-  return n ? `${n}枚乗った` : '乗らなかった';
 }
 
 /** ドラ表示牌に使えない牌（三人麻雀にない・表示牌どうしで4枚） */
@@ -9490,21 +9439,22 @@ function setupSheetHTML(a) {
   const sh = sheet();
   const keys = order(a);
   const q = sh.q || 'summary';
-  const i = q === 'summary' ? keys.length : keys.indexOf(q);
+  const gate = q === 'gate';
+  const i = q === 'summary' ? keys.length : Math.max(0, keys.indexOf(q));
   const n = keys.length + 1;
   const p = pageHTML(q, a);
-  const prog = Array.from({ length: n }, (_, k) => `<i class="${k <= i ? 'on' : ''}"></i>`).join('');
+  const prog = gate ? '' : `<div class="sh-prog">${Array.from({ length: n }, (_, k) => `<i class="${k <= i ? 'on' : ''}"></i>`).join('')}</div>`;
   return (
     `<div class="sh-grab"></div>` +
-    `<div class="sh-top"><button type="button" class="sh-back" data-action="su-back">‹ ${i <= 0 ? '閉じる' : '戻る'}</button>` +
-    `<span class="sh-title">点数を出す条件</span><span class="sh-stepn">${Math.min(i, n - 1) + 1} / ${n}</span>` +
+    `<div class="sh-top"><button type="button" class="sh-back" data-action="su-back">‹ ${gate || i <= 0 ? '閉じる' : '戻る'}</button>` +
+    `<span class="sh-title">点数条件</span><span class="sh-stepn">${gate ? '' : `${Math.min(i, n - 1) + 1} / ${n}`}</span>` +
     `<button type="button" class="sh-x" data-action="su-close" aria-label="閉じる">×</button></div>` +
-    `<div class="sh-prog">${prog}</div>` +
-    doneChips(a) +
+    prog +
+    (gate ? '' : doneChips(a)) +
     `<div class="sh-q">${p.title}</div>${p.hint ? `<div class="sh-hint">${p.hint}</div>` : ''}` +
     `<div class="sh-body">${p.body}</div>` +
     (p.note ? `<div class="sh-note">${p.note}</div>` : '') +
-    (!scoreReady() ? `<div class="sh-foot"><button type="button" class="linkish" data-action="su-later">あとで入れる（待ちだけ見る）</button></div>` : '')
+    (!gate && !scoreReady() ? `<div class="sh-foot"><button type="button" class="linkish" data-action="su-later">あとで入れる（待ちだけ見る）</button></div>` : '')
   );
 }
 
@@ -9518,11 +9468,6 @@ function pick(key, raw) {
       break;
     case 'seatWind':
       setSituation('seatWind', +raw);
-      break;
-    case 'dealer':
-      if (+raw === 1) setSituation('seatWind', 27);
-      else if (s.seatWind === 27) setSituation('seatWind', 28);
-      else markSetup('seatWind');
       break;
     case 'nuki':
       s.nuki = +raw;
@@ -9562,7 +9507,25 @@ function pick(key, raw) {
   advance();
 }
 
-/** 条件のシート・まとめの操作。扱ったら true */
+/** 表示牌を1枚足す（ドラ・裏ドラ）。枚数に達したら自動で次へ */
+function addIndicator(kind, id) {
+  const msg = doraLimit(id);
+  if (msg) {
+    toast(msg);
+    return;
+  }
+  const list = kind === 'dora' ? state.dora : state.ura;
+  const n = kind === 'dora' ? state.setup.doraN | 0 : Math.max(1, state.setup.doraN | 0);
+  if (list.length >= Math.max(1, n)) return;
+  snapshot();
+  list.push(id);
+  if (kind === 'ura') S().uraDora = 0; // 表示牌で数えるので、枚数の欄は使わない
+  markSetup(kind);
+  if (list.length >= n) advance();
+  else update();
+}
+
+/** 点数条件のシート・枠の操作。扱ったら true */
 function handleSetup(el) {
   const d = el.dataset;
   const sh = sheet();
@@ -9574,12 +9537,15 @@ function handleSetup(el) {
     case 'su-later':
       closeSetup(true);
       return true;
+    case 'su-gate':
+      if (d.value === '1') openSetup();
+      else closeSetup(true);
+      return true;
     case 'su-back':
       back();
       return true;
     case 'su-jump':
       sh.q = d.q;
-      sh.kan = false;
       update();
       return true;
     case 'su-pick':
@@ -9595,63 +9561,47 @@ function handleSetup(el) {
     case 'su-step':
       step(d.key, +d.delta);
       return true;
-    case 'su-dora-add': {
-      const msg = doraLimit(+d.id);
-      if (msg) {
-        toast(msg);
-        return true;
-      }
-      if (state.dora.length >= 5) {
-        toast('ドラ表示牌は5枚までです');
-        return true;
-      }
-      snapshot();
-      state.dora.push(+d.id);
-      markSetup('dora');
-      if (sh.kan) update();
-      else advance();
+    case 'su-dora-count': {
+      // 枚数を選ぶ（選び直すときは表示牌を消してもう一度）
+      const n = Math.max(0, Math.min(MAX_DORA, d.n | 0));
+      if (state.dora.length) snapshot();
+      state.dora = [];
+      state.setup.doraN = n;
+      delete state.setup.a.dora;
+      update();
       return true;
     }
+    case 'su-dora-add':
+      addIndicator('dora', +d.id);
+      return true;
     case 'su-dora-undo':
       if (state.dora.length) {
         snapshot();
         state.dora.pop();
       }
+      delete state.setup.a.dora;
       update();
       return true;
     case 'su-dora-none':
       if (state.dora.length) snapshot();
       state.dora = [];
+      state.setup.doraN = 0;
       markSetup('dora');
       advance();
-      return true;
-    case 'su-dora-kan':
-      sh.kan = !sh.kan;
-      update();
       return true;
     case 'su-dora-next':
       markSetup('dora');
       advance();
       return true;
-    case 'su-ura-add': {
-      const msg = doraLimit(+d.id);
-      if (msg) {
-        toast(msg);
-        return true;
-      }
-      snapshot();
-      state.ura.push(+d.id);
-      S().uraDora = 0; // 表示牌で数えるので、枚数の欄は使わない
-      markSetup('ura');
-      if (sh.kan) update();
-      else advance();
+    case 'su-ura-add':
+      addIndicator('ura', +d.id);
       return true;
-    }
     case 'su-ura-undo':
       if (state.ura.length) {
         snapshot();
         state.ura.pop();
       }
+      delete state.setup.a.ura;
       update();
       return true;
     case 'su-ura-none':
@@ -9661,10 +9611,6 @@ function handleSetup(el) {
       markSetup('ura');
       advance();
       return true;
-    case 'su-ura-kan':
-      sh.kan = !sh.kan;
-      update();
-      return true;
     case 'su-ura-next':
       markSetup('ura');
       advance();
@@ -9673,10 +9619,7 @@ function handleSetup(el) {
       sh.mode = null;
       sh.q = null;
       confirmSetup();
-      toast('点数を表示しました（条件は「変更」で直せます）', 2200);
-      return true;
-    case 'su-next-hand':
-      nextHand(d.kind);
+      toast('点数を表示しました（点数条件は「変更」で直せます）', 2200);
       return true;
     default:
       return false;
@@ -9708,7 +9651,7 @@ const STEPS = [
   ['read', '「認識する」を押す', '牌の判別は端末の中だけで行います（通信なし・1〜2秒）。オフライン環境でも使用可能'],
   ['fix', '違う牌はタップで直す', '読み取った牌は枠のすぐ下に並びます。読み違えた牌をタップすると、候補から選び直せます。全部やり直すときは「リセット」'],
   ['wait', '待ちが形ごとに手牌の下に出る', '両面・シャンポンなどの形ごとに、牌ごとの役がつきます。形を押すと役と点数の内訳が下から出ます'],
-  ['gear', '条件は1問ずつ答える', '1シャンテン・テンパイ・アガリ形になると、画面の下から「点数を出す条件」が出ます。場風・自風・ドラ・リーチなどを押していくと点数が出ます。待ちとシャンテン数は条件なしでも出ます。人数は見出し横の「四人／三人」'],
+  ['gear', '点数条件は1問ずつ答える', '1シャンテン・テンパイ・アガリ形になると、画面の下から「点数条件」が出ます。場風・自風・本場・ドラ・リーチなどを押していくと点数が出ます。待ちとシャンテン数は条件なしでも出ます。ルールは「ルール設定」、人数は見出し横の「四人／三人」'],
 ];
 
 function bigButton(kind, icon, label, note) {
@@ -9811,7 +9754,7 @@ function handleGuide(el) {
 
 
 
-// キーボードで入れるのは手牌と鳴きだけ。ドラ・裏ドラは上の「条件」（写真の画面と同じステップ入力）で表示牌を入れる
+// キーボードで入れるのは手牌と鳴きだけ。ドラ・裏ドラは上の「点数条件」（写真の画面と同じステップ入力）で表示牌を入れる
 const TARGETS = [
   ['hand', '手牌'],
   ['chi', 'チー'],
@@ -9916,7 +9859,7 @@ function addTile(id) {
 }
 
 // ---------- 描画 ----------
-/** 画面上部の「条件」のまとめ。写真の画面と同じもの（ステップ入力・ルールは同じシートを開く） */
+/** 画面上部の「点数条件」の枠。写真の画面と同じもの（ステップ入力・ルールは同じシートを開く） */
 function renderRulesBar() {
   $('rules-bar').innerHTML = setupBarHTML(view.analysis);
 }
@@ -10574,7 +10517,7 @@ function nextPaint() {
 /**
  * 「リセット」: 牌のチップと認識の結果を消して、「認識する」を押す前に戻す。
  * 写真の画面では写真とその位置を残す。カメラの画面では止めた映像を動かし直す（すぐ撮り直せるように）。
- * ドラ・リーチ・ツモなどの条件はそのまま（条件は「条件/ルール 設定」のリセットで別に消す）。
+ * ドラ・リーチ・ツモなどの条件はそのまま（点数条件は「点数条件をリセット」で別に消す）。
  * 確認は出さずにすぐ消し、数秒だけ「元に戻す」を出す
  */
 function resetRead() {
@@ -11135,14 +11078,15 @@ async function readOnDevice() {
   }
   cam.cands = r.tiles.map((t) => t.top);
   track('read_ok');
-  cam.note = `端末内のAIで読み取りました（${((Date.now() - t0) / 1000).toFixed(1)}秒）`;
+  const sec = ((Date.now() - t0) / 1000).toFixed(1);
+  cam.note = `端末内のAIで読み取りました（${sec}秒）`;
   cam.read = true; // 読み取り後は枠の外を暗くする
   // 確認用（ブラウザでの自動テストが読み取りの内訳を見る）
   if (window.haiyomi) window.haiyomi.lastRead = { source: r.source, n: r.n, corners: r.corners, trimmed: r.trimmed, valign: r.valign, gap: r.gap, confidence: r.confidence, srcW, roi: lastRoi };
   applyRecognition({ tiles, melds: [], win: null, confidence: r.confidence, warnings });
   suggestMeld(tiles.length);
   // 終わったことをはっきり知らせる（三人麻雀の2〜8萬など、ほかのお知らせがあるときはそちらを優先）
-  if (!(state.rules.sanma && manzu)) toast(`${tiles.length}枚を読み取りました${unsure ? `（「？」が${unsure}枚）` : ''}`, 1800);
+  if (!(state.rules.sanma && manzu)) toast(`${tiles.length}枚を読み取りました（${sec}秒）${unsure ? `・「？」が${unsure}枚` : '・違う牌はタップで直せます'}`, 2200);
   return true;
 }
 
@@ -11470,6 +11414,7 @@ function chipsFor(a) {
     return null;
   }
   if (a.phase === 'hand14' && !a.agari && a.shanten.min <= 1) return { kind: 'discard', items: a.discards, key: (d) => d.discard };
+  if (a.phase === 'hand14' && a.agari) return { kind: 'agari', items: [a.agari], key: () => 'agari' };
   return null;
 }
 
@@ -11497,6 +11442,54 @@ function bandHead(title, sub, tone = '') {
   return `<div class="band-head${tone ? ' ' + tone : ''}"><b>${title}</b><span>${sub}</span></div>`;
 }
 
+/**
+ * 補足の行に足すもの（v0.35: 下の結果の枠をなくしたので、ここに移した）
+ *   七対子・国士のシャンテン数（その形に近いときだけ）、読み取りの注意（三人麻雀なのに2〜8萬 など）、
+ *   風牌の役は場風・自風を入れるまで出さないこと
+ */
+function bandNotes(a) {
+  const notes = [];
+  if (a && a.shanten && a.phase === 'hand13' && !a.hiddenMelds) {
+    const sh = a.shanten;
+    if (sh.chiitoi !== Infinity && sh.chiitoi !== sh.normal && (sh.chiitoi < sh.normal || sh.pairs >= 5)) notes.push(`七対子なら${shantenText(sh.chiitoi)}`);
+    if (sh.kokushi !== Infinity && sh.kokushi !== sh.normal && (sh.kokushi < sh.normal || sh.yaochu >= 8)) notes.push(`国士なら${shantenText(sh.kokushi)}`);
+  }
+  if (cam.recog && cam.recog.warnings && cam.recog.warnings.length) notes.push(...cam.recog.warnings);
+  if (a && !scoreReady() && setupPhase(a) && !(state.setup.a.roundWind && state.setup.a.seatWind)) {
+    const ids = [...state.concealed, ...(state.win != null ? [state.win] : []), ...state.melds.flatMap((m) => m.tiles)];
+    if (ids.some((id) => tileBase(id) >= 27 && tileBase(id) <= 30)) notes.push('東・南・西・北の役は、場風と自風を入れると出ます');
+  }
+  if (!notes.length) return '';
+  return `<div class="band-notes">${notes.map((n) => `<div>${n}</div>`).join('')}</div>`;
+}
+
+/** アガリ形のカード（点数条件を入れたあと）: アガリ牌と待ち・役を全部・点数を大きく・翻符・受け取り。押すと下から内訳 */
+function agariCardHTML(a) {
+  const r = a.agari;
+  const on = !!cam.sel && cam.sel.kind === 'agari';
+  const win = state.win;
+  const head = `<div class="ag-h">${tileHTML(win, { size: 'chip' })}<b>${tileLabel(win)}で${r.tsumo ? 'ツモ' : 'ロン'}</b><span>${r.dealer ? '親' : '子'}${waitText(r) ? '・' + waitText(r) : ''}</span></div>`;
+  if (!r.ok) {
+    const hints = (a.hints || []).map((h) => `<div>${h}</div>`).join('');
+    return (
+      `<button type="button" class="ag-card warn" data-action="cam-sel" data-kind="agari" data-tile="agari" aria-pressed="${on}" aria-label="アガリ形の内訳">${head}` +
+      `<div class="ag-none">役がありません。ドラ・赤ドラだけではアガれません${hints ? `<div class="ag-hints">${hints}</div>` : ''}</div>` +
+      `<div class="ag-more">押すと面子の分け方 ›</div></button>`
+    );
+  }
+  const names = r.yaku.map((y) => `<span>${y.name}${y.yakuman === 2 ? '（ダブル）' : ''}</span>`);
+  const doras = (r.doraList || []).map((d) => `<span class="dora">${d.name.replace(/枚$/, '')}</span>`);
+  const extra = (r.total | 0) - (r.points | 0);
+  return (
+    `<button type="button" class="ag-card" data-action="cam-sel" data-kind="agari" data-tile="agari" aria-pressed="${on}" aria-label="アガリの内訳">${head}` +
+    `<div class="ag-yaku"><span class="yk">${[...names, ...doras].join('<i>・</i>')}</span></div>` +
+    `<div class="ag-pts"><span class="ag-big">${fmt(r.points)}<small>点</small></span>${r.limit ? `<span class="ag-limit">${r.limit}</span>` : ''}` +
+    `<span class="ag-hf">${r.yakuman ? '役満' : `${r.han}翻${r.fu}符`}${r.tsumo ? `・${paymentShort(r)}` : ''}</span>` +
+    `${extra > 0 ? `<span class="ag-total">受け取り <b>${fmt(r.total)}</b>点</span>` : ''}</div>` +
+    `<div class="ag-more">押すと翻・符の内訳と面子の分け方 ›</div></button>`
+  );
+}
+
 /** 役の名前の並び（ドラは赤）。extra は「増える役」（色を変える） */
 function yakuText(names, dora, extra = [], extraDora = 0) {
   const base = names.filter((n) => !extra.includes(n)).map((n) => `<span>${n}</span>`);
@@ -11518,7 +11511,7 @@ function ronTsumoHTML(w, opts = {}) {
   let hint = '';
   const menzen = state.melds.every((m) => m.type === 'ankan');
   if (menzen && !state.situation.riichi && opts.concealed) {
-    const rr = evaluateWin({ ...scoringContext(state), concealed: opts.concealed, winTile: w.tile, tsumo: false, riichi: 1 });
+    const rr = evaluateWin({ ...scoringContext(effectiveState()), concealed: opts.concealed, winTile: w.tile, tsumo: false, riichi: 1 });
     if (rr.ok) hint = `<span><em>リーチなら</em>${fmt(rr.points)}</span>`;
   }
   return `<span class="pts none">${hint}<span><em>ツモ</em>${tsumo && tsumo.ok ? paymentShort(tsumo) : '役なし'}</span></span>`;
@@ -11556,7 +11549,7 @@ function groupsHTML(a, groups) {
 
 /** 1シャンテン: テンパイになる牌を「役がつく」（点数の高い順）と「役なし」に分ける */
 function drawGroupsHTML(a) {
-  const ctx = scoringContext(state);
+  const ctx = scoringContext(effectiveState());
   const list = drawSummaries(state.concealed, a.tenpaiDraws, ctx);
   const ready = scoreReady();
   const withYaku = list.filter((d) => d.best);
@@ -11574,14 +11567,14 @@ function drawGroupsHTML(a) {
     return `<button type="button" class="dg-nchip" data-action="cam-sel" data-kind="draw" data-tile="${d.draw}" aria-pressed="${on}" aria-label="${tileLabel(d.draw)}を引いたら（役なし）">${tileHTML(d.draw, { size: 'chip' })}<small>役なし</small></button>`;
   };
   return (
-    (withYaku.length ? `<div class="dg-label">役がつく（ダマでもアガれる）・${ready ? '点数の高い順' : '点数は条件のあと'}</div><div class="dg-grid">${withYaku.map(chip).join('')}</div>` : '') +
+    (withYaku.length ? `<div class="dg-label">役がつく（ダマでもアガれる）・${ready ? '点数の高い順' : '点数は点数条件のあと'}</div><div class="dg-grid">${withYaku.map(chip).join('')}</div>` : '') +
     (none.length ? `<div class="dg-label dim">役なし（リーチかツモでアガれる）</div><div class="dg-none">${none.map(nchip).join('')}</div>` : '')
   );
 }
 
 /** 「テンパイになる牌 10種・役がつく 4種（平和2・一盃口3）」 */
 function drawSubText(a) {
-  const ctx = scoringContext(state);
+  const ctx = scoringContext(effectiveState());
   const list = drawSummaries(state.concealed, a.tenpaiDraws, ctx);
   const withYaku = list.filter((d) => d.best);
   const count = {};
@@ -11600,7 +11593,9 @@ function bandHTML(a) {
   const ids = handIds();
   if (!ids.length && state.win == null && !state.melds.length) {
     if (mediaMessage()) return '';
-    return bandHead('手牌なし', '上の枠に手牌を横一列に入れて読み取ります');
+    // 読み取れなかった理由（手牌が見つからない など）は、お知らせが消えたあともここに残す（v0.35: 下の枠をなくしたため）
+    const failed = cam.note && !cam.read ? cam.note : '';
+    return bandHead(failed ? '読み取れず' : '手牌なし', failed || '上の枠に手牌を横一列に入れて読み取ります', failed ? 'warn' : '');
   }
   if (cam.draft) {
     const q = cam.draft.tiles.filter((x) => x == null).length;
@@ -11619,25 +11614,22 @@ function bandHTML(a) {
       if (a.hiddenMelds) sub = `待ち ${a.waits.length}種（鳴き${a.hiddenMelds}組は省略）`;
       else if (groups.length <= 2) sub = `待ち ${a.waits.length}種 → ${names.join(' と ')}`;
       else sub = `待ち ${a.waits.length}種を形で分けると <b>${groups.length}つ</b>（${groups.map((g) => g.label).join('・')}）`;
-      return bandHead('テンパイ', sub, 'ok') + groupsHTML(a, groups);
+      return bandHead('テンパイ', sub, 'ok') + bandNotes(a) + groupsHTML(a, groups);
     }
-    if (s === 1 && a.tenpaiDraws && a.tenpaiDraws.length) return bandHead('1シャンテン', drawSubText(a)) + drawGroupsHTML(a);
+    if (s === 1 && a.tenpaiDraws && a.tenpaiDraws.length) return bandHead('1シャンテン', drawSubText(a)) + bandNotes(a) + drawGroupsHTML(a);
     // 2シャンテン以上は牌を並べても見づらいので、シャンテン数だけ出す
-    if (s >= 2) return bandHead(`${s}シャンテン`, `受け入れ ${a.ukeire.length}種（あと${s}回の入れ替えでテンパイ）`);
-    return bandHead(`${s}シャンテン`, `受け入れ ${a.ukeire.length}種`) + chipRow('uke', a.ukeire.map((u) => ({ tile: u.tile })));
+    if (s >= 2) return bandHead(`${s}シャンテン`, `受け入れ ${a.ukeire.length}種（あと${s}回の入れ替えでテンパイ）`) + bandNotes(a);
+    return bandHead(`${s}シャンテン`, `受け入れ ${a.ukeire.length}種`) + bandNotes(a) + chipRow('uke', a.ukeire.map((u) => ({ tile: u.tile })));
   }
   if (a.agari) {
     const r = a.agari;
-    if (!scoreReady()) return bandHead('アガリ形', '点数と役は条件を入れると出ます', 'win');
+    if (!scoreReady()) return bandHead('アガリ形', '点数と役は点数条件を入れると出ます', 'win') + bandNotes(a);
     if (r.ok) {
-      // 本場・供託があるときは「実際に動く点数」も帯に出す（基本の点数と区別できるように）
-      const extra = (r.total | 0) - (r.points | 0);
-      const move = extra > 0 ? `・受け取り ${fmt(r.total)}点` : '';
-      // ツモは支払いの形も添える（子のツモ 2,000-4,000／親のツモ 4,000オール）
+      // ツモは支払いの形も添える（子のツモ 2,000-4,000／親のツモ 4,000オール）。点数と役はカードに（v0.35）
       const how = `${r.dealer ? '親' : '子'}の${r.tsumo ? `ツモ ${paymentShort(r)}` : 'ロン'}`;
-      return bandHead('アガリ', `${fmt(r.points)}点${r.limit ? '・' + r.limit : ''}（${how}）${move}`, 'win');
+      return bandHead('アガリ', how, 'win') + bandNotes(a) + agariCardHTML(a);
     }
-    return bandHead('アガリ形・役なし', 'ドラだけではアガれません', 'warn');
+    return bandHead('アガリ形・役なし', 'ドラだけではアガれません', 'warn') + bandNotes(a) + agariCardHTML(a);
   }
   const s = a.shanten.min;
   if (s >= 2) return bandHead(`${s}シャンテン`, '切る牌の候補は「手入力」画面で見られます');
@@ -11804,7 +11796,7 @@ function groupDetail(a, key) {
 
 /** 引いたあとの13枚（引いた牌を入れて1枚切った形）を形ごとに */
 function tenpaiAfter(rest) {
-  const ctx = scoringContext(state);
+  const ctx = scoringContext(effectiveState());
   const visible = countsOf(allInputTiles());
   const r = analyzeWaiting(rest, ctx, visible);
   if (r.shanten.min !== 0 || !r.waits) return null;
@@ -11828,7 +11820,7 @@ function groupsAfterHTML(rest, opt = {}) {
 function drawDetail(a, tile) {
   const d = a.tenpaiDraws.find((x) => x.draw === tile);
   if (!d) return '';
-  const ctx = scoringContext(state);
+  const ctx = scoringContext(effectiveState());
   const ready = scoreReady();
   // 切り方ごとに、いちばん高いロンの点数で並べる
   const opts = d.options.map((o) => {
@@ -11885,8 +11877,9 @@ function detailSheetHTML(analysis) {
   if (sel.kind === 'group') body = groupDetail(a, sel.tile);
   else if (sel.kind === 'draw' && a.tenpaiDraws) body = drawDetail(a, sel.tile);
   else if (sel.kind === 'discard' && a.discards) body = discardDetail(a, sel.tile);
+  else if (sel.kind === 'agari' && a.agari) body = agariDetail(a);
   if (!body) return '';
-  const pending = !scoreReady() && !a.hiddenMelds ? `<div class="dt-pending"><span>点数は条件を入れると出ます</span><button type="button" data-action="su-open">条件を入れる</button></div>` : '';
+  const pending = !scoreReady() && !a.hiddenMelds ? `<div class="dt-pending"><span>点数は点数条件を入れると出ます</span><button type="button" data-action="su-open">点数条件を入れる</button></div>` : '';
   return (
     `<div class="sh-grab"></div><div class="sh-top"><span class="sh-title">内訳</span><button type="button" class="sh-x" data-action="cam-sheet-close" aria-label="閉じる">×</button></div>` +
     pending +
@@ -11919,78 +11912,6 @@ function agariDetail(a) {
     paymentList(r, state.situation) +
     (shape ? `<div class="section-title">面子の分け方</div>${shape}` : '') +
     fuDetailsHTML(r)
-  );
-}
-
-/** テンパイのとき、見出しの横に出すアガリ牌 */
-function waitTilesHTML(a) {
-  if (!a || !a.waits || !a.waits.length) return '';
-  return `<span class="s-waits"><small>アガリ牌</small>${tilesInline(a.waits.map((w) => w.tile), 'xs')}</span>`;
-}
-
-function summaryHTML(a) {
-  if (cam.busy) {
-    // 端末内の計算は途中で止められないので「中止」はクラウドAI（β）のときだけ
-    const stop = cam.busy === 'device' ? '' : '<button type="button" class="btn ghost" data-action="cam-stop">中止</button>';
-    return `<div class="s-sum"><span class="eyebrow">読み取り中</span><b class="s-big">…</b><p class="muted">${cam.note}</p>${stop}</div>`;
-  }
-  const k = state.melds.length;
-  if (!a || cam.draft || a.phase === 'error' || a.phase === 'incomplete') {
-    const lines = [
-      'スマホは縦のままでOK。上の枠に手牌が横一列に入るように写します（カメラはスマホを横にすると近くから撮れます）',
-      getTileModel() ? '「認識する」を押すと、端末内のAIが牌を読みます' : sampleImages ? '「認識する」でAIが牌を読みます（β）' : '読み取れない場合は「＋」から牌をタップで入力',
-      '手牌の下に待ちが形ごとに出ます。押すと役と点数の内訳。点数を出す条件は、読み取ったあとに1問ずつ聞きます',
-    ];
-    return `<div class="s-sum"><span class="eyebrow">使い方</span><ol class="howto">${lines.map((l) => `<li>${l}</li>`).join('')}</ol></div>`;
-  }
-  if (a.phase === 'hand13') {
-    const s = a.shanten.min;
-    if (a.hiddenMelds) {
-      return `<div class="s-sum"><span class="eyebrow">${a.count}枚（鳴き${a.hiddenMelds}組は省略）</span><div class="s-head"><b class="s-big ok">テンパイ</b>${waitTilesHTML(a)}</div></div>`;
-    }
-    return (
-      `<div class="s-sum"><span class="eyebrow">${13 - 3 * k}枚${k ? `＋鳴き${k}組` : ''}</span>` +
-      `<div class="s-head"><b class="s-big${s === 0 ? ' ok' : ''}">${shantenText(s)}</b>${waitTilesHTML(a)}</div>` +
-      `${formsHTML(a.shanten)}</div>`
-    );
-  }
-  if (a.agari) {
-    const r = a.agari;
-    const ready = scoreReady();
-    let big = r.ok ? 'アガリ' : 'アガリ形・役なし';
-    let sub = r.ok ? `${fmt(r.points)}点${r.limit ? '・' + r.limit : ''}` : 'ドラだけではアガれません';
-    if (!ready) {
-      big = 'アガリ形';
-      sub = '点数は条件を入れると出ます';
-    }
-    return `<div class="s-sum"><span class="eyebrow">${14 - 3 * k}枚${k ? `＋鳴き${k}組` : ''}${ready ? `・${r.tsumo ? 'ツモ' : 'ロン'}` : ''}</span><div class="s-head"><b class="s-big${r.ok || !ready ? ' win' : ''}">${big}</b><span class="s-sub">${sub}</span></div></div>`;
-  }
-  return `<div class="s-sum"><span class="eyebrow">${14 - 3 * k}枚・切る前</span><b class="s-big${a.shanten.min === 0 ? ' ok' : ''}">${a.shanten.min === 0 ? '1枚切ればテンパイ' : shantenText(a.shanten.min)}</b></div>`;
-}
-
-function detailHTML(a) {
-  if (!a || cam.busy || cam.draft) return '';
-  if (a.phase === 'hand14' && a.agari) return agariDetail(a);
-  if (a.phase === 'hand13' && a.shanten.min >= 2) {
-    return `<p class="muted">受け入れを引くとシャンテン数が1つ進みます。1シャンテンになると「何が来ればテンパイか」を表示します。</p>`;
-  }
-  if (a.phase === 'hand13' || (a.phase === 'hand14' && a.shanten.min <= 1)) {
-    return `<p class="muted">上の${a.phase === 'hand13' && a.shanten.min === 0 ? '待ちの形' : a.phase === 'hand13' ? '牌' : '切る牌'}を押すと、役と点数の内訳が下から出ます。</p>`;
-  }
-  return '';
-}
-
-function notesHTML() {
-  const local = !!getTileModel();
-  let reader = '自動読み取りを確認しています…';
-  if (local) reader = '端末内のAIで読み取ります（通信なし・1〜2秒）<br>オフライン環境でも使用可能';
-  else if (sampleChecked) reader = sampleImages ? 'クラウドAI（β）で読み取ります。数秒〜数十秒かかります' : 'この画面では自動読み取りを使えません。「＋」から牌をタップで入力できます';
-  const cloudAgain = local && sampleImages ? ' <button type="button" class="linkish" data-action="cam-read-ai">クラウドAI（β）で読み直す</button>' : '';
-  const readNote = cam.note && !cam.busy ? `<p class="muted">${cam.note}</p>` : '';
-  const warns = cam.recog && cam.recog.warnings.length ? `<ul class="warn-list">${cam.recog.warnings.map((w) => `<li>${w}</li>`).join('')}</ul>` : '';
-  return (
-    `<div class="s-note"><div class="s-note-head"><b>読み取り</b></div><p>${reader}${cloudAgain}</p>${readNote}${warns}` +
-    `<p class="muted">${local ? '一般的な全自動卓の牌で学習しています。<br>実際の手牌と異なる場合は修正してください。' : '端末内AIは、実物の牌の写真を集めて学習させてから搭載します。'}</p></div>`
   );
 }
 
@@ -12046,7 +11967,7 @@ function popHTML() {
       const r = state.rules;
       const yn = (key, on) => ruleRow(RULE_LABELS[key], key, [[1, 'あり'], [0, 'なし']], on ? 1 : 0);
       const body =
-        `<p class="muted">卓のルールです。局ごとに変わるもの（場風・自風・ドラ・リーチなど）は「条件」の「変更」から入れます。</p>` +
+        `<p class="muted">卓のルールです。局ごとに変わるもの（場風・自風・本場・ドラ・リーチなど）は「点数条件」から入れます。</p>` +
         ruleRow('人数', 'sanma', [[0, '四人麻雀'], [1, '三人麻雀']], r.sanma ? 1 : 0) +
         (r.sanma ? ruleRow('ツモ損', 'tsumoLoss', [[1, 'あり'], [0, 'なし（折半）']], r.tsumoLoss === false ? 0 : 1) : '') +
         ruleRow('符', 'fuMode', [['normal', '正規'], ['fix30', '30符'], ['fix40', '40符']], r.fuMode || 'normal') +
@@ -12109,10 +12030,13 @@ function popHTML() {
       const t = meldType();
       const k = state.melds.length;
       const rest = need() - handIds().filter((x) => x != null).length;
+      const total = rest > 0 && Number.isInteger(rest / 3) ? k + rest / 3 : 0; // 枚数から分かる鳴きの組数
       const lead =
         rest < 0
           ? `手牌が${-rest}枚多いので、鳴いた面子を入れると枚数が合います。`
-          : `鳴いた面子（チー・ポン・カン）を入れると、その分だけ手牌の枚数が減ります。`;
+          : total
+            ? `手牌が${handIds().filter((x) => x != null).length}枚なので、鳴きは${total}組です。${k ? `あと${total - k}組` : '1組ずつ'}入れてください。`
+            : `鳴いた面子（チー・ポン・カン）を入れると、その分だけ手牌の枚数が減ります。`;
       const types = (state.rules.sanma ? [['pon', 'ポン'], ['minkan', '明カン'], ['ankan', 'アンカン']] : [['chi', 'チー'], ['pon', 'ポン'], ['minkan', '明カン'], ['ankan', 'アンカン']])
         .map(([v, l]) => `<button type="button" data-action="cam-meld-type" data-value="${v}" aria-pressed="${t === v}">${l}</button>`)
         .join('');
@@ -12124,8 +12048,8 @@ function popHTML() {
         now +
         `<p class="muted">${hint}</p>` +
         paletteHTML('cam-meld-add', (id) => meldKeyDisabled(id, t)) +
-        `<button type="button" class="btn ghost" data-action="cam-pop-close">鳴いていない</button>`;
-      return popShell(`鳴き${k + 1}組目を入れる`, body);
+        `<button type="button" class="btn ghost" data-action="cam-pop-close">${k ? 'あとで入れる' : '鳴いていない'}</button>`;
+      return popShell(`<span class="pop-big">鳴き <em>${k + 1}組目</em></span>${total ? `<small class="pop-of">／ 全${total}組</small>` : ''}`, body);
     }
     case 'demo': {
       const items = DEMOS.map(
@@ -12288,8 +12212,20 @@ function renderCamera(analysis) {
   const twin = $('twin');
   twin.innerHTML = twinHTML(a);
   fitTwin();
-  $('side-body').innerHTML = summaryHTML(a) + detailHTML(a) + notesHTML();
   renderPop();
+}
+
+/** 「この条件で点数を見る」のあと: 点数と役（写真の枠の中の帯）が画面に入る位置へ（v0.35） */
+function revealResult() {
+  const band = $('band');
+  if (!band || state.mode !== 'camera') return;
+  requestAnimationFrame(() => {
+    try {
+      band.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    } catch (e) {
+      band.scrollIntoView(false);
+    }
+  });
 }
 
 // 手入力の画面でも開けるシート（ほかは写真の画面だけのもの）
@@ -12331,7 +12267,7 @@ function handleCamera(el) {
   switch (d.action) {
     case 'cam-sel': {
       // 待ちの形・引く牌・切る牌を押す → 手牌の中の牌を浮かせて、下から内訳のシート。もう一度押すと閉じる
-      const tile = d.kind === 'group' ? d.tile : +d.tile;
+      const tile = d.kind === 'group' || d.kind === 'agari' ? d.tile : +d.tile;
       const same = cam.sel && cam.sel.kind === d.kind && cam.sel.tile === tile && state.sheet.mode === 'detail';
       cam.sel = same ? null : { kind: d.kind, tile };
       state.sheet.mode = same ? null : 'detail';
@@ -12384,7 +12320,10 @@ function handleCamera(el) {
       snapshot();
       state.melds.push(meld);
       if (type !== 'ankan' && state.situation.riichi) toast('鳴きがあるためリーチは計算に含めません');
-      cam.pop = null;
+      // 枚数がまだ合わない（7枚で1組だけ入れた など）なら、続けて次の組を入れてもらう（v0.35）
+      const rest = need() - handIds().filter((x) => x != null).length;
+      const stillShort = rest > 0 && Number.isInteger(rest / 3) && state.melds.length < 4;
+      cam.pop = stillShort ? 'addmeld' : null;
       cam.sel = null;
       return update();
     }
@@ -12446,14 +12385,6 @@ function handleCamera(el) {
   }
 }
 
-/** 「次の局へ」で手牌を消したあと: ライブカメラで止めていた映像を動かし直す（次の手牌を撮れるように） */
-function afterNextHand() {
-  if (cam.source === 'live' && cam.live === 'frozen') {
-    resumeLive();
-    update();
-  }
-}
-
 /** 手入力画面へ移るとき: カメラを止め、読み取れなかった牌は外す */
 function leaveCamera() {
   stopLive();
@@ -12509,18 +12440,15 @@ function syncPlayers() {
 }
 
 /**
- * 「条件」のまとめ（#rules-bar）と「何待ち 判断」の見出しの置き場所（v0.33）。
- * 写真の画面: 写真（読み取り枠）の下、結果の上へ移す。手入力の画面: 今までどおり画面の上（手牌の上）
+ * 「点数条件」の枠（#rules-bar）の置き場所（v0.33）。
+ * 写真の画面: 写真（読み取り枠）のすぐ下へ移す。手入力の画面: 今までどおり画面の上（手牌の上）
  */
-const SETUP_PARTS = ['rules-bar', 'judge-head'];
 function placeSetup(camera) {
+  const el = $('rules-bar');
   const parent = camera ? $('cam-view') : $('app');
-  const before = camera ? $('cam-side') : document.querySelector('#app > .rotate-hint');
-  if (!parent || !before) return;
-  SETUP_PARTS.forEach((id) => {
-    const el = $(id);
-    if (el && el.parentNode !== parent) parent.insertBefore(el, before);
-  });
+  const before = camera ? $('cam-stage') && $('cam-stage').nextSibling : document.querySelector('#app > .rotate-hint');
+  if (!el || !parent || el.parentNode === parent) return;
+  parent.insertBefore(el, before || null);
 }
 
 let lastMode = null;
@@ -12536,7 +12464,7 @@ function render(a) {
   if (camera) renderCamera(a);
   else renderManual(a);
   renderSheet(a);
-  // 読み取り・入力のあと、1シャンテン以上で条件が足りなければ、条件のステップ入力を自動で開く（v0.34）
+  // 読み取り・入力のあと、1シャンテン以上で点数条件が足りなければ、ステップ入力を自動で開く（v0.34）
   maybeAutoOpen(a);
   if (camera) syncKbSpace(); // 手入力のキーボードの余白を消す
   // 手入力に入ったとき（タブ・スタート画面・前回の続き）は、手牌がキーボードの下に隠れないようにする
@@ -12547,7 +12475,7 @@ function render(a) {
   renderGuide();
 }
 
-/** 下から出るシート（条件のステップ入力／待ち・切り方の内訳）。写真の画面と手入力の画面で共通 */
+/** 下から出るシート（点数条件のステップ入力／待ち・切り方・アガリの内訳）。写真の画面と手入力の画面で共通 */
 function renderSheet(a) {
   const el = $('sheet');
   const scrim = $('sheet-scrim');
@@ -12597,9 +12525,10 @@ function onClick(e) {
   else if (action === 'bar-step') step(el.dataset.key, +el.dataset.delta);
   else if (action.startsWith('su-')) {
     handleSetup(el);
-    if (action === 'su-next-hand' && state.mode === 'camera') afterNextHand();
+    // 「この条件で点数を見る」のあとは、点数と役（写真の枠の中の帯）が見える位置へ
+    if (action === 'su-confirm' && state.mode === 'camera') revealResult();
   } else if (action === 'sheet-scrim') {
-    // シートの外を押したら閉じる（条件のステップ入力は、同じ手牌では開き直さない）
+    // シートの外を押したら閉じる（点数条件のステップ入力は、同じ形のうちは開き直さない）
     if (state.sheet.mode === 'setup') closeSetup(true);
     else {
       state.sheet.mode = null;
@@ -12636,7 +12565,7 @@ function init() {
   else if (ga && ga.mark === 'on') toast('この端末での利用状況の計測を再開しました', 4000);
   // 利用状況: ホーム画面のアプリとして開いたか、Safari などのブラウザで開いたか
   track(isStandalone() ? 'launch_home' : 'launch_browser');
-  // 外部（確認用の自動操作など）からの入力口。条件のステップ入力は自動で開かない（{ open: true } で開く）
+  // 外部（確認用の自動操作など）からの入力口。点数条件のステップ入力は自動で開かない（{ open: true } で開く）
   window.haiyomi = {
     setHand: (hand, opts = {}) => setHand(hand, { quiet: !opts.open }),
     setHandFromString: (str, winStr, opts = {}) => setHand({ concealed: parseTiles(str), win: winStr ? parseTiles(winStr)[0] : null }, { quiet: !opts.open }),
@@ -12659,7 +12588,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.34</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="waits.html">待ちの読み方</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><small class="site-ver">v0.35</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
