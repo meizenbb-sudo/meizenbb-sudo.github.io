@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>できること | 何待ち？</title>
-<meta name="description" content="受け入れ表示・配牌整理・オフライン動作・鳴きの入力・点数計算まで。写真で待ちを出すだけではない「何待ち？」の機能をまとめて紹介します。">
+<title>三人麻雀のルール | 何待ち？</title>
+<meta name="description" content="三人麻雀（サンマ）の牌・席・チーなし・北の抜きドラ・ツモ損と折半の点数の違いを、四人麻雀と比べて説明します。">
 <meta name="theme-color" content="#edf1ec" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0c1310" media="(prefers-color-scheme: dark)">
-<link rel="canonical" href="https://nanimachi.net/features.html">
+<link rel="canonical" href="https://nanimachi.net/sanma.html">
 <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="何待ち？">
-<meta property="og:title" content="できること | 何待ち？">
-<meta property="og:description" content="受け入れ表示・配牌整理・オフライン動作・鳴きの入力・点数計算まで。写真で待ちを出すだけではない「何待ち？」の機能をまとめて紹介します。">
-<meta property="og:url" content="https://nanimachi.net/features.html">
+<meta property="og:title" content="三人麻雀のルール | 何待ち？">
+<meta property="og:description" content="三人麻雀（サンマ）の牌・席・チーなし・北の抜きドラ・ツモ損と折半の点数の違いを、四人麻雀と比べて説明します。">
+<meta property="og:url" content="https://nanimachi.net/sanma.html">
 <meta property="og:image" content="https://nanimachi.net/ogp.png">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -228,127 +228,68 @@ table.pts .t2 { display: inline-block; line-height: 1.35; }
 <body>
 <header class="ph"><div class="ph-in">
 <a class="ph-brand" href="./"><img src="icon-180.png" width="30" height="30" alt=""><b>何待ち？</b></a>
-<nav><a href="features.html" aria-current="page">できること</a><a href="help.html">使い方</a><a href="learn.html">解説</a><a class="go" href="./">アプリ</a></nav>
+<nav><a href="features.html">できること</a><a href="help.html">使い方</a><a href="learn.html" aria-current="page">解説</a><a class="go" href="./">アプリ</a></nav>
 </div></header>
 <main class="pg">
-<h1>このアプリでできること</h1>
-<p class="lead">写真から待ちを出すだけのアプリではありません。「実戦で手が止まる場面」をひと通り拾えるように作っています。</p>
+<h1>三人麻雀のルール</h1>
+<p class="lead">3人で打つ麻雀（サンマ）は、使う牌・鳴き・点数の払い方が四人麻雀と少しずつ違います。よく使われるルールと、このアプリでの扱いをまとめました。店や地域でルールが違うことも多いので、打つ前に確かめてください。</p>
 
-<div class="ok-note">
-  <b>全部、端末の中だけで動きます。</b>写真も手牌も外に出ません。登録もログインも不要で、無料です。
-</div>
+<h2>使う牌は108枚</h2>
+<p>四人麻雀の136枚から、<b>萬子の2〜8</b>（7種類×4枚＝28枚）を抜いた<b>108枚</b>で打つのが一般的です。萬子は<b>1萬と9萬だけ</b>が残ります。</p>
+<p class="hand">使う萬子 <span class="tiles"><svg class="ti" viewBox="0 0 30 43" aria-hidden="true"><rect x="0" y="3" width="30" height="40" rx="4" fill="#dc9f37"/><rect x="0" y="0" width="30" height="40" rx="4" fill="#fbf8ee"/><text x="15" y="11.5" font-size="13" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#1E232B" text-anchor="middle" dominant-baseline="central">一</text><text x="15" y="29" font-size="15.5" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#C4302B" text-anchor="middle" dominant-baseline="central">萬</text></svg><svg class="ti" viewBox="0 0 30 43" aria-hidden="true"><rect x="0" y="3" width="30" height="40" rx="4" fill="#dc9f37"/><rect x="0" y="0" width="30" height="40" rx="4" fill="#fbf8ee"/><text x="15" y="11.5" font-size="13" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#1E232B" text-anchor="middle" dominant-baseline="central">九</text><text x="15" y="29" font-size="15.5" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#C4302B" text-anchor="middle" dominant-baseline="central">萬</text></svg></span>　／　使わない萬子 <span class="tiles"><svg class="ti" viewBox="0 0 30 43" aria-hidden="true"><rect x="0" y="3" width="30" height="40" rx="4" fill="#dc9f37"/><rect x="0" y="0" width="30" height="40" rx="4" fill="#fbf8ee"/><text x="15" y="11.5" font-size="13" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#1E232B" text-anchor="middle" dominant-baseline="central">二</text><text x="15" y="29" font-size="15.5" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#C4302B" text-anchor="middle" dominant-baseline="central">萬</text></svg><svg class="ti" viewBox="0 0 30 43" aria-hidden="true"><rect x="0" y="3" width="30" height="40" rx="4" fill="#dc9f37"/><rect x="0" y="0" width="30" height="40" rx="4" fill="#fbf8ee"/><text x="15" y="11.5" font-size="13" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#1E232B" text-anchor="middle" dominant-baseline="central">三</text><text x="15" y="29" font-size="15.5" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#C4302B" text-anchor="middle" dominant-baseline="central">萬</text></svg><svg class="ti" viewBox="0 0 30 43" aria-hidden="true"><rect x="0" y="3" width="30" height="40" rx="4" fill="#dc9f37"/><rect x="0" y="0" width="30" height="40" rx="4" fill="#fbf8ee"/><text x="15" y="11.5" font-size="13" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#1E232B" text-anchor="middle" dominant-baseline="central">四</text><text x="15" y="29" font-size="15.5" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#C4302B" text-anchor="middle" dominant-baseline="central">萬</text></svg><svg class="ti" viewBox="0 0 30 43" aria-hidden="true"><rect x="0" y="3" width="30" height="40" rx="4" fill="#dc9f37"/><rect x="0" y="0" width="30" height="40" rx="4" fill="#fbf8ee"/><text x="15" y="11.5" font-size="13" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#1E232B" text-anchor="middle" dominant-baseline="central">五</text><text x="15" y="29" font-size="15.5" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#C4302B" text-anchor="middle" dominant-baseline="central">萬</text></svg><svg class="ti" viewBox="0 0 30 43" aria-hidden="true"><rect x="0" y="3" width="30" height="40" rx="4" fill="#dc9f37"/><rect x="0" y="0" width="30" height="40" rx="4" fill="#fbf8ee"/><text x="15" y="11.5" font-size="13" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#1E232B" text-anchor="middle" dominant-baseline="central">六</text><text x="15" y="29" font-size="15.5" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#C4302B" text-anchor="middle" dominant-baseline="central">萬</text></svg><svg class="ti" viewBox="0 0 30 43" aria-hidden="true"><rect x="0" y="3" width="30" height="40" rx="4" fill="#dc9f37"/><rect x="0" y="0" width="30" height="40" rx="4" fill="#fbf8ee"/><text x="15" y="11.5" font-size="13" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#1E232B" text-anchor="middle" dominant-baseline="central">七</text><text x="15" y="29" font-size="15.5" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#C4302B" text-anchor="middle" dominant-baseline="central">萬</text></svg><svg class="ti" viewBox="0 0 30 43" aria-hidden="true"><rect x="0" y="3" width="30" height="40" rx="4" fill="#dc9f37"/><rect x="0" y="0" width="30" height="40" rx="4" fill="#fbf8ee"/><text x="15" y="11.5" font-size="13" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#1E232B" text-anchor="middle" dominant-baseline="central">八</text><text x="15" y="29" font-size="15.5" font-family="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho','Noto Serif JP','Noto Serif CJK JP',serif" font-weight="800" fill="#C4302B" text-anchor="middle" dominant-baseline="central">萬</text></svg></span></p>
+<p>筒子・索子・字牌は四人麻雀と同じです。赤5萬も使いません。</p>
 
-<div class="feat">
-  <h3><span class="num">1</span>テンパイしていなくても、受け入れが分かる</h3>
-  <p>13枚そろえば、テンパイでなくても<b>シャンテン数</b>と「<b>この牌が来ればテンパイ</b>」が出ます。1シャンテンでは、テンパイになる牌が<b>役がつく牌</b>（平和・一盃口・ドラ…）と<b>役なしの牌</b>に分かれて並ぶので、「これが来たら平和がつく」といった実戦の考え方のまま見られます。押すと、いちばん高い切り方が出ます。</p>
-  <figure>
-    <img src="feat2.png" alt="1シャンテンと表示され、テンパイになる牌が役がつく牌と役なしの牌に分かれて並んでいる">
-    <figcaption>1シャンテンの例。役がつく牌には役の名前が付いています（条件を入れると点数の高い順になります）。</figcaption>
-  </figure>
-  <p><small>2シャンテン以上のときは種類数だけを出します（牌が多くなりすぎて、かえって読みにくいためです）。</small></p>
-</div>
-
-<div class="feat">
-  <h3><span class="num">2</span>「配牌整理」で並べ替え、押し戻しもできる</h3>
-  <p>写真から読んだ牌は<b>写真に写っていた順のまま</b>並びます。配牌整理を ON にすると種類順に並べ替わり、もう一度押すと<b>元の並びに戻ります</b>。配牌のようにバラバラの手ほど効きます。</p>
-  <div class="pair">
-    <figure>
-      <img src="feat1a.png" alt="配牌整理がOFFで、牌が写真に写っていた順のまま並んでいる">
-      <figcaption>OFF：写真のままの並び（配牌の直後）</figcaption>
-    </figure>
-    <figure>
-      <img src="feat1b.png" alt="配牌整理がONで、牌が種類順に並べ替わっている">
-      <figcaption>ON：萬子・筒子・索子・字牌の順に整理</figcaption>
-    </figure>
-  </div>
-  <p>読み取りが合っているかを確かめるときは OFF（写真と見比べられます）、手を考えるときは ON、と使い分けられます。<b>どちらに切り替えても、待ちとシャンテン数の答えは変わりません。</b></p>
-</div>
-
-<div class="feat">
-  <h3><span class="num">3</span>牌が逆さまでも、そのまま読める</h3>
-  <p>手牌には、<b>上下が逆さまのまま置かれた牌</b>がよく混ざります。「何待ち？」は牌を1枚ずつ見分けているので、<b>向きをそろえ直さなくても、そのまま読めます</b>。</p>
-  <div class="pair">
-    <figure>
-      <img src="feat6a.png" alt="写真の手牌の1〜5枚目。1枚目の1索は逆さま、5枚目の1索はふつうの向き">
-      <figcaption>写真。左の1索は逆さま、右の1索はふつうの向き（2枚目の九萬も逆さま）</figcaption>
-    </figure>
-    <figure>
-      <img src="feat6b.png" alt="アプリが読んだ同じ5枚。両方とも1索として正しく読めている">
-      <figcaption>アプリの読み取り。どちらも1索として出ます</figcaption>
-    </figure>
-  </div>
-  <p><small>この写真は14枚のうち5枚が逆さまでしたが、14枚とも正しく読めました。手元で確かめた範囲では、<b>逆さまの牌でも向きをそろえた牌とほぼ同じ正解率</b>でした。</small></p>
-</div>
-
-<div class="feat">
-  <h3><span class="num">4</span>電波がなくても、そのまま動く</h3>
-  <p>読み取りも計算も端末の中で完結します。ホーム画面に一度追加しておけば、<b>機内モードでも、電波の届かない雀荘でも、同じ速さで動きます</b>。</p>
-  <ul>
-    <li>サーバーに問い合わせないので、待ち時間がありません（読み取りは1〜2秒）。</li>
-    <li>通信量もかかりません。</li>
-    <li>写真が外に出ないので、人の手牌を撮っても安心です。</li>
-  </ul>
-  <p>追加のしかたは<a href="help.html">使い方</a>の「ホーム画面に置いて使う」をご覧ください。</p>
-</div>
-
-<div class="feat">
-  <h3><span class="num">5</span>入れ方は3通り。その場でも、あとからでも</h3>
-  <figure>
-    <img src="feat3.png" alt="カメラ・写真・手入力の3つのタブ">
-    <figcaption>上のタブでいつでも切り替えられます。</figcaption>
-  </figure>
-  <ul>
-    <li><b>カメラ</b> … その場で手牌にかざして読み取る。スマホを横にすると、カメラだけの画面になって近くから撮れます。</li>
-    <li><b>写真</b> … アルバムにある写真から読み取る。<b>あとで見返すとき</b>や、友だちに送ってもらった画像にも使えます。</li>
-    <li><b>手入力</b> … 写真がなくても、牌を選んで並べられます。本で見た問題を解くときに。</li>
-  </ul>
-</div>
-
-<div class="feat">
-  <h3><span class="num">6</span>鳴いていても判断できる</h3>
-  <p>手牌が10枚・7枚・4枚で読み取れたときは、<b>鳴いているものとして扱います</b>。待ちとシャンテン数はその場で出ますし、鳴いた面子を入れれば点数まで出せます。</p>
-  <figure>
-    <img src="feat4a.png" alt="7枚の手牌からテンパイと表示され、鳴き2組は省略として計算と出ている">
-    <figcaption>7枚＝2組鳴いている手。面子を入れる前でも、待ちはすぐ出ます。</figcaption>
-  </figure>
-  <figure>
-    <img src="feat4b.png" alt="鳴き1組目を入れる画面。チー・ポン・明カン・アンカンを選んで牌をタップする">
-    <figcaption>チー・ポン・明カン・アンカンを選んで、鳴いた牌をタップするだけ。点数を出すときに使います。</figcaption>
-  </figure>
-</div>
-
-<div class="feat">
-  <h3><span class="num">7</span>点数まで、迷わずたどり着く</h3>
-  <p>点数を出すための「点数条件」（場風・自風・本場・ドラ・リーチ…）は、<b>読み取ったあとに画面の下から1問ずつ</b>聞きます。押すと次の質問へ進み、要らない質問は飛ばします。場風やドラを入れ忘れたまま、まちがった点数を信じてしまわないよう、<b>答え終わるまで点数は出しません</b>。</p>
-  <div class="pair">
-    <figure>
-      <img src="feat5a.png" alt="画面の下から出た「点数条件」。リーチした？の質問に、しない・リーチの大きなボタンと、小さめのダブルリーチが並んでいる">
-      <figcaption>点数条件は1画面1問。押すだけで次へ進みます</figcaption>
-    </figure>
-    <figure>
-      <img src="feat5b.png" alt="シャンポン待ちのカードに、牌ごとの役とロン・ツモの翻数・点数、リーチなしの札が表示されている">
-      <figcaption>答え終わると、形ごとにロンとツモの両方が出ます</figcaption>
-    </figure>
-  </div>
-  <p>待ちは<b>形ごと</b>（両面・シャンポン・三面張…）にまとまり、<b>牌ごとに役が付く</b>ので、どれでアガるのが得かを見比べられます。翻数・符・役の内訳・面子の分け方まで出るうえ、<b>役がなくてアガれないときは、リーチをかければ何点か・ツモなら何点か</b>まで出ます。</p>
-</div>
-
-<h2>そのほか</h2>
+<h2>席と場</h2>
 <ul>
-  <li><b>三人麻雀に対応</b>。2〜8萬と赤5萬を抜いた牌姿で計算し、抜きドラ（北）も入れられます。</li>
-  <li><b>ルールを場に合わせられる</b>。喰いタン・切り上げ満貫・数え役満・ツモ損の有無などを切り替えられます。</li>
-  <li><b>本場と供託</b>を入れると、受け取る合計点まで出ます。</li>
-  <li><b>読み間違いはタップで直せます</b>。候補が出るので、選び直すだけです。</li>
+  <li>席は<b>東・南・西</b>の3つで、北家はありません。</li>
+  <li>場は東場・南場で打ち、北場はありません。</li>
+  <li><b>チーはできません</b>（ポン・カンはできます）。</li>
 </ul>
 
-<div class="note">
-  <b>できないこと。</b>フリテン、流し満貫、ローカル役、包（パオ）、ダブロンには対応していません。残り枚数も、自分の手牌からしか数えられないため表示していません。くわしくは<a href="terms.html">免責事項</a>をご覧ください。
-</div>
+<h2>北は「抜きドラ」</h2>
+<p>多くのルールでは、北を引いたら手牌から横に抜いて出し、代わりに王牌から1枚補充します。抜いた北は<b>1枚につき1翻のドラ</b>（抜きドラ）になります。</p>
+<p>北は抜かずに手牌で使うこともできます。そのときに北を役牌として数えるかどうかはルールによって違い、このアプリでは役牌として数えません（北家・北場がないため）。</p>
 
-<a class="cta" href="./">アプリを開いて試す</a>
-<p style="text-align:center"><small><a href="help.html">使い方を見る</a>　<a href="waits.html">待ちの読み方</a>　<a href="learn.html">解説の一覧</a></small></p>
+<h2>点数: ロンは同じ、ツモは2通り</h2>
+<p>ロンの点数は四人麻雀と同じです。違うのはツモのときで、払う人が1人少ないため、次の2つのルールがあります。</p>
+<ul>
+  <li><b>ツモ損あり</b>…いない人の分はもらえません。ツモのほうがロンより収入が少なくなります。</li>
+  <li><b>ツモ損なし（折半）</b>…いない人の分を、払う2人で半分ずつ足して払います。</li>
+</ul>
+<table class="cmp">
+  <tr><th>子のツモ</th><th>四人麻雀</th><th>ツモ損あり</th><th>折半</th></tr>
+  <tr><td>30符2翻</td><td>500-1,000<br>（計2,000）</td><td>500-1,000<br>（計1,500）</td><td>800-1,300<br>（計2,100）</td></tr>
+  <tr><td>満貫</td><td>2,000-4,000<br>（計8,000）</td><td>2,000-4,000<br>（計6,000）</td><td>3,000-5,000<br>（計8,000）</td></tr>
+</table>
+<table class="cmp">
+  <tr><th>親のツモ</th><th>四人麻雀</th><th>ツモ損あり</th><th>折半</th></tr>
+  <tr><td>30符2翻</td><td>1,000オール<br>（計3,000）</td><td>1,000オール<br>（計2,000）</td><td>1,500オール<br>（計3,000）</td></tr>
+  <tr><td>満貫</td><td>4,000オール<br>（計12,000）</td><td>4,000オール<br>（計8,000）</td><td>6,000オール<br>（計12,000）</td></tr>
+</table>
+<p><small>折半の上乗せ分も100点単位に切り上げるので、30符2翻の子のツモは、四人麻雀の合計（2,000点）より少し多い2,100点になります。</small></p>
 
+<h2>役の違い</h2>
+<p>萬子が1と9しかないため、次のような違いが出ます。</p>
+<ul>
+  <li><b>三色同順はできません</b>…萬子で順子を作れないためです。</li>
+  <li><b>一気通貫</b>は筒子か索子で、<b>タンヤオ</b>は筒子・索子の2〜8だけで作ります。</li>
+  <li><b>萬子の清一色はできません</b>…萬子は1萬と9萬の8枚しかないためです。</li>
+  <li><b>国士無双</b>はそのまま作れます（1萬・9萬があるため）。</li>
+</ul>
+<p>牌の種類が少ないぶん同じ牌が集まりやすく、混一色・清一色や、抜きドラ・赤ドラで点数が高くなりやすいと言われます。</p>
 
+<h2>アプリで三人麻雀を使う</h2>
+<ul>
+  <li>見出しの横の「<b>三人麻雀</b>」を押すと切り替わります。2〜8萬と赤5萬は使えない牌になり、チーも入力できなくなります。</li>
+  <li>三人麻雀の設定のまま2〜8萬を読み取ると、<b>設定の間違いをお知らせ</b>します（四人麻雀の写真を読んだときなど）。</li>
+  <li>点数条件では、場風・自風が東・南・西の3つになり、<b>抜きドラ（抜いた北）の枚数</b>も聞きます。</li>
+  <li>「ルール設定」で<b>ツモ損あり／なし（折半）</b>を選べます。最初は「あり」です。</li>
+</ul>
+<p>待ちの計算も三人麻雀に合わせて、使わない牌（2〜8萬）は待ち牌に数えません。</p>
+
+<a class="cta" href="./">アプリを三人麻雀で使う</a>
+
+<nav class="rel" aria-label="ほかの解説"><div class="rel-h">ほかの解説</div><div class="rel-pn"><a class="rel-prev" href="score.html"><small>前へ</small>点数計算のしくみ</a><span></span></div><div class="rel-all"><a href="waits.html">待ちの読み方</a><a href="shanten.html">シャンテン数と受け入れ</a><a href="yaku.html">役の一覧</a><a href="fu.html">符の数え方</a><a href="score.html">点数計算のしくみ</a><a href="learn.html">解説の一覧</a></div></nav>
 </main>
 <footer class="pf"><div class="pf-in"><nav><a href="features.html">できること</a><a href="help.html">使い方</a><a href="tips.html">きれいに読み取るコツ</a><a href="learn.html">解説の一覧</a><a href="waits.html">待ちの読み方</a><a href="shanten.html">シャンテン数と受け入れ</a><a href="yaku.html">役の一覧</a><a href="fu.html">符の数え方</a><a href="score.html">点数計算のしくみ</a><a href="sanma.html">三人麻雀のルール</a><a href="privacy.html">プライバシーポリシー</a><a href="terms.html">免責事項・利用規約</a><a href="./">アプリ</a><a href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener">姉妹アプリ 麻雀記録帳</a></nav><small>© 2026 Sakura-ya（桜屋）・何待ち？</small></div></footer>
 </body>

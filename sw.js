@@ -1,16 +1,17 @@
 /**
  * オフラインで動かすための Service Worker。
  *
- * 本体は1ファイル（index.html・約770KB）なので、初回に丸ごと保存して、次からはそれを出す。
+ * 本体は1ファイル（index.html・v0.38 で約2.3MB。読み取りの重みを含む）なので、初回に丸ごと保存して、次からはそれを出す。
  * 本体が変わるとビルドが下の VERSION を書き換えるので、新しい版が入ったら画面に「更新」の帯を出す。
  * VERSION は「版-中身の指紋」（例: v0.23-5c2262cea9ea）。指紋は公開用の一式（sw.js 以外）から作る。
  * 書体（Google Fonts）は使ったときに保存する。取れなくても端末の丸ゴシックで代替できるので必須にはしない。
  */
-const VERSION = 'v0.37-ba1b158e1a46';
+const VERSION = 'v0.38-0d9faa817418';
 const CACHE = `haiyomi-${VERSION}`;
 const FONTS = 'haiyomi-fonts';
 const SHELL = new URL('./', self.registration.scope).href;
-const PAGES = ['./features.html', './help.html', './waits.html', './privacy.html', './terms.html'];
+// 解説ページ（build.mjs の PAGES から入れる。v0.38 で6ページ増えたので、手で並べるのをやめた）
+const PAGES = ["./features.html","./help.html","./tips.html","./learn.html","./waits.html","./shanten.html","./yaku.html","./fu.html","./score.html","./sanma.html","./privacy.html","./terms.html"];
 const ICONS = ['./favicon.ico', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable.png'];
 const CORE = ['./', './manifest.json', ...ICONS, ...PAGES];
 const FONT_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);

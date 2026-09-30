@@ -173,6 +173,53 @@ td:first-child { width: 34%; font-weight: 700; }
 .pair figcaption { margin-top: 5px; font-size: 12px; }
 @media (max-width: 460px) { .pair { grid-template-columns: 1fr; } }
 
+/* ---- v0.38: 解説ページを増やしたときの部品 ---- */
+/* 式（基本点 = 符 × 2^(翻+2) など） */
+.formula { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; text-align: center; font-weight: 800; font-size: 16px; }
+/* 役の早見表（役・門前・鳴き）と、刻子・槓子の符の表: 数字の列は狭く・真ん中に */
+table.yk td:first-child, table.fu td:first-child, table.cmp td:first-child { width: auto; }
+table.yk td:not(:first-child), table.yk th:not(:first-child),
+table.fu td:not(:first-child), table.fu th:not(:first-child) { width: 4.6em; text-align: center; font-weight: 700; }
+table.cmp td, table.cmp th { text-align: center; white-space: nowrap; padding: 8px 3px; font-size: 13px; font-variant-numeric: tabular-nums; }
+table.cmp td:first-child { font-weight: 700; white-space: nowrap; }
+/* 点数の早見表（横にはみ出すときは表だけ横に動かせる） */
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 16px; }
+table.pts { font-size: 13px; font-variant-numeric: tabular-nums; margin: 0; min-width: 330px; }
+table.pts th, table.pts td { text-align: center; padding: 7px 4px; white-space: nowrap; }
+table.pts td:first-child { width: auto; }
+table.pts tr > th:first-child { color: var(--ink); }
+table.pts td.mg { background: var(--accent-soft); color: var(--accent); font-weight: 800; }
+table.pts td.na { color: var(--muted); opacity: .55; }
+table.pts .t2 { display: inline-block; line-height: 1.35; }
+.mg-key { background: var(--accent-soft); color: var(--accent); font-weight: 800; padding: 1px 6px; border-radius: 6px; }
+@media (prefers-color-scheme: dark) { table.pts td.mg, .mg-key { background: #17302a; } }
+/* 解説の一覧のカード */
+.cards { display: grid; gap: 10px; margin: 0 0 18px; }
+.card { display: block; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 15px; }
+.card b { display: block; font-size: 16px; color: var(--accent); margin-bottom: 2px; }
+.card span { display: block; font-size: 13px; color: var(--muted); line-height: 1.7; }
+/* ページの下の「ほかの解説」 */
+.rel { margin: 34px 0 0; padding-top: 18px; border-top: 1px solid var(--line); }
+.rel-h { font-weight: 800; font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+.rel-pn { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.rel-pn a { display: block; text-decoration: none; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-weight: 700; color: var(--ink); }
+.rel-pn a small { display: block; font-weight: 500; }
+.rel-next { text-align: right; }
+.rel-all { display: flex; flex-wrap: wrap; gap: 6px; }
+.rel-all a { font-size: 12.5px; text-decoration: none; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink); }
+/* 撮り方のコツ: 読み取り枠の見本（牌の絵で作る。写真は使わない） */
+.mock { margin: 10px 0 16px; }
+.mock-frame { position: relative; display: flex; align-items: center; justify-content: center; min-height: 92px; padding: 16px 10px;
+  border-radius: 14px; background: #1e5446; overflow: hidden; }
+.mock-frame::before { content: ''; position: absolute; inset: 8px; border: 2px solid rgb(255 255 255 / .9); border-radius: 10px; }
+.mock-frame .tiles { display: grid; grid-template-columns: repeat(13, 1fr); gap: 2px; width: 90%; margin: 0; vertical-align: 0; }
+.mock-frame .ti { width: 100%; }
+.mock.small .mock-frame .tiles { width: 42%; }
+.mock.tilt .mock-frame .tiles { width: 78%; transform: rotate(-9deg); }
+.mock-cap { margin: 6px 2px 0 !important; font-size: 13.5px; }
+.mock.ok .mock-cap b { color: var(--accent); }
+.mock.ng .mock-cap b { color: #C4302B; }
+
 .tiles { display: inline-flex; gap: 2px; vertical-align: -7px; margin: 0 3px; }
 .ti { width: 25px; height: auto; filter: drop-shadow(0 1px 1px rgb(21 32 27 / .22)); }
 .hand { font-size: 14px; }
@@ -181,7 +228,7 @@ td:first-child { width: 34%; font-weight: 700; }
 <body>
 <header class="ph"><div class="ph-in">
 <a class="ph-brand" href="./"><img src="icon-180.png" width="30" height="30" alt=""><b>何待ち？</b></a>
-<nav><a href="features.html">できること</a><a href="help.html">使い方</a><a href="waits.html">待ちの読み方</a><a class="go" href="./">アプリ</a></nav>
+<nav><a href="features.html">できること</a><a href="help.html">使い方</a><a href="learn.html">解説</a><a class="go" href="./">アプリ</a></nav>
 </div></header>
 <main class="pg">
 <h1>プライバシーポリシー</h1>
@@ -261,7 +308,8 @@ td:first-child { width: 34%; font-weight: 700; }
 
 <a class="cta" href="./">アプリを開く</a>
 
+
 </main>
-<footer class="pf"><div class="pf-in"><nav><a href="features.html">できること</a><a href="help.html">使い方</a><a href="waits.html">待ちの読み方</a><a href="privacy.html">プライバシーポリシー</a><a href="terms.html">免責事項・利用規約</a><a href="./">アプリ</a></nav><small>© 2026 Sakura-ya（桜屋）・何待ち？</small></div></footer>
+<footer class="pf"><div class="pf-in"><nav><a href="features.html">できること</a><a href="help.html">使い方</a><a href="tips.html">きれいに読み取るコツ</a><a href="learn.html">解説の一覧</a><a href="waits.html">待ちの読み方</a><a href="shanten.html">シャンテン数と受け入れ</a><a href="yaku.html">役の一覧</a><a href="fu.html">符の数え方</a><a href="score.html">点数計算のしくみ</a><a href="sanma.html">三人麻雀のルール</a><a href="privacy.html">プライバシーポリシー</a><a href="terms.html">免責事項・利用規約</a><a href="./">アプリ</a><a href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener">姉妹アプリ 麻雀記録帳</a></nav><small>© 2026 Sakura-ya（桜屋）・何待ち？</small></div></footer>
 </body>
 </html>
