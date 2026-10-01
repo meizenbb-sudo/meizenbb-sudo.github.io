@@ -3519,9 +3519,14 @@ html[data-cam-land] .land-hint:not([hidden])::before {
 }
 .su-rules-ic {
   flex: none;
-  font-size: 17px;
-  line-height: 1;
+  display: flex;
   color: var(--muted);
+}
+/* v0.40: 歯車は線の SVG（setup.js の GEAR_SVG）。タブのアイコン（17px）より少し大きく */
+.su-rules-ic svg {
+  display: block;
+  width: 19px;
+  height: 19px;
 }
 .su-rules-t {
   flex: 1 1 auto;
@@ -9778,6 +9783,14 @@ function rulesSummary(r) {
   return parts.join('・');
 }
 
+// 「ルール設定」の歯車（v0.40）。v0.39 までは「⚙」の文字で、iPhone では色付きの絵文字になり、ほかの線の絵（カメラ・写真・
+// 鉛筆）と見た目がそろわなかった。同じ線の太さ（1.8）・丸い角の SVG で描く（歯6枚・外 9.2・根元 7・真ん中の穴 2.8）
+const GEAR_SVG =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<path d="M9.84 5.34L10.09 3L13.91 3L14.16 5.34A7 7 0 0 1 16.68 6.8L18.84 5.84L20.75 9.16L18.85 10.54A7 7 0 0 1 18.85 13.46L20.75 14.84' +
+  'L18.84 18.16L16.68 17.2A7 7 0 0 1 14.16 18.66L13.91 21L10.09 21L9.84 18.66A7 7 0 0 1 7.32 17.2L5.16 18.16L3.25 14.84L5.15 13.46' +
+  'A7 7 0 0 1 5.15 10.54L3.25 9.16L5.16 5.84L7.32 6.8A7 7 0 0 1 9.84 5.34Z"/><circle cx="12" cy="12" r="2.8"/></svg>';
+
 /** 写真の下（手入力では手牌の上）の「点数条件」の枠。変更・ルール設定 */
 function setupBarHTML(a) {
   const ok = scoreReady();
@@ -9796,7 +9809,7 @@ function setupBarHTML(a) {
     `<div class="su-h"><b>点数条件</b><em class="su-st" data-st="${st}">${stLabel}</em>` +
     `<button type="button" class="su-edit${ok ? '' : ' go'}" data-action="su-open">${btnLabel}</button></div>` +
     line +
-    `<button type="button" class="su-rules" data-action="cam-pop" data-pop="settings"><span class="su-rules-ic" aria-hidden="true">⚙</span>` +
+    `<button type="button" class="su-rules" data-action="cam-pop" data-pop="settings"><span class="su-rules-ic">${GEAR_SVG}</span>` +
     `<span class="su-rules-t"><b>ルール設定</b><small>${rulesSummary(state.rules)}</small></span><i>›</i></button>` +
     `<div class="su-foot"><button type="button" class="linkish" data-action="setup-reset">点数条件をリセット</button></div>` +
     `</div>`
@@ -13364,7 +13377,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.39</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.40</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
