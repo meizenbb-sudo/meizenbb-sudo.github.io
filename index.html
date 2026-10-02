@@ -4980,6 +4980,123 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   font-size: clamp(18px, 5.9vw, 28px);
 }
 
+/* ---------- v0.42: 本場・供託を入れた点数を、大きな点数の下に少し小さく（ユーザーの指定「1,500-2,800(2本場)+2,000(供託2)」） ---------- */
+.pts .pl-hb {
+  grid-column: 1 / -1;
+  justify-self: end;
+  margin-top: -3px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: rgb(255 255 255 / 0.82);
+  white-space: normal;
+  text-align: right;
+}
+.wg-card[aria-pressed='true'] .pts .pl-hb {
+  color: #2c3a33;
+}
+.pl-hb .hb-k,
+.bs-hb .hb-k {
+  margin: 0 1px;
+  font-size: 0.8em;
+  font-weight: 800;
+  opacity: 0.75;
+}
+.pl-hb small:not(.hb-k),
+.bs-hb small:not(.hb-k) {
+  font-size: 0.8em;
+}
+.bs-hb {
+  flex: 1 1 100%;
+  min-width: 0;
+  text-align: right;
+  margin-top: -2px;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--ink);
+  white-space: normal;
+  font-variant-numeric: tabular-nums;
+}
+/* 「1,500-2,800（2本場）」と「＋2,000（供託2）」のあいだでだけ折り返す（狭い画面） */
+.hb-p {
+  display: inline-block;
+  white-space: nowrap;
+}
+.bs-hb .hb-k {
+  color: var(--muted);
+  opacity: 1;
+}
+/* テンパイの点数の注記（裏ドラ・一発は含まない） */
+.bs-note {
+  margin: -4px 0 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--warn-soft);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+/* v0.42: まとめのページ。ボタンを上に、答えた内容は2列の小さな札に */
+.sh-sum-h {
+  margin: 2px 0 -4px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.sh-sum.cols {
+  grid-template-columns: 1fr 1fr;
+}
+.sh-sum.cols .sh-sum-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 4px;
+  min-height: 0;
+  padding: 6px 8px 6px 11px;
+}
+.sh-sum.cols .sh-sum-row .sh-k {
+  width: auto;
+  grid-column: 1;
+  font-size: 11.5px;
+  line-height: 1.3;
+}
+.sh-sum.cols .sh-sum-row b {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sh-sum.cols .sh-sum-row i {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  font-size: 18px;
+}
+/* 内訳のシート（白い地）と手入力の待ち牌の行の、本場・供託込みの点数 */
+.dt-row .pts .pl-hb {
+  color: var(--muted);
+}
+.score-cell .hb {
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.score-cell .hb .hb-k {
+  font-size: 0.85em;
+}
+/* v0.42: 狭い画面（320px）で「3翻40符」と子のツモの支払い「1,300-2,600」がくっつかないよう、翻符と長い支払いを画面の幅に合わせて少し小さく */
+.wg-card .pts i {
+  font-size: clamp(15px, 4.8vw, 19px);
+}
+.wg-card .pts b.long {
+  font-size: clamp(17px, 5.6vw, 28px);
+}
+
 </style>
 <noscript>
   <div class="noscript-note">
@@ -9372,12 +9489,14 @@ function yakuRows(r) {
   return `<table class="yaku-table"><tbody>${rows.join('')}</tbody></table>`;
 }
 
-function scoreCell(label, r) {
+function scoreCell(label, r, situation = null) {
   const k = `<span class="k${label === 'ロン' ? ' ron' : label === 'ツモ' ? ' tsumo' : ''}">${winKindHTML(label)}</span>`;
   if (!r.ok) {
     return `<span class="score-cell">${k}<span class="v none">役なし</span><span class="s">&nbsp;</span></span>`;
   }
-  return `<span class="score-cell">${k}<span class="v">${paymentShort(r)}</span><span class="s">${hanFuText(r)}</span></span>`;
+  // v0.42: 本場・供託があれば、その下に本場・供託込みの点数（小さく）
+  const hb = situation ? honbaLineHTML(r, situation) : '';
+  return `<span class="score-cell">${k}<span class="v">${paymentShort(r)}</span><span class="s">${hanFuText(r)}</span>${hb ? `<span class="hb">${hb}</span>` : ''}</span>`;
 }
 
 function tilesInline(ids, size = 'xs') {
@@ -9521,6 +9640,30 @@ function moveLineHTML(r, situation) {
     `<p class="move-line">${parts.join('<i>＋</i>')}<i>＝</i>` +
     `<span class="mv total"><small>受け取り</small><b>${fmt(r.total)}<em>点</em></b></span></p>`
   );
+}
+
+/**
+ * 本場・供託を入れた点数の行（v0.42）。大きな点数（基本の点数）の下に少し小さく出す。
+ *   子のツモ 1,300-2,600・2本場・供託2 → 「1,500-2,800(2本場)+2,000(供託2)」（ユーザーの指定の書き方）
+ *   親のツモ 2,600オール → 「2,800オール(2本場)+2,000(供託2)」、ロン 2,600 → 「3,200(2本場)+2,000(供託2)」
+ *   本場がなく供託だけ → 「+2,000(供託2)」。どちらもなければ空
+ */
+function honbaLineHTML(r, situation) {
+  const honba = situation.honba | 0;
+  const kyotaku = situation.kyotaku | 0;
+  if (!r || !r.ok || !r.payment || (!honba && !kyotaku)) return '';
+  const p = r.payment;
+  let out = '';
+  if (honba) {
+    const e = p.honbaEach | 0;
+    const pay =
+      p.type === 'ron' ? fmt(p.ron + (p.honbaBonus | 0))
+        : p.type === 'tsumoDealer' ? `${fmt(p.each + e)}<small>オール</small>`
+          : `${fmt(p.child + e)}-${fmt(p.parent + e)}`;
+    out += `<span class="hb-p"><span class="hb-n">${pay}</span><small class="hb-k">(${honba}本場)</small></span>`;
+  }
+  if (kyotaku) out += `<span class="hb-p"><span class="hb-n">+${fmt(1000 * kyotaku)}</span><small class="hb-k">(供託${kyotaku})</small></span>`;
+  return out;
 }
 
 /** アガリ時の支払い内訳 */
@@ -10591,14 +10734,17 @@ function pageHTML(q, a) {
       const qs = setupQuestions(a);
       const rows = qs.map((x) => `<button type="button" class="sh-sum-row" data-action="su-jump" data-q="${x.key}"><span class="sh-k">${Q_TITLE[x.key]}</span><b>${answerText(x.key)}</b><i>›</i></button>`).join('');
       const missing = qs.filter((x) => !x.answered);
+      // v0.42（ユーザーの要望）: 「この条件で点数を見る」を一覧の上に。アガリ形は項目が10前後あり、下に置くとスクロールしないと見えなかった。
+      // 一覧は2列にして、直したい項目を押すとその質問へ
       return {
         title: missing.length ? '未回答の項目があります' : 'この条件で点数を出します',
-        hint: missing.length ? '' : '項目を押すと直せます',
+        hint: '',
         body:
-          `<div class="sh-sum">${rows}</div>` +
           (missing.length
             ? `<button type="button" class="sh-opt big go" data-action="su-jump" data-q="${missing[0].key}"><b>${Q_TITLE[missing[0].key]}を入れる</b></button>`
-            : `<button type="button" class="sh-opt big go" data-action="su-confirm"><b>この条件で点数を見る</b></button>`),
+            : `<button type="button" class="sh-opt big go" data-action="su-confirm"><b>この条件で点数を見る</b></button>`) +
+          `<div class="sh-sum-h">答えた内容（押すと直せます）</div>` +
+          `<div class="sh-sum cols">${rows}</div>`,
         note: '',
       };
     }
@@ -10664,7 +10810,8 @@ function setupSheetHTML(a) {
     `<span class="sh-title">点数条件</span><span class="sh-stepn">${gate ? '' : `${Math.min(i, n - 1) + 1} / ${n}`}</span>` +
     `<button type="button" class="sh-x" data-action="su-close" aria-label="閉じる">×</button></div>` +
     prog +
-    (gate ? '' : doneChips(a)) +
+    // v0.42: まとめのページは下の項目の一覧と同じなので、✓ の札は出さない（ボタンを上に寄せるため）
+    (gate || q === 'summary' ? '' : doneChips(a)) +
     `<div class="sh-q">${p.title}</div>${p.hint ? `<div class="sh-hint">${p.hint}</div>` : ''}` +
     `<div class="sh-body">${p.body}</div>` +
     (p.note ? `<div class="sh-note">${p.note}</div>` : '') +
@@ -10976,6 +11123,9 @@ function handleGuide(el) {
 //   ✖（右上）・「閉じる」（下）・Esc で今の画面に戻る。テンパイ・アガリのカードの下の「点数を大きく表示」からもう一度開ける。
 //   待ちは形ごと、点数が牌ごとに違うときは牌ごとに分ける。役も出す（ユーザーの要望「役もお願いします」）: 牌ごとに「役 リーチ・平和・ドラ1」の行、
 //   ツモだけ・ロンだけでつく役（メンゼンツモなど）はその行に「＋メンゼンツモ」。ロン・ツモの文字の前には新しく作ったアイコン（shared.js RON_SVG・TSUMO_SVG）
+// v0.42（ユーザーの要望）: 本場・供託があるときは、大きな点数（基本の点数）の下に本場・供託込みの点数を少し小さく
+//   「1,500-2,800(2本場)+2,000(供託2)」（shared.js honbaLineHTML。カード・内訳・手入力でも同じ書き方）。
+//   リーチしたテンパイは、裏ドラ・一発を聞かずに出した点数なので、見出しの下に注記（ダマ・アガリ形は出さない）
 
 
 
@@ -11042,7 +11192,8 @@ function lineHTML(kind, r, extra = [], own = false) {
   // 子のツモ「2,000-3,900」は長いので少し小さく（狭い画面で1行に収める）
   const long = kind === 'tsumo' && r.payment && r.payment.type !== 'tsumoDealer' ? ' class="long"' : '';
   const plus = extra.length ? `<span class="bs-plus${own ? ' own' : ''}">${own ? '' : '＋'}${ykHTML(extra)}</span>` : '';
-  return `<div class="bs-l ${kind}">${em}${hanFuHTML(r)}${plus}<strong${long}>${pts}</strong></div>`;
+  const hb = honbaLineHTML(r, state.situation);
+  return `<div class="bs-l ${kind}">${em}${hanFuHTML(r)}${plus}<strong${long}>${pts}</strong>${hb ? `<div class="bs-hb">${hb}</div>` : ''}</div>`;
 }
 
 /** 点数が同じかどうかの目印（ロン・ツモの翻・符・点数・払い方） */
@@ -11122,7 +11273,11 @@ function contentHTML(a) {
       );
     })
     .join('');
-  return { tone: 'ok', title: 'テンパイ', sub: `${who}・待ち ${a.waits.length}種${dama}`, body };
+  // v0.42: テンパイの点数は裏ドラ・一発を聞かずに出しているので、リーチしたときはそれが分かる注記を見出しの下に
+  const note = (state.situation.riichi | 0) > 0
+    ? '※ 裏ドラ・一発は含まない点数です。アガったときに乗れば、その分だけ上がります'
+    : '';
+  return { tone: 'ok', title: 'テンパイ', sub: `${who}・待ち ${a.waits.length}種${dama}`, body, note };
 }
 
 /** 大きな表示のカード（出せないときは ''）。テストからも呼ぶ */
@@ -11133,6 +11288,7 @@ function bigScoreHTML(a) {
     `<div class="bs-card ${c.tone}" data-action="bs-card">` +
     `<div class="bs-top"><div class="bs-title"><b>${c.title}</b><span>${c.sub}</span></div>` +
     `<button type="button" class="bs-x" data-action="bs-close" aria-label="閉じる（今の画面に戻る）">${X_SVG}</button></div>` +
+    (c.note ? `<p class="bs-note">${c.note}</p>` : '') +
     `<div class="bs-list">${c.body}</div>` +
     `<button type="button" class="bs-close" data-action="bs-close">閉じる</button>` +
     `</div>`
@@ -11451,7 +11607,7 @@ function waitRows(waits) {
         .join('');
       return (
         `<li class="wait-row"><details><summary>${tileHTML(w.tile, { size: 'md' })}` +
-        `${scoreCell('ロン', w.ron)}${scoreCell('ツモ', w.tsumo)}</summary>` +
+        `${scoreCell('ロン', w.ron, state.situation)}${scoreCell('ツモ', w.tsumo, state.situation)}</summary>` +
         `<div class="wait-detail">${detail}${shapeHTML(w.ron) ? `<div><h3>ロン時の面子の分け方</h3>${shapeHTML(w.ron)}</div>` : ''}</div></details></li>`
       );
     })
@@ -13031,7 +13187,7 @@ function ronTsumoHTML(w, opts = {}) {
   const kindOf = (label) => (label === 'ロン' ? 'ron' : label === 'ツモ' ? 'tsumo' : 'hint');
   const line = (label, r, text) =>
     r && r.ok
-      ? `<span class="pl ${kindOf(label)}"><em>${winKindHTML(label)}</em><i>${hanLabel(r)}</i><b${/\d-\d/.test(text) ? ' class="long"' : ''}>${text}</b></span>`
+      ? `<span class="pl ${kindOf(label)}"><em>${winKindHTML(label)}</em><i>${hanLabel(r)}</i><b${/\d-\d/.test(text) ? ' class="long"' : ''}>${text}</b>${kindOf(label) !== 'hint' && honbaLineHTML(r, state.situation) ? `<span class="pl-hb">${honbaLineHTML(r, state.situation)}</span>` : ''}</span>`
       : `<span class="pl ${kindOf(label)}"><em>${winKindHTML(label)}</em><i></i><b class="no">役なし</b></span>`;
   const dama = opts.dama ? '<span class="pts-dama">リーチなし</span>' : '';
   const tsumoLine = line('ツモ', tsumo, tsumo && tsumo.ok ? paymentShort(tsumo) : '');
@@ -14144,7 +14300,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.41</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.42</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
