@@ -2348,6 +2348,29 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   --w: clamp(16px, var(--tw-w, 5.4cqw), 36px);
   --edge: 2px;
 }
+/* いちばん小さい牌（16px）でも入りきらないとき（狭い画面で鳴きが2〜3組。fitTwin が data-tight を付ける）:
+   すき間を狭く、「＋」「鳴」のボタンを細く（「鳴」の下の「チー/ポン」は省く）、牌は 14px まで（v0.46） */
+.twin[data-tight] {
+  gap: 4px;
+}
+.twin[data-tight] .twin-melds {
+  gap: 4px;
+}
+.twin[data-tight] .tw .tile,
+.twin[data-tight] .tw-meld .tile {
+  --w: clamp(14px, var(--tw-w, 5.4cqw), 36px);
+}
+.twin[data-tight] .tw-add {
+  min-width: 30px;
+  padding: 2px 3px;
+  font-size: 15px;
+}
+.twin[data-tight] .tw-add small {
+  font-size: 8px;
+}
+.twin[data-tight] .tw-add[data-pop='addmeld'] small {
+  display: none;
+}
 .tw.hl {
   transform: translateY(-6px);
 }
@@ -13702,7 +13725,8 @@ const FLOWER_ID = 37; // 花牌（抜きドラ）。手牌からは外す
 const REJECT_TEXT = {
   noRow: '手牌が見つかりませんでした。枠の中に手牌を横一列に入れて撮り直してください（「＋」から手で入力もできます）',
   tooSmall: '枠の中に手牌が見つかりませんでした。手牌が枠いっぱいに入るように、写真を拡大するか近づいて撮り直してください',
-  tooFew: '手牌として読める牌が足りませんでした。手牌が枠いっぱいに入るように撮り直してください',
+  // v0.46: 裸単騎（手牌1枚＋鳴き4組）は写真では読めない（1枚では列の手がかりがない）ので、手で入れる方法を添える
+  tooFew: '手牌として読める牌が足りませんでした。手牌が枠いっぱいに入るように撮り直してください。裸単騎（手牌1枚）は「＋」で1枚、「鳴」で4組を入れてください',
   impossible: '同じ牌が5枚以上になりました。手牌の写真か確認して、はっきり写るように撮り直してください',
   unsure: '牌をはっきり読み取れませんでした。明るい場所で、手牌を枠いっぱいに入れて撮り直してください',
 };
@@ -14536,9 +14560,34 @@ function bandHTML(a) {
 }
 
 // ---------- 表示: 認識した手牌 ----------
+// 並んだ牌の大きさの範囲（fitTwin）。入りきらないときは「＋」「鳴」を細くして（data-tight）、牌も TW_MIN_TIGHT まで小さくする
+const TW_MAX = 36;
+const TW_MIN = 16;
+const TW_MIN_TIGHT = 14;
+
+/** 並び（#twin）の中身が今の牌の大きさで横幅に入るときの、牌1枚の幅（px）。測れないときは null */
+function twinFitWidth(tw, cells, first) {
+  const w0 = first.getBoundingClientRect().width;
+  const box = tw.clientWidth;
+  if (!w0 || !box) return null;
+  const cs = getComputedStyle(tw);
+  const gap = parseFloat(cs.columnGap) || 0;
+  const pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+  const kids = [...tw.children];
+  const content = kids.reduce((sum, e) => sum + e.getBoundingClientRect().width, 0) + gap * Math.max(0, kids.length - 1) + pad;
+  // 鳴いた面子は牌3〜4枚（横向きの牌は少し広い）のかたまりなので、今の幅を牌1枚の幅で割った「何枚ぶん」で数える（v0.46）。
+  // v0.45 までは面子も1枚として数えていたので、面子の幅が「牌の大きさで変わらない幅」に入り、描き直すたびに大きすぎ・小さすぎを
+  // 行き来していた（裸単騎＝鳴き4組で 27.1px（右が 99px はみ出す）↔ 16px）
+  let cellsW = 0;
+  for (const c of cells) cellsW += c.getBoundingClientRect().width;
+  const fixed = content - cellsW; // 牌以外（すき間・「＋」「鳴」のボタン）に使っている幅
+  return (box - fixed - 3) / (cellsW / w0);
+}
+
 /**
- * 並んだ牌を横幅いっぱいまで大きくする。
- * すき間・「＋」ボタン・「来た牌」などの札は牌の大きさで変わらないので、その合計を引いてから枚数で割る
+ * 並んだ牌を横幅いっぱいまで大きくする（TW_MIN〜TW_MAX）。
+ * いちばん小さい牌でも入りきらないとき（狭い画面で鳴きが2〜3組）は、「＋」「鳴」のボタンを細くし、すき間を狭くして、
+ * 牌も TW_MIN_TIGHT まで小さくする（v0.46。v0.45 までは幅375px で「鳴」のボタンが切れていた）
  */
 function fitTwin() {
   const tw = $('twin');
@@ -14547,19 +14596,19 @@ function fitTwin() {
   const first = tw.querySelector('.twin-hand .tw') || cells[0];
   if (!cells.length || !first) {
     tw.style.removeProperty('--tw-w');
+    delete tw.dataset.tight;
     return;
   }
-  const w0 = first.getBoundingClientRect().width;
-  const box = tw.clientWidth;
-  if (!w0 || !box) return;
-  const cs = getComputedStyle(tw);
-  const gap = parseFloat(cs.columnGap) || 0;
-  const pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
-  const kids = [...tw.children];
-  const content = kids.reduce((sum, e) => sum + e.getBoundingClientRect().width, 0) + gap * Math.max(0, kids.length - 1) + pad;
-  const fixed = content - cells.length * w0; // 牌以外に使っている幅
-  const want = (box - fixed - 3) / cells.length;
-  tw.style.setProperty('--tw-w', `${Math.min(36, Math.max(16, Math.floor(want * 10) / 10))}px`);
+  delete tw.dataset.tight;
+  let want = twinFitWidth(tw, cells, first);
+  if (want == null) return;
+  if (want < TW_MIN) {
+    tw.dataset.tight = '1';
+    const w2 = twinFitWidth(tw, cells, first);
+    if (w2 != null) want = w2;
+  }
+  const min = tw.dataset.tight ? TW_MIN_TIGHT : TW_MIN;
+  tw.style.setProperty('--tw-w', `${Math.min(TW_MAX, Math.max(min, Math.floor(want * 10) / 10))}px`);
 }
 
 /** 押しているものに合わせて、手牌の中で浮かせる牌（hl）・「切」の印（cut）・引いた牌（ghost）。位置は並び（アガリ牌をふくむ）の番号 */
@@ -15515,7 +15564,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.45</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.46</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
