@@ -10014,16 +10014,18 @@ function tileHTML(id, opts = {}) {
 const $ = (id) => document.getElementById(id);
 
 /**
- * ロン・ツモのアイコン（v0.41・新しく作ったもの）。ユーザーの要望「ロンとツモが2文字同士でわかりにくいので、それぞれにアイコンを」。
- * 世の中に決まった絵がないので、形の違い（丸と縦長）と意味で見分けられるようにした:
- *   ロン = 的（まと）の真ん中に牌 …「当たり牌」。他の人の捨て牌が当たってアガる（丸い形）
- *   ツモ = 山から牌を1枚引き上げる（上向きの矢）… 自分で引いてアガる（縦長の形）
- * 色はロン赤・ツモ緑（文字の札と同じ）。線はほかのアイコン（カメラ・写真・鉛筆・歯車）と同じ 24 の枠・丸い角
+ * ロン・ツモのアイコン。ユーザーの要望「ロンとツモが2文字同士でわかりにくいので、それぞれにアイコンを」（v0.41）。
+ * v0.47（お試し）: ユーザーの指定「ロを○で囲ったものと、ツモのツを○で囲ったもの」。線2の丸の中に「ロ」「ツ」。
+ *   字は端末のフォントに左右されないよう、Noto Sans CJK JP Black（SIL Open Font License）の字形を path にした
+ *   （字の大きい方の辺 11.4・丸の真ん中に合わせる。作り方は設計メモ 2.73）
+ *   v0.41〜v0.46 の絵: ロン = 的の真ん中に牌、ツモ = 山から牌を1枚引き上げる（「しっくりこない」とのことで入れ替え）
+ * 色はロン赤・ツモ緑（文字の札と同じ）。枠はほかのアイコン（カメラ・写真・鉛筆・歯車）と同じ 24・線 2
  */
 const winIcon = (body) =>
   `<svg class="wk-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
-const RON_SVG = winIcon('<circle cx="12" cy="12" r="8.6"/><rect x="9.4" y="8.4" width="5.2" height="7.2" rx="1.2"/><path d="M12 1.6v2.6M12 19.8v2.6M1.6 12h2.6M19.8 12h2.6"/>');
-const TSUMO_SVG = winIcon('<path d="M2.5 16.5h6.2v5H2.5zM15.3 16.5h6.2v5h-6.2z"/><path d="M8.7 21.5h6.6"/><rect x="8.9" y="6.5" width="6.2" height="8" rx="1.4"/><path d="M12 4.6V1.6M10.2 3.3 12 1.5l1.8 1.8"/>');
+const maruIcon = (d) => winIcon(`<circle cx="12" cy="12" r="9.8"/><path d="${d}" fill="currentColor" stroke="none"/>`);
+const RON_SVG = maruIcon('M6.31 6.54C6.34 7 6.34 7.67 6.34 8.14C6.34 9.15 6.34 14.21 6.34 15.25C6.34 16.05 6.3 17.46 6.3 17.46H8.74V16.68H15.27L15.24 17.46H17.7C17.7 17.46 17.67 15.91 17.67 15.28C17.67 14.21 17.67 9.15 17.67 8.14C17.67 7.64 17.67 7.04 17.7 6.56C17.11 6.57 16.56 6.57 16.16 6.57C14.92 6.57 9.21 6.57 8 6.57C7.57 6.57 6.91 6.56 6.31 6.54ZM8.73 14.41V8.84H15.29V14.41Z');
+const TSUMO_SVG = maruIcon('M11.81 6.58 9.88 7.22C10.28 8.07 10.98 9.86 11.24 10.71L13.18 10.03C12.92 9.15 12.14 7.23 11.81 6.58ZM17.7 7.71 15.4 7.06C15.19 9.02 14.4 11.29 13.48 12.46C12.17 14.1 10.13 15.21 8.44 15.68L10.17 17.42C11.99 16.71 13.83 15.44 15.18 13.65C16.22 12.27 16.97 10.13 17.32 8.86C17.41 8.53 17.53 8.09 17.7 7.71ZM8.27 7.38 6.3 8.07C6.69 8.82 7.51 10.88 7.79 11.72L9.77 10.99C9.48 10.12 8.69 8.25 8.27 7.38Z');
 /** 「ロン」「ツモ」の文字の前にアイコン（それ以外の言葉はそのまま） */
 function winKindHTML(label) {
   if (label === 'ロン') return `${RON_SVG}ロン`;
@@ -15564,7 +15566,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.46</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.47</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
