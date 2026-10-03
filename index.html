@@ -40,7 +40,7 @@ gtag('config','G-SQBR6QXW86');
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SQBR6QXW86"></script>
 <meta name="google-adsense-account" content="ca-pub-5521107706403454">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5521107706403454" crossorigin="anonymous"></script>
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}.sw-bar{position:fixed;left:50%;bottom:calc(66px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;white-space:nowrap;padding:7px 7px 7px 14px;border-radius:999px;background:#10352a;color:#fff;font:600 12.5px/1.4 system-ui,sans-serif;box-shadow:0 6px 20px rgb(0 0 0 /.4)}.sw-bar button{flex:none;border:0;border-radius:999px;padding:6px 14px;white-space:nowrap;background:#8fe3bd;color:#10352a;font:800 12.5px/1 system-ui,sans-serif}html,body{height:auto}body{display:flex;flex-direction:column;min-height:100svh}.app{height:auto;flex:1 1 auto;min-height:0}.site-foot{flex:none;display:flex;flex-direction:column;padding:6px 10px calc(4px + env(safe-area-inset-bottom,0px));background:var(--surface-2);border-top:1px solid var(--line)}.site-foot nav{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap}.site-foot a{color:var(--muted);font-size:11px;text-decoration:none}.site-foot i{color:var(--line);font-style:normal;font-size:10px}.sis-card,.sis-card:visited,.sis-card:hover{display:flex;align-items:center;gap:10px;box-sizing:border-box;width:100%;max-width:360px;padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);text-decoration:none;text-align:left}.sis-card img{flex:none;display:block;width:40px;height:40px;border-radius:22%}.sis-t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}.sis-n{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.sis-n b{font-size:14px;font-weight:800;color:var(--ink)}.sis-n em{font-style:normal;font-size:10px;font-weight:700;line-height:1.6;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:0 7px}.sis-t small{font-size:11.5px;line-height:1.45;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}.sis-go{flex:none;width:16px;height:16px;color:var(--muted)}.site-foot .sis-card{align-self:center;margin-top:7px}.site-ver{align-self:flex-end;margin-top:1px;color:var(--muted);font:500 9.5px/1.1 system-ui,sans-serif;letter-spacing:.03em;opacity:.8}html[data-ga=off] .site-ver::after{content:'・計測オフ'}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}.sw-bar{position:fixed;left:50%;bottom:calc(66px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;white-space:nowrap;padding:7px 7px 7px 14px;border-radius:999px;background:#10352a;color:#fff;font:600 12.5px/1.4 system-ui,sans-serif;box-shadow:0 6px 20px rgb(0 0 0 /.4)}.sw-bar button{flex:none;border:0;border-radius:999px;padding:6px 14px;white-space:nowrap;background:#8fe3bd;color:#10352a;font:800 12.5px/1 system-ui,sans-serif}html,body{height:auto}body{display:flex;flex-direction:column;min-height:100svh}.app{height:auto;flex:1 1 auto;min-height:0}.site-foot{flex:none;display:flex;flex-direction:column;padding:6px 10px calc(4px + env(safe-area-inset-bottom,0px));background:var(--surface-2);border-top:1px solid var(--line)}.site-foot nav{display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap}.site-foot a{color:var(--muted);font-size:11px;text-decoration:none}.site-foot i{color:var(--line);font-style:normal;font-size:10px}.site-foot .sis-card{align-self:center;margin-top:7px}.site-ver{align-self:flex-end;margin-top:1px;color:var(--muted);font:500 9.5px/1.1 system-ui,sans-serif;letter-spacing:.03em;opacity:.8}html[data-ga=off] .site-ver::after{content:'・計測オフ'}</style>
 </head>
 <body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -235,7 +235,20 @@ h2 {
 .appbar .help-btn {
   margin-left: auto;
 }
-@media (min-width: 560px) {
+/* v0.44: 共有ボタンは「？」の左。2つで右端に寄せる */
+.appbar .share-btn {
+  display: inline-grid;
+  place-items: center;
+}
+.appbar .share-btn + .help-btn {
+  margin-left: 0;
+}
+.share-btn svg {
+  width: 17px;
+  height: 17px;
+}
+/* 広い画面は入力の方法の切り替えも1行目に（v0.44: 共有ボタンのぶん 560px → 680px。560〜680px では「？」が2行目に落ちていた） */
+@media (min-width: 680px) {
   .appbar .mode-switch {
     order: 0;
     flex: 0 0 auto;
@@ -245,12 +258,36 @@ h2 {
     flex: 0 0 auto;
     padding-inline: 13px;
   }
-  .appbar .help-btn {
+  .appbar .help-btn,
+  .appbar .share-btn {
     margin-left: 0;
   }
 }
 .appbar .help-btn {
   flex: none;
+}
+/* 幅の狭いスマホでは、見出し・四人／三人・共有・？を1行目に収める（360〜414px。v0.44） */
+@media (max-width: 420px) {
+  .appbar {
+    column-gap: 6px;
+  }
+  .appbar .players-seg button {
+    padding: 0 8px;
+  }
+}
+@media (max-width: 370px) {
+  .appbar .brand-mini {
+    font-size: 21px;
+  }
+  .appbar .players-seg button b {
+    font-size: 16px;
+  }
+}
+/* 320px は「麻雀」の小さな字を省く（四人・三人だけで分かる） */
+@media (max-width: 340px) {
+  .appbar .players-seg button small {
+    display: none;
+  }
 }
 
 /* 点数を出す前の案内 */
@@ -5097,6 +5134,463 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   font-size: clamp(17px, 5.6vw, 28px);
 }
 
+/* ---------- v0.44: 友だちに教える（共有）のシート ---------- */
+.share-list {
+  flex: none;
+  display: grid;
+  gap: 10px;
+}
+.share-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  border: 0;
+  border-radius: 16px;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  box-shadow: inset 0 0 0 2px var(--line), 0 2px 8px rgb(0 0 0 / 0.06);
+}
+.share-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.share-ic svg {
+  width: 22px;
+  height: 22px;
+}
+.share-tx {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.share-tx b {
+  font-family: var(--font-brand);
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+.share-tx small {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--muted);
+}
+.share-opt.go {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+}
+.share-opt.go .share-ic {
+  background: rgb(255 255 255 / 0.18);
+  color: #fff;
+}
+.share-opt.go small {
+  color: rgb(255 255 255 / 0.85);
+}
+/* 姉妹アプリ（画面の一番下と同じカード。シートの幅いっぱいに） */
+.share-sis {
+  flex: none;
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.share-sis-h {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.share-sis .sis-card {
+  max-width: none;
+  padding: 10px 12px;
+}
+/* QRコード（暗い画面でも白地に黒） */
+.share-qr {
+  flex: none;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 6px 0 10px;
+}
+.share-qr .qr {
+  width: min(62vw, 240px);
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px var(--line), 0 6px 18px rgb(0 0 0 / 0.12);
+}
+.share-qr b {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+/* 暗い画面では明るい緑の上の白い文字が読みにくいので、濃い文字に（共有の「LINE などで送る」・シートの緑のボタン） */
+:root[data-theme='dark'] .share-opt.go,
+:root[data-theme='dark'] .share-opt.go small,
+:root[data-theme='dark'] .sh-opt.go b,
+:root[data-theme='dark'] .sh-opt.go small {
+  color: #0c1310;
+}
+:root[data-theme='dark'] .share-opt.go .share-ic {
+  background: rgb(0 0 0 / 0.1);
+  color: #0c1310;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .share-opt.go,
+  :root:not([data-theme='light']) .share-opt.go small,
+  :root:not([data-theme='light']) .sh-opt.go b,
+  :root:not([data-theme='light']) .sh-opt.go small {
+    color: #0c1310;
+  }
+  :root:not([data-theme='light']) .share-opt.go .share-ic {
+    background: rgb(0 0 0 / 0.1);
+    color: #0c1310;
+  }
+}
+
+/* ---------- v0.44: ホーム画面への追加をすすめる案内（画面イメージは 2026-10-03） ---------- */
+/* 画面の下の細い案内。シート（18）より下、ページより上 */
+.home-tip {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  z-index: 16;
+  display: flex;
+  justify-content: center;
+  padding: 0 12px;
+  pointer-events: none;
+}
+.home-tip[hidden] {
+  display: none;
+}
+/* 案内を出している間は、ページのいちばん下が案内に隠れないように余白 */
+body.home-tip-on {
+  padding-bottom: 96px;
+}
+.ht-bar {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(100%, 520px);
+  padding: 9px 9px 9px 8px;
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--line), 0 10px 28px rgb(0 0 0 / 0.28);
+  animation: sheet-in 0.22s ease-out;
+}
+.ht-app {
+  flex: none;
+  display: block;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
+}
+.ht-app.big {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+}
+@media (max-width: 340px) {
+  .ht-bar > .ht-app {
+    display: none;
+  }
+}
+.ht-tx {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.ht-tx b {
+  font-size: clamp(13px, 3.6vw, 14.5px);
+  font-weight: 900;
+  line-height: 1.3;
+}
+.ht-tx small {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--muted);
+}
+/* 入りきらないときは文の区切りで折り返す（1文字だけ次の行に落ちないように） */
+.ht-tx b span,
+.ht-tx small span,
+.ht-merits b i {
+  display: inline-block;
+  font-style: normal;
+}
+.ht-go {
+  flex: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 11px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+/* 閉じる（✕）は右上の角に小さく（文字の幅を取らないように） */
+.ht-x {
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 26px;
+  box-shadow: 0 0 0 1px var(--line), 0 2px 6px rgb(0 0 0 / 0.2);
+}
+/* 「追加のしかた」のシート */
+.ht-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ht-head .sh-hint {
+  margin-top: 4px;
+}
+.ht-merits {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.ht-merits span {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 9px 4px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  text-align: center;
+}
+.ht-merits svg {
+  width: 24px;
+  height: 24px;
+}
+.ht-merits b {
+  font-size: clamp(11.5px, 3.2vw, 12.5px);
+  font-weight: 900;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.ht-steps-h {
+  flex: none;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.ht-steps {
+  flex: none;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ht-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+.ht-n {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+}
+.ht-g {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 30px;
+  color: var(--ink);
+}
+.ht-g svg {
+  width: 26px;
+  height: 26px;
+}
+.ht-steps li:last-child .ht-g svg {
+  width: 34px;
+  height: 22px;
+}
+.ht-st {
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.ht-st b {
+  font-weight: 900;
+}
+.ht-st small {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.ht-note {
+  flex: none;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.ht-note b {
+  color: var(--ink);
+}
+.ht-warn {
+  flex: none;
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fff4e5;
+  color: #6b3d00;
+  box-shadow: inset 0 0 0 1.5px #f2b35c;
+}
+.ht-warn b {
+  font-size: 15px;
+  font-weight: 900;
+}
+.ht-warn span {
+  font-size: 13px;
+  line-height: 1.55;
+}
+.ht-install {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ht-bi {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+}
+.ht-bi svg {
+  width: 24px;
+  height: 24px;
+}
+/* LINE のときのリンクのコピー（控えめなボタン） */
+.ht-sub {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  box-shadow: inset 0 0 0 2px var(--line);
+}
+.ht-sub > span:last-child {
+  display: grid;
+  gap: 1px;
+}
+.ht-sub b {
+  font-size: 16px;
+  font-weight: 900;
+}
+.ht-sub small {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.ht-sub .ht-bi {
+  color: var(--accent);
+}
+.ht-foot {
+  flex: none;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+.ht-done {
+  min-height: 48px;
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 800;
+}
+/* 暗い画面: 注意の枠の色と、明るい緑のボタンの文字（白では読みにくいので濃い色に） */
+:root[data-theme='dark'] .ht-warn {
+  background: #3a2a12;
+  color: #ffd9a8;
+  box-shadow: inset 0 0 0 1.5px #8a5a1c;
+}
+:root[data-theme='dark'] .ht-go,
+:root[data-theme='dark'] .ht-install {
+  color: #0c1310;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ht-warn {
+    background: #3a2a12;
+    color: #ffd9a8;
+    box-shadow: inset 0 0 0 1.5px #8a5a1c;
+  }
+  :root:not([data-theme='light']) .ht-go,
+  :root:not([data-theme='light']) .ht-install {
+    color: #0c1310;
+  }
+}
+/* 「新しい版があります」の帯（画面の下から 66px）が出ている間は、案内を出さない（重ねない。build.mjs の swScript が body に sw-on を付ける） */
+body.sw-on .home-tip {
+  display: none;
+}
+body.sw-on.home-tip-on {
+  padding-bottom: 0;
+}
+.ht-install .ht-bi svg {
+  color: inherit;
+}
+/* Android の「ホーム画面に追加」ボタンの絵は白（暗い画面は上の指定で濃い色） */
+.ht-install {
+  color: #fff;
+}
+
+.sis-card,.sis-card:visited,.sis-card:hover{display:flex;align-items:center;gap:10px;box-sizing:border-box;width:100%;max-width:360px;padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);text-decoration:none;text-align:left}.sis-card img{flex:none;display:block;width:40px;height:40px;border-radius:22%}.sis-t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}.sis-n{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.sis-n b{font-size:14px;font-weight:800;color:var(--ink)}.sis-n em{font-style:normal;font-size:10px;font-weight:700;line-height:1.6;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:0 7px}.sis-t small{font-size:11.5px;line-height:1.45;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}.sis-go{flex:none;width:16px;height:16px;color:var(--muted)}
 </style>
 <noscript>
   <div class="noscript-note">
@@ -5126,6 +5620,8 @@ html[data-cam-land] .land-hint:not([hidden])::before {
       <span>手入力</span>
     </button>
   </div>
+  <!-- v0.44: 友だちに教える（共有）。押すと下からシート（LINE などで送る・QRコード・リンクをコピー・姉妹アプリ） -->
+  <button type="button" class="help-btn light share-btn" id="share-btn" data-action="share-open" aria-label="友だちに教える（共有）"></button>
   <button type="button" class="help-btn light" data-action="guide-open" data-kind="help" aria-label="使い方">？</button>
 </header>
 <!-- 点数条件の枠（v0.34: 場風・自風・ドラ・リーチ… は読み取ったあとに下から出るシートで1問ずつ聞く。ここには答えた内容と「変更」・ルール設定） -->
@@ -5229,6 +5725,8 @@ html[data-cam-land] .land-hint:not([hidden])::before {
 <!-- 下から出るシート（条件のステップ入力／待ち・切り方の内訳）。写真の画面と手入力の画面で共通（v0.34） -->
 <div class="sheet-scrim" id="sheet-scrim" data-action="sheet-scrim" hidden></div>
 <div class="sheet" id="sheet" role="dialog" aria-label="条件・内訳" hidden></div>
+<!-- v0.44: ホーム画面への追加をすすめる案内（スマホのブラウザで開いているときだけ。× で閉じたらもう出さない） -->
+<div class="home-tip" id="home-tip" hidden></div>
 <div class="toast" id="toast" role="status" hidden></div>
 <!-- バナー広告のスペース（320×50相当）。既定では出さない（広告が入るまで空の枠を見せない）。
      中身を AdMob（アプリ）や AdSense（Web）のタグに差し替え、window.haiyomi.setAds(true) で出す -->
@@ -11340,6 +11838,609 @@ function handleBigScore(el) {
   return true;
 }
 
+// ---- src/ui/sister.js ----
+// 姉妹アプリ「麻雀記録帳」（成績の記録）のカード。v0.44 で build.mjs から移した（アプリの画面の一番下・解説ページの下・共有のシートで同じもの）
+//   v0.39: 麻雀記録帳の側の指定どおり、アイコン付きのカード（アイコンは 192×192 の正方形。40px で表示し、角は 22% 丸める。
+//   すぐ横に名前があるので alt は空。新しいタブで開く）。アイコンは向こうの icon-192.png と同じもので、オフラインでも出るよう
+//   何待ち？の中に置く（icons/kiroku-icon-192.png → kiroku-icon-192.png。sw.js も最初に保存する）
+//   画面に触らない（文字列だけ）ので、build.mjs（Node）からも読み込める
+const KIROKU_URL = 'https://kiroku.nanimachi.net/';
+const KIROKU_ICON = 'kiroku-icon-192.png';
+const KIROKU_DESC = '持ち点を入れるだけで、成績を自動で集計';
+
+/** カードの HTML（attrs はリンクに足す属性。共有のシートでは data-action で押した回数を数える） */
+function sisCardHTML(attrs = '') {
+  return (
+    `<a class="sis-card" href="${KIROKU_URL}" target="_blank" rel="noopener"${attrs ? ' ' + attrs : ''}>` +
+    `<img src="${KIROKU_ICON}" width="40" height="40" alt="" decoding="async">` +
+    `<span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>${KIROKU_DESC.replace('、', '、<wbr>')}</small></span>` +
+    `<svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" ` +
+    `fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`
+  );
+}
+
+/** カードの見た目（アプリの画面と解説ページで同じ。色はどちらも --surface・--line・--ink・--muted を使う） */
+const SIS_CSS =
+  `.sis-card,.sis-card:visited,.sis-card:hover{display:flex;align-items:center;gap:10px;box-sizing:border-box;width:100%;max-width:360px;` +
+  `padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);text-decoration:none;text-align:left}` +
+  `.sis-card img{flex:none;display:block;width:40px;height:40px;border-radius:22%}` +
+  `.sis-t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:1px}` +
+  `.sis-n{display:flex;align-items:center;gap:6px;flex-wrap:wrap}` +
+  `.sis-n b{font-size:14px;font-weight:800;color:var(--ink)}` +
+  `.sis-n em{font-style:normal;font-size:10px;font-weight:700;line-height:1.6;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:0 7px}` +
+  // 狭い画面で2行になるときは「、」で折り返す（言葉の途中で切らない）
+  `.sis-t small{font-size:11.5px;line-height:1.45;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}` +
+  `.sis-go{flex:none;width:16px;height:16px;color:var(--muted)}`;
+
+// ---- src/ui/qr.js ----
+// QRコード（端末の中で作る。外部のサービスや部品は使わない）。v0.44（試作は 2026-09-28）
+//   バイトモード・誤り訂正レベル M・型番 1〜6（URL なら 100 文字くらいまで）。
+//   qrMatrix(text) → 1（黒）/ 0（白）の2次元配列（まわりの余白なし）。qrSvg(text) → 余白4マスつきの <svg>
+//   作り方は QR コードの規格（JIS X 0510）どおり: データ → 誤り訂正（リード・ソロモン）→ 配置 → 8通りのマスクから減点の少ないもの
+//   確かめ方: ml/qr_check.py（型番 1〜6・8通りのマスクを OpenCV で読み取る）と ml/ui_check.py（画面の QR コードを読み取る）
+
+// 型番ごとの [データの符号語数, 1ブロックの誤り訂正の符号語数, ブロック数]（誤り訂正レベル M。型番 1〜6 はどのブロックも同じ大きさ）
+const QR_M = [null, [16, 10, 1], [28, 16, 1], [44, 26, 1], [64, 18, 2], [86, 24, 2], [108, 16, 4]];
+// 位置合わせパターンの中心（型番 2〜6 は1つ）
+const QR_ALIGN = [null, [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34]];
+
+// GF(256)（原始多項式 x^8 + x^4 + x^3 + x^2 + 1）
+const QR_EXP = new Uint8Array(512);
+const QR_LOG = new Uint8Array(256);
+{
+  let x = 1;
+  for (let i = 0; i < 255; i++) {
+    QR_EXP[i] = x;
+    QR_LOG[x] = i;
+    x <<= 1;
+    if (x & 0x100) x ^= 0x11d;
+  }
+  for (let i = 255; i < 512; i++) QR_EXP[i] = QR_EXP[i - 255];
+}
+const qrMul = (a, b) => (a && b ? QR_EXP[QR_LOG[a] + QR_LOG[b]] : 0);
+
+/** 誤り訂正の符号語（data を生成多項式で割った余り） */
+function qrEcc(data, n) {
+  // 生成多項式 (x - α^0)(x - α^1)…(x - α^(n-1))。係数は次数の高い順
+  let g = [1];
+  for (let i = 0; i < n; i++) {
+    const next = new Array(g.length + 1).fill(0);
+    for (let j = 0; j < g.length; j++) {
+      next[j] ^= g[j];
+      next[j + 1] ^= qrMul(g[j], QR_EXP[i]);
+    }
+    g = next;
+  }
+  const res = new Array(n).fill(0);
+  for (const d of data) {
+    const f = d ^ res.shift();
+    res.push(0);
+    for (let i = 0; i < n; i++) res[i] ^= qrMul(g[i + 1], f);
+  }
+  return res;
+}
+
+/** 形式情報（誤り訂正レベル M・マスク番号）の15ビット */
+function qrFormat(mask) {
+  const data = mask; // M = 00
+  let rem = data;
+  for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+  return ((data << 10) | rem) ^ 0x5412;
+}
+
+const QR_MASKS = [
+  (x, y) => (x + y) % 2 === 0,
+  (x, y) => y % 2 === 0,
+  (x) => x % 3 === 0,
+  (x, y) => (x + y) % 3 === 0,
+  (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0,
+  (x, y) => ((x * y) % 2) + ((x * y) % 3) === 0,
+  (x, y) => (((x * y) % 2) + ((x * y) % 3)) % 2 === 0,
+  (x, y) => (((x + y) % 2) + ((x * y) % 3)) % 2 === 0,
+];
+
+/** 減点（規格の4つの規則）。小さいほど読み取りやすい */
+function qrPenalty(m) {
+  const n = m.length;
+  let p = 0;
+  const lines = [];
+  for (let i = 0; i < n; i++) {
+    lines.push(m[i]);
+    lines.push(m.map((row) => row[i]));
+  }
+  // 1: 同じ色が5つ以上続く
+  for (const line of lines) {
+    let run = 1;
+    for (let i = 1; i <= n; i++) {
+      if (i < n && line[i] === line[i - 1]) run++;
+      else {
+        if (run >= 5) p += 3 + (run - 5);
+        run = 1;
+      }
+    }
+  }
+  // 2: 2×2 が同じ色
+  for (let y = 0; y < n - 1; y++) {
+    for (let x = 0; x < n - 1; x++) {
+      const c = m[y][x];
+      if (c === m[y][x + 1] && c === m[y + 1][x] && c === m[y + 1][x + 1]) p += 3;
+    }
+  }
+  // 3: 位置検出パターンに似た 1:1:3:1:1（片側に白4つ）
+  const A = [1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0];
+  const B = [0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1];
+  for (const line of lines) {
+    for (let i = 0; i + 11 <= n; i++) {
+      let a = true;
+      let b = true;
+      for (let k = 0; k < 11; k++) {
+        if (line[i + k] !== A[k]) a = false;
+        if (line[i + k] !== B[k]) b = false;
+      }
+      if (a) p += 40;
+      if (b) p += 40;
+    }
+  }
+  // 4: 黒の割合が50%から離れている
+  let dark = 0;
+  for (const row of m) for (const v of row) dark += v;
+  const total = n * n;
+  p += 10 * Math.max(0, Math.ceil(Math.abs(dark * 20 - total * 10) / total) - 1);
+  return p;
+}
+
+/**
+ * 文字列 → QRコードのマス（1 = 黒）。型番 6 に入りきらない長さは null。
+ * mask（0〜7）を渡すとそのマスクで作る（確かめ用）。渡さなければ減点のいちばん少ないもの
+ */
+function qrMatrix(text, mask = null) {
+  const bytes = Array.from(new TextEncoder().encode(text));
+  let ver = 1;
+  while (ver <= 6 && 12 + 8 * bytes.length > QR_M[ver][0] * 8) ver++;
+  if (ver > 6) return null;
+  const [dataCw, ecPer, nBlocks] = QR_M[ver];
+  // データ: モード（バイト）・文字数・本体・終端・埋め草
+  const bits = [];
+  const put = (v, len) => {
+    for (let i = len - 1; i >= 0; i--) bits.push((v >>> i) & 1);
+  };
+  put(0b0100, 4);
+  put(bytes.length, 8);
+  for (const b of bytes) put(b, 8);
+  put(0, Math.min(4, dataCw * 8 - bits.length));
+  while (bits.length % 8) bits.push(0);
+  const data = [];
+  for (let i = 0; i < bits.length; i += 8) data.push(parseInt(bits.slice(i, i + 8).join(''), 2));
+  for (let pad = 0xec; data.length < dataCw; pad ^= 0xec ^ 0x11) data.push(pad);
+  // ブロックに分けて誤り訂正を付け、交互に並べる
+  const per = dataCw / nBlocks;
+  const blocks = [];
+  for (let b = 0; b < nBlocks; b++) {
+    const d = data.slice(b * per, (b + 1) * per);
+    blocks.push({ d, e: qrEcc(d, ecPer) });
+  }
+  const cw = [];
+  for (let i = 0; i < per; i++) for (const bl of blocks) cw.push(bl.d[i]);
+  for (let i = 0; i < ecPer; i++) for (const bl of blocks) cw.push(bl.e[i]);
+
+  const size = 17 + 4 * ver;
+  const base = Array.from({ length: size }, () => new Array(size).fill(0));
+  const fn = Array.from({ length: size }, () => new Array(size).fill(false));
+  const set = (x, y, dark) => {
+    base[y][x] = dark ? 1 : 0;
+    fn[y][x] = true;
+  };
+  // 位置検出パターン（3つの角。まわりの白い区切りを含む）
+  for (const [cx, cy] of [[3, 3], [size - 4, 3], [3, size - 4]]) {
+    for (let dy = -4; dy <= 4; dy++) {
+      for (let dx = -4; dx <= 4; dx++) {
+        const x = cx + dx;
+        const y = cy + dy;
+        if (x < 0 || y < 0 || x >= size || y >= size) continue;
+        const d = Math.max(Math.abs(dx), Math.abs(dy));
+        set(x, y, d !== 2 && d !== 4);
+      }
+    }
+  }
+  // タイミングパターン
+  for (let i = 0; i < size; i++) {
+    if (!fn[6][i]) set(i, 6, i % 2 === 0);
+    if (!fn[i][6]) set(6, i, i % 2 === 0);
+  }
+  // 位置合わせパターン
+  const pos = QR_ALIGN[ver];
+  for (const ay of pos) {
+    for (const ax of pos) {
+      if ((ax === 6 && ay === 6) || (ax === 6 && ay === size - 7) || (ax === size - 7 && ay === 6)) continue;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }
+  }
+  // 形式情報の場所（あとで書く）と、いつも黒のマス
+  const drawFormat = (m, mk) => {
+    const f = qrFormat(mk);
+    const bit = (i) => (f >>> i) & 1;
+    const put2 = (x, y, v) => {
+      m[y][x] = v;
+      fn[y][x] = true;
+    };
+    for (let i = 0; i < 6; i++) put2(8, i, bit(i));
+    put2(8, 7, bit(6));
+    put2(8, 8, bit(7));
+    put2(7, 8, bit(8));
+    for (let i = 9; i < 15; i++) put2(14 - i, 8, bit(i));
+    for (let i = 0; i < 8; i++) put2(size - 1 - i, 8, bit(i));
+    for (let i = 8; i < 15; i++) put2(8, size - 15 + i, bit(i));
+    put2(8, size - 8, 1);
+  };
+  drawFormat(base, 0);
+  // データを右下から2列ずつジグザグに置く（縦のタイミングパターンの列は飛ばす）
+  let k = 0;
+  for (let right = size - 1; right >= 1; right -= 2) {
+    if (right === 6) right = 5;
+    for (let vert = 0; vert < size; vert++) {
+      for (let j = 0; j < 2; j++) {
+        const x = right - j;
+        const upward = ((right + 1) & 2) === 0;
+        const y = upward ? size - 1 - vert : vert;
+        if (!fn[y][x] && k < cw.length * 8) {
+          base[y][x] = (cw[k >>> 3] >>> (7 - (k & 7))) & 1;
+          k++;
+        }
+      }
+    }
+  }
+  // 8通りのマスクを試して、減点のいちばん少ないもの（mask を指定したときはそのマスク）
+  let best = null;
+  let bestP = Infinity;
+  for (let mk = 0; mk < 8; mk++) {
+    if (mask != null && mk !== mask) continue;
+    const m = base.map((row) => row.slice());
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!fn[y][x] && QR_MASKS[mk](x, y)) m[y][x] ^= 1;
+    drawFormat(m, mk);
+    const p = qrPenalty(m);
+    if (p < bestP) {
+      bestP = p;
+      best = m;
+    }
+  }
+  return best;
+}
+
+/** 文字列 → QRコードの <svg>（まわりに白い余白4マス。暗い画面でも白地に黒） */
+function qrSvg(text, label = 'QRコード') {
+  const m = qrMatrix(text);
+  if (!m) return '';
+  const q = 4;
+  const n = m.length + q * 2;
+  let d = '';
+  for (let y = 0; y < m.length; y++) for (let x = 0; x < m.length; x++) if (m[y][x]) d += `M${x + q} ${y + q}h1v1h-1z`;
+  return (
+    `<svg class="qr" viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" role="img" aria-label="${label}">` +
+    `<rect width="${n}" height="${n}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`
+  );
+}
+
+// ---- src/ui/share.js ----
+// 友だちに教える（共有）と、姉妹アプリ（麻雀記録帳）への入口。v0.44（試作と画面イメージは 2026-09-28・設計メモ 2.61）
+//   見出しの共有ボタン（「？」の左）→ 下から出るシート: LINE などで送る（端末の共有メニュー）・QRコードを見せる・リンクをコピー・姉妹アプリ。
+//   送るのはアプリの URL だけ（写真や手牌は送らない）。QRコードは端末の中で作る（qr.js）。
+//   送る URL には ?openExternalBrowser=1 を付ける: LINE のトーク・LINE の QRコードリーダーから開いたときに、LINE の中のブラウザではなく
+//   Safari・Chrome で開く（LINE の仕組み）→ そのままホーム画面に追加できる。ほかのアプリでは付けたままでも同じページが開く
+
+
+
+
+
+const SHARE_URL = 'https://nanimachi.net/?openExternalBrowser=1';
+const SHARE_SHOW = 'nanimachi.net'; // 画面に見せるアドレス
+const SHARE_TITLE = '何待ち？';
+const SHARE_TEXT = '麻雀の手牌を撮るだけで、待ちと点数がわかるアプリ';
+
+const sicon = (body) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+const SHARE_ICON = {
+  send: sicon('<path d="M12 3.5v11"/><path d="m8 7.5 4-4 4 4"/><path d="M8 10.5H6.5A1.5 1.5 0 0 0 5 12v7a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-7a1.5 1.5 0 0 0-1.5-1.5H16"/>'),
+  qr: sicon('<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 18h1M18 14h2"/>'),
+  copy: sicon('<rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5"/>'),
+};
+
+/** 見出しの共有ボタンの中身（アイコン） */
+const SHARE_BTN_ICON = SHARE_ICON.send;
+
+/** シートの中身（state.sheet.mode === 'share'）。q === 'qr' で QRコードのページ */
+function shareSheetHTML() {
+  const qr = state.sheet.q === 'qr';
+  const top =
+    `<div class="sh-grab"></div>` +
+    `<div class="sh-top"><button type="button" class="sh-back" data-action="share-back">‹ ${qr ? '戻る' : '閉じる'}</button>` +
+    `<span class="sh-title">共有</span>` +
+    `<button type="button" class="sh-x" data-action="share-close" aria-label="閉じる">×</button></div>`;
+  if (qr) {
+    return (
+      top +
+      `<div class="sh-q">QRコード</div>` +
+      `<div class="sh-hint">相手のスマホのカメラや LINE で読み取ると「何待ち？」が開きます</div>` +
+      `<div class="share-qr">${qrSvg(SHARE_URL, '何待ち？のQRコード')}<b>${SHARE_SHOW}</b></div>`
+    );
+  }
+  const opt = (action, icon, title, sub, cls = '') =>
+    `<button type="button" class="share-opt${cls}" data-action="${action}">` +
+    `<span class="share-ic">${icon}</span><span class="share-tx"><b>${title}</b><small>${sub}</small></span></button>`;
+  return (
+    top +
+    `<div class="sh-q">友だちに教える</div>` +
+    `<div class="sh-hint">麻雀の手牌を撮るだけで、待ちと点数がわかるアプリです。無料・登録なしで使えます</div>` +
+    `<div class="share-list">` +
+    opt('share-native', SHARE_ICON.send, 'LINE などで送る', 'LINE・メッセージ・AirDrop など', ' go') +
+    opt('share-qr', SHARE_ICON.qr, 'QRコードを見せる', '目の前の人に、カメラで読み取ってもらう') +
+    opt('share-copy', SHARE_ICON.copy, 'リンクをコピー', SHARE_SHOW) +
+    `</div>` +
+    `<div class="share-sis"><div class="share-sis-h">姉妹アプリ</div>${sisCardHTML('data-action="share-kiroku"')}</div>`
+  );
+}
+
+function closeShare() {
+  state.sheet.mode = null;
+  state.sheet.q = null;
+  update();
+}
+
+async function copyLink() {
+  try {
+    await navigator.clipboard.writeText(SHARE_URL);
+    toast('リンクをコピーしました');
+  } catch (e) {
+    toast(`コピーできませんでした。${SHARE_SHOW} と送ってください`, 5000);
+  }
+}
+
+/** share- で始まる操作。処理したら true（姉妹アプリのリンクは false を返して、そのまま新しいタブで開く） */
+function handleShare(el) {
+  const action = el.dataset.action;
+  const sh = state.sheet;
+  switch (action) {
+    case 'share-open':
+      state.cam.pop = null;
+      sh.mode = 'share';
+      sh.q = null;
+      track('share_open');
+      update();
+      return true;
+    case 'share-close':
+      closeShare();
+      return true;
+    case 'share-back':
+      if (sh.q === 'qr') {
+        sh.q = null;
+        update();
+      } else closeShare();
+      return true;
+    case 'share-qr':
+      sh.q = 'qr';
+      track('share_qr');
+      update();
+      return true;
+    case 'share-copy':
+      track('share_copy');
+      copyLink();
+      return true;
+    case 'share-native':
+      track('share_native');
+      // 端末の共有メニュー（iPhone・Android）。ないとき（パソコンのブラウザなど）はリンクをコピー。
+      // 押した操作の中で呼ぶ（間に await を挟むと、ブラウザが「押していない」とみなして開かない）
+      if (navigator.share) navigator.share({ title: SHARE_TITLE, text: SHARE_TEXT, url: SHARE_URL }).catch(() => {});
+      else copyLink();
+      return true;
+    case 'share-kiroku':
+      track('kiroku_open');
+      return false;
+    default:
+      return false;
+  }
+}
+
+// ---- src/ui/hometip.js ----
+// ホーム画面への追加をすすめる案内。v0.44（画面イメージは 2026-10-03・設計メモ 2.69）
+//   スマホのブラウザ（Safari・Chrome・LINE の中のブラウザなど）で開いているときだけ、写真の読み取りが1回うまくいったあと、
+//   写真の画面の下に細い案内を出す。× で閉じたら、この端末ではもう出さない。ホーム画面から開いているとき（isStandalone）・
+//   パソコン・手入力の画面・シートや重ねる画面が出ている間・「新しい版があります」の帯が出ている間（body.sw-on）は出さない。
+//   「追加のしかた」→ 下から出るシートで、端末ごとの手順:
+//     iPhone（iOS 26 の Safari: アドレスバーの右の「…」→ 共有 → ホーム画面に追加 → Webアプリとして開く をオンのまま 追加）
+//     Android（Chrome: 追加の画面をそのまま出すボタン。beforeinstallprompt）
+//     LINE の中のブラウザ（そこからは追加できないので、Safari などで開き直す手順とリンクのコピー）
+
+
+
+const HT_CLOSED_KEY = 'nm-home-tip'; // 'closed' なら案内を出さない
+const HT_OK_KEY = 'nm-read-ok'; // 写真の読み取りがうまくいった回数
+const HT_URL = 'https://nanimachi.net/';
+
+// Android の Chrome: 追加の画面を出す合図を取っておく（押したときに prompt() で出す）
+let htInstallEvent = null;
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    htInstallEvent = e;
+  });
+}
+
+const htStore = (k, v) => {
+  try {
+    if (v === undefined) return localStorage.getItem(k);
+    localStorage.setItem(k, v);
+  } catch (e) {
+    // 保存できない環境（プライベートブラウズなど）でも止めない
+  }
+  return null;
+};
+
+/** どの手順を見せるか: 'line'（LINE の中のブラウザ）・'ios'・'android'・'other'（パソコンなど） */
+function homePlatform(ua = navigator.userAgent || '', touchMac = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
+  if (/ Line\//i.test(ua)) return 'line';
+  // iPad の Safari は Mac と同じ名乗り方なので、タッチできるかで見分ける
+  if (/iPhone|iPad|iPod/.test(ua) || touchMac) return 'ios';
+  if (/Android/.test(ua)) return 'android';
+  return 'other';
+}
+
+/** 読み取りがうまくいったときに呼ぶ（camera.js の read_ok のところ） */
+function noteReadOk() {
+  const n = (parseInt(htStore(HT_OK_KEY), 10) || 0) + 1;
+  htStore(HT_OK_KEY, String(n));
+}
+
+function homeTipWanted() {
+  if (isStandalone()) return false;
+  if (homePlatform() === 'other') return false; // パソコンには出さない
+  if (htStore(HT_CLOSED_KEY) === 'closed') return false;
+  return (parseInt(htStore(HT_OK_KEY), 10) || 0) >= 1;
+}
+
+const hsvg = (body, w = 1.9) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+const HT_ICON = {
+  more: hsvg('<circle cx="12" cy="12" r="9"/><circle cx="7.8" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="16.2" cy="12" r="1.1" fill="currentColor" stroke="none"/>'),
+  share: hsvg('<path d="M12 3.5v11"/><path d="m8 7.5 4-4 4 4"/><path d="M8 10.5H6.5A1.5 1.5 0 0 0 5 12v7a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-7a1.5 1.5 0 0 0-1.5-1.5H16"/>'),
+  add: hsvg('<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8.5v7M8.5 12h7"/>'),
+  toggle: '<svg viewBox="0 0 34 22" aria-hidden="true"><rect x="1" y="1" width="32" height="20" rx="10" fill="#34c759"/><circle cx="23" cy="11" r="8" fill="#fff"/></svg>',
+  dots: hsvg('<circle cx="12" cy="5.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="18.5" r="1.3" fill="currentColor" stroke="none"/>'),
+  open: hsvg('<path d="M14 5h5v5"/><path d="m19 5-8 8"/><path d="M17 13.5V18a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 18V8.5A1.5 1.5 0 0 1 6 7h4.5"/>'),
+  full: hsvg('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
+  offline: hsvg('<path d="M3 3l18 18"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M5 12.5a10 10 0 0 1 4.2-2.4M19 12.5a10 10 0 0 0-3.5-2.2"/><path d="M2 8.8a15 15 0 0 1 5-2.9M22 8.8A15 15 0 0 0 11 4.6"/><circle cx="12" cy="20" r="0.9" fill="currentColor"/>'),
+  tap: hsvg('<path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10"/><path d="M12 9.5a1.5 1.5 0 0 1 3 0v1a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-.6a5 5 0 0 1-3.9-1.9L4.6 15.4a1.5 1.5 0 0 1 2.3-1.9L9 15.5"/>'),
+  copy: hsvg('<rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5"/>'),
+};
+
+/** 案内の中身（テストからも呼ぶ） */
+function homeTipHTML() {
+  return (
+    `<div class="ht-bar" role="note">` +
+    `<img class="ht-app" src="icon-192.png" alt="" width="40" height="40">` +
+    `<span class="ht-tx"><b><span>ホーム画面に</span><span>追加しませんか</span></b><small><span>全画面で、</span><span>電波がなくても使えます</span></small></span>` +
+    `<button type="button" class="ht-go" data-action="home-open">追加のしかた</button>` +
+    `<button type="button" class="ht-x" data-action="home-dismiss" aria-label="この案内を閉じる（もう出さない）">×</button>` +
+    `</div>`
+  );
+}
+
+/** 画面の下の細い案内（出さないときは隠す）。main.js の render のたびに呼ぶ */
+function renderHomeTip() {
+  const el = document.getElementById('home-tip');
+  if (!el) return;
+  // 写真の画面だけ（手入力の画面は下に牌のキーボードがある）。シート・設定・使い方・点数の大きな表示が出ている間と、
+  // スマホを横にして撮る画面（カメラだけの画面）の間は出さない（重ねない）
+  const busy = state.mode !== 'camera' || !!state.sheet.mode || !!state.cam.pop || !!state.overlay ||
+    document.documentElement.hasAttribute('data-cam-land');
+  const show = !busy && homeTipWanted();
+  el.hidden = !show;
+  document.body.classList.toggle('home-tip-on', show);
+  if (!show) return;
+  if (!el.dataset.ready) {
+    el.dataset.ready = '1';
+    el.innerHTML = homeTipHTML();
+  }
+  if (!el.dataset.seen) {
+    el.dataset.seen = '1';
+    track('home_tip');
+  }
+}
+
+const htStep = (n, icon, html) =>
+  `<li><span class="ht-n">${n}</span><span class="ht-g">${icon}</span><span class="ht-st">${html}</span></li>`;
+
+const HT_MERITS =
+  `<div class="ht-merits">` +
+  `<span>${HT_ICON.full}<b><i>全画面で</i><i>大きく</i></b></span>` +
+  `<span>${HT_ICON.offline}<b><i>電波なしでも</i><i>動く</i></b></span>` +
+  `<span>${HT_ICON.tap}<b><i>ワンタップで</i><i>開く</i></b></span>` +
+  `</div>`;
+
+/** 「追加のしかた」のシート（state.sheet.mode === 'home'）。pf はテストで端末を指定するとき */
+function homeSheetHTML(pf = homePlatform()) {
+  const top =
+    `<div class="sh-grab"></div>` +
+    `<div class="sh-top"><button type="button" class="sh-back" data-action="home-close">‹ 閉じる</button>` +
+    `<span class="sh-title">ホーム画面に追加</span>` +
+    `<button type="button" class="sh-x" data-action="home-close" aria-label="閉じる">×</button></div>`;
+  const head =
+    `<div class="ht-head"><img class="ht-app big" src="icon-192.png" alt="" width="56" height="56">` +
+    `<div><div class="sh-q">ホーム画面に追加する</div><div class="sh-hint">このアイコンで並び、アプリのように開けます</div></div></div>` +
+    HT_MERITS;
+  const foot =
+    `<div class="ht-foot"><button type="button" class="ht-done" data-action="home-close">閉じる</button>` +
+    `<button type="button" class="linkish" data-action="home-never">この案内をもう出さない</button></div>`;
+  if (pf === 'line') {
+    return (
+      top + head +
+      `<div class="ht-warn"><b>LINE の中では追加できません</b>` +
+      `<span>LINE のトークから開いたときは、LINE の中のブラウザで表示されています。いったん Safari（Android は Chrome）で開き直してください。</span></div>` +
+      `<ol class="ht-steps">` +
+      htStep(1, HT_ICON.dots, 'LINE の画面の<b>メニュー</b>（︙ や共有のボタン）を押す') +
+      htStep(2, HT_ICON.open, '<b>「Safariで開く」</b>などを選ぶ<small>Android は「他のアプリで開く」</small>') +
+      htStep(3, HT_ICON.add, '開き直した画面で、もう一度<b>「追加のしかた」</b>を押す') +
+      `</ol>` +
+      `<button type="button" class="ht-sub" data-action="home-copy"><span class="ht-bi">${HT_ICON.copy}</span><span><b>リンクをコピー</b><small>Safari のアドレスバーに貼り付けて開けます</small></span></button>` +
+      foot
+    );
+  }
+  if (pf === 'android') {
+    return (
+      top + head +
+      `<button type="button" class="sh-opt big go ht-install" data-action="home-install"><span class="ht-bi">${HT_ICON.add}</span><b>ホーム画面に追加</b></button>` +
+      `<div class="ht-note">押すと Chrome の追加の画面が出ます。出ないときは、右上の<b>「︙」</b>→<b>「ホーム画面に追加」</b>（または「アプリをインストール」）</div>` +
+      foot
+    );
+  }
+  return (
+    top + head +
+    `<div class="ht-steps-h">iPhone（Safari）の手順</div>` +
+    `<ol class="ht-steps">` +
+    htStep(1, HT_ICON.more, 'アドレスバーの右の<b>「…」</b>を押す') +
+    htStep(2, HT_ICON.share, '<b>「共有」</b>を押す') +
+    htStep(3, HT_ICON.add, '下にずらして<b>「ホーム画面に追加」</b>') +
+    htStep(4, HT_ICON.toggle, '<b>「Webアプリとして開く」</b>はオンのまま、右上の<b>「追加」</b>') +
+    `</ol>` +
+    `<div class="ht-note">iOS 18 までの Safari や、iPhone の Chrome などは、共有ボタン（□に↑）→<b>「ホーム画面に追加」</b></div>` +
+    foot
+  );
+}
+
+async function htCopy() {
+  try {
+    await navigator.clipboard.writeText(HT_URL);
+    toast('リンクをコピーしました');
+  } catch (e) {
+    toast(`コピーできませんでした。${HT_URL} を Safari で開いてください`, 5000);
+  }
+}
+
+/** home- で始まる操作 */
+function handleHome(el) {
+  const action = el.dataset.action;
+  if (action === 'home-open') {
+    state.sheet.mode = 'home';
+    state.sheet.q = null;
+    track('home_howto');
+    update();
+  } else if (action === 'home-close') {
+    state.sheet.mode = null;
+    update();
+  } else if (action === 'home-dismiss' || action === 'home-never') {
+    htStore(HT_CLOSED_KEY, 'closed');
+    state.sheet.mode = null;
+    track('home_tip_close');
+    update();
+  } else if (action === 'home-install') {
+    track('home_install');
+    if (htInstallEvent) {
+      htInstallEvent.prompt();
+      htInstallEvent = null;
+    } else toast('右上の「︙」から「ホーム画面に追加」を選んでください', 5000);
+  } else if (action === 'home-copy') {
+    htCopy();
+  }
+}
+
 // ---- src/ui/manual.js ----
 // 手入力画面（縦向き）: 牌キーボードで入力 → シャンテン・待ち・点数
 
@@ -11850,6 +12951,7 @@ function handleManual(el) {
 // カメラ画面（縦向きのまま使える。横向きでも動く）
 //   下の横長の枠に手牌を写す → 読み取り → 手牌の上に「待ち」「テンパイになる牌」を表示
 //   → 表示された牌をタップすると右の枠に役と点数（設定を変えるとすぐ再計算）
+
 
 
 
@@ -12727,6 +13829,7 @@ async function readOnDevice() {
   }
   cam.cands = r.tiles.map((t) => t.top);
   track('read_ok');
+  noteReadOk(); // v0.44: ホーム画面への追加の案内は、読み取りが1回うまくいってから出す
   const sec = ((Date.now() - t0) / 1000).toFixed(1);
   cam.note = `端末内のAIで読み取りました（${sec}秒）`;
   cam.read = true; // 読み取り後は枠の外を暗くする
@@ -14129,6 +15232,8 @@ function initCamera() {
 
 
 
+
+
 /** 見出し横の「4人／3人」を今の設定に合わせる */
 function syncPlayers() {
   document.querySelectorAll('[data-action="players"]').forEach((b) => {
@@ -14172,6 +15277,8 @@ function render(a) {
   renderGuide();
   // v0.41: 点数の大きな表示（点数条件を入れたら重ねて出す。✖で今の画面に戻る）
   renderBigScore(a);
+  // v0.44: ホーム画面への追加をすすめる案内（スマホのブラウザで開いているときだけ）
+  renderHomeTip();
 }
 
 /** 下から出るシート（点数条件のステップ入力／待ち・切り方・アガリの内訳）。写真の画面と手入力の画面で共通 */
@@ -14183,6 +15290,8 @@ function renderSheet(a) {
   let html = '';
   if (sh.mode === 'setup') html = setupSheetHTML(a);
   else if (sh.mode === 'detail') html = state.mode === 'camera' ? detailSheetHTML(a) : '';
+  else if (sh.mode === 'share') html = shareSheetHTML(); // v0.44: 友だちに教える（共有）
+  else if (sh.mode === 'home') html = homeSheetHTML(); // v0.44: ホーム画面に追加のしかた
   if (!html) sh.mode = null;
   const was = el.dataset.mode || '';
   el.dataset.mode = sh.mode || '';
@@ -14244,6 +15353,8 @@ function onClick(e) {
   else if (action === 'players') setRule('sanma', el.dataset.value === '1');
   else if (action.startsWith('guide-')) handleGuide(el);
   else if (action.startsWith('bs-')) handleBigScore(el);
+  else if (action.startsWith('share-')) handleShare(el);
+  else if (action.startsWith('home-')) handleHome(el);
   else if (action.startsWith('cam-')) handleCamera(el);
   else handleManual(el);
 }
@@ -14252,6 +15363,8 @@ function init() {
   document.body.insertAdjacentHTML('afterbegin', tileSprite());
   const brandTile = $('brand-tile');
   if (brandTile) brandTile.innerHTML = brandTileHTML();
+  const shareBtn = $('share-btn');
+  if (shareBtn) shareBtn.innerHTML = SHARE_BTN_ICON;
   load();
   setRenderer(render);
   document.addEventListener('click', onClick);
@@ -14300,7 +15413,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.43</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.44</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
@@ -14309,6 +15422,7 @@ else init();
   const show = (reg) => {
     if (!bar) return;
     bar.hidden = false;
+    document.body.classList.add('sw-on'); // v0.44: ホーム画面への追加の案内（画面の下）を隠す
     document.getElementById('sw-reload').onclick = () => {
       bar.hidden = true;
       if (reg.waiting) reg.waiting.postMessage('skip-waiting');
