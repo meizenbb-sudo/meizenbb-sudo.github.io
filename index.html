@@ -3755,19 +3755,62 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   line-height: 1.5;
   color: var(--muted);
 }
-/* 入口「テンパイです」の待ち牌（v0.37。文の前に1行で、牌は小さく） */
-.sh-waits {
+/* 入口「テンパイです」の待ち牌（v0.45: 見出しのすぐ下に大きく。v0.37〜v0.44 は文の頭に 18px で小さすぎた）。
+   牌の大きさは待ちの数で変える（data-size）。入りきらなければ牌の並びだけ次の行へ */
+.sh-waitbox {
+  flex: none;
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 3px;
-  margin-bottom: 4px;
-  color: var(--ink);
+  align-items: center;
+  gap: 8px 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--accent-soft);
+}
+.swb-h {
+  white-space: nowrap;
+  color: var(--accent);
+  font-size: 15px;
   font-weight: 800;
 }
-.sh-waits .tile {
-  --w: 18px;
-  --edge: 1px;
+.swb-h b {
+  margin: 0 2px 0 5px;
+  font-size: 26px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.swb-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sh-waitbox .tile {
+  --w: 44px;
+  --edge: 3px;
+}
+.sh-waitbox[data-size='m'] .tile {
+  --w: 36px;
+}
+.sh-waitbox[data-size='s'] .swb-tiles {
+  gap: 5px;
+}
+.sh-waitbox[data-size='s'] .tile {
+  --w: 30px;
+  --edge: 2.5px;
+}
+.sh-waitbox[data-size='xs'] .swb-tiles {
+  gap: 4px;
+}
+.sh-waitbox[data-size='xs'] .tile {
+  --w: 26px;
+  --edge: 2px;
+}
+.swb-note {
+  flex: 1 0 100%;
+  margin-top: -2px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
 }
 .sh-body {
   flex: none;
@@ -6878,7 +6921,7 @@ function analyzeDrawn(concealed, win, ctx, visible) {
 }
 
 /**
- * 鳴きを省いた「何待ち問題」の形（10枚・7枚）を、鳴きが k 組あるものとして解析する。
+ * 鳴きを省いた「何待ち問題」の形（10枚・7枚・4枚）を、鳴きが k 組あるものとして解析する。
  * テンパイのときだけ { k, shanten, waits, waitTotal } を返す（点数は鳴きの中身が分からないので出さない）。
  * waits[].ron / tsumo は面子の分け方だけを持つ（ok: false, reason: 'hidden'）。
  */
@@ -6952,8 +6995,8 @@ function analyze(state) {
   const visible = cAll;
   if (concealed.length < need) {
     const out = { ...base, phase: 'incomplete', missing: need - concealed.length };
-    // 鳴きの入力がない10枚・7枚は「鳴きを省いた問題」の形としても見る（テンパイなら待ちを添える）
-    if (k === 0 && win == null && (concealed.length === 10 || concealed.length === 7)) {
+    // 鳴きの入力がない10枚・7枚・4枚は「鳴きを省いた問題」の形としても見る（テンパイなら待ちを添える。4枚は v0.45 から）
+    if (k === 0 && win == null && (concealed.length === 10 || concealed.length === 7 || concealed.length === 4)) {
       const hidden = analyzeHidden(concealed, state, visible, (13 - concealed.length) / 3);
       if (hidden) out.hidden = hidden;
     }
@@ -8222,12 +8265,37 @@ function findRow(img, roi = null, debug = null) {
   const hsv = hsvOf(small);
   // 普通の条件 → 枠の近くに見つからなければ、ゆるい条件（明るすぎる写真）で探し直す
   let found = findBand(small, w, h, k, roi, false, debug, hsv);
+  let strictRow = null;
   if (!found || (roi && !found.best.inRoi)) {
     const f2 = findBand(small, w, h, k, roi, true, debug, hsv);
-    if (f2 && (!found || f2.best.inRoi)) found = f2;
+    if (f2 && (!found || f2.best.inRoi)) {
+      // ゆるい条件で見つけた帯が、普通の条件で見つけた帯の牌の面の上にあるときは、その牌の一部（面の黄み・上面の影）なので採らない（v0.45）。
+      // 4枚の手牌を大きく写して枠を面にぴったり合わせると、背の帯が枠の上に少し外れて「枠の外」になり、ゆるい条件の探し直しで
+      // 牌の面の黄みを帯と取り違えて、面の下半分を列にしていた（自撮りX06: 6筒2枚→4筒、自撮りX08 も面の上下がずれた）
+      strictRow = found ? traceRow(small, w, h, k, found.best, found.felt, hsv.S, hsv.V, roi) : null;
+      const onFaces = strictRow && bandOnFaces(f2.best, found.best, strictRow, k);
+      if (debug) debug.push({ relaxedPath: true, onFaces: !!onFaces });
+      if (!onFaces) {
+        found = f2;
+        strictRow = null;
+      }
+    }
   }
   if (!found) return null;
-  return traceRow(small, w, h, k, found.best, found.felt, hsv.S, hsv.V, roi);
+  return strictRow || traceRow(small, w, h, k, found.best, found.felt, hsv.S, hsv.V, roi);
+}
+
+/**
+ * 帯 b（ゆるい条件）が、帯 s（普通の条件）からたどった列 row の牌の面の上にあるか（縮小画像の座標で比べる）。
+ * b の下端が s の下端より下で、列の面の下端より上にあり、横の範囲の半分以上が列と重なるとき
+ */
+function bandOnFaces(b, s, row, k) {
+  const c = row.corners.map(([x, y]) => [x * k, y * k]);
+  const L = Math.max(b.st.x, Math.min(c[0][0], c[3][0]));
+  const R = Math.min(b.st.x + b.st.w, Math.max(c[1][0], c[2][0]));
+  if (R - L < 0.5 * b.st.w) return false;
+  const faceBottom = (c[2][1] + c[3][1]) / 2;
+  return b.bottom > s.bottom + 2 && b.bottom < faceBottom;
 }
 
 function findBand(small, w, h, k, roi, relaxed, debug, hsv) {
@@ -9152,11 +9220,16 @@ function nearRoi(corners, roi) {
   return true;
 }
 
+// 読み取り枠に比べて小さすぎる列（checkHand の 1'）: 高さが枠の TINY_H 未満で、長さも枠の TINY_W 未満
+const TINY_H = 0.08;
+const TINY_W = 0.25;
+
 /**
  * 読み取った並びが「手牌」としてありえるか。
  * 手牌でない写真（風景・人物など）でも分類器は必ず何かの牌を答えてしまうため、
  * 並びの構造（列が見つかったか・区切りのはっきりさ）と、牌の組み合わせの可否で判断する。
- *   返り値 { ok, reason }  reason: noRow | tooFew | impossible | unsure
+ *   返り値 { ok, reason }  reason: noRow | tooSmall | tooFew | impossible | unsure
+ *   opts: { melds: 入れた鳴きの数, minP, roi: 読み取り枠（写真の画素の座標。あれば小さすぎる列を止める） }
  */
 function checkHand(r, opts = {}) {
   if (!r || !r.ok) return { ok: false, reason: 'noRow' };
@@ -9166,8 +9239,19 @@ function checkHand(r, opts = {}) {
   const n = tiles.length;
   // 1) 牌の列を見つけられず、牌どうしの区切りもはっきりしない（＝並んだ牌が写っていない）
   if (r.source === 'fallback' && r.gap < (opts.minGap != null ? opts.minGap : 0)) return { ok: false, reason: 'noRow' };
-  // 2) 手牌として少なすぎる（鳴きを入れても足りない）
-  if (n < 7 - 3 * melds) return { ok: false, reason: 'tooFew' };
+  // 1') 読み取り枠（opts.roi）に比べて、高さも長さもとても小さい列（v0.45）。手牌のない所（卓の点数の表示など）に枠を置くと、
+  //     ボタンの縁などの細い帯を何枚もの「白」と読むことがあった（自撮りの写真の手牌のない所に枠を置いた121回のうち2回。どちらも
+  //     列の高さが枠の 3〜4%・長さが枠の 9〜12%）。本当の手牌は、枠をゆるく合わせても高さが枠の 10% 以上・長さが 45% 以上ある
+  if (opts.roi && r.corners) {
+    const { len, height } = rowSize(r.corners);
+    const rw = opts.roi.x1 - opts.roi.x0;
+    const rh = opts.roi.y1 - opts.roi.y0;
+    if (rw > 0 && rh > 0 && height < TINY_H * rh && len < TINY_W * rw) return { ok: false, reason: 'tooSmall' };
+  }
+  // 2) 手牌として少なすぎる（鳴きを入れても足りない）。鳴きを入れていなくても、3組鳴いたあとの4枚までは読む
+  //    （v0.45。v0.44 までは7枚未満を止めていたので、鳴き3組の4枚の写真が「読み取れず」になった。使い方・できることのページの
+  //    「10枚・7枚・4枚で読めたら鳴いているものとして扱う」と合わせる）
+  if (n < 4 - 3 * melds) return { ok: false, reason: 'tooFew' };
   // 3) 同じ牌が5枚以上（麻雀の牌としてありえない）。
   //    赤5は卓によって各色2枚・3枚・全部赤もあるので、同じ赤5が何枚あっても止めない（5枚以上だけ見る）
   const counts = new Map();
@@ -11057,6 +11141,24 @@ function indicatorPage(kind, picked, n) {
 }
 
 /**
+ * 入口「テンパイです」の待ち牌（v0.45: ユーザーの要望「待ちがとても小さいので大きく」。v0.37〜v0.44 は文の頭に 18px の牌）。
+ * 見出しのすぐ下に、待ちの数と牌を大きく並べる。牌の大きさは待ちの数で変える（4種までは 44px、多いときは小さくして、
+ * 入りきらなければ牌だけ次の行へ）。鳴きを省いた形（10・7・4枚）も牌で出す
+ */
+function waitBoxHTML(tiles, hiddenMelds = 0) {
+  const n = tiles.length;
+  const size = n <= 4 ? 'l' : n <= 6 ? 'm' : n <= 9 ? 's' : 'xs';
+  const names = tiles.map((t) => tileLabel(t)).join('・');
+  return (
+    `<div class="sh-waitbox" data-size="${size}" role="group" aria-label="待ち ${n}種：${names}">` +
+    `<span class="swb-h" aria-hidden="true">待ち<b>${n}</b>種</span>` +
+    `<span class="swb-tiles">${tiles.map((t) => tileHTML(t, { size: 'md' })).join('')}</span>` +
+    (hiddenMelds ? `<small class="swb-note">鳴き${hiddenMelds}組を省いて計算しています</small>` : '') +
+    `</div>`
+  );
+}
+
+/**
  * 入口のページの文（今の形がひと目で分かるように、見出しは形の名前）。v0.37: テンパイ・アガリ形にも出す
  * （ユーザーの要望: 「この案内で今のシャンテン数がすぐ分かる」）。テンパイは待ちも添える（シートが下の帯を隠すため）
  */
@@ -11070,13 +11172,11 @@ function gateText(a) {
     };
   }
   if (phase === 'tenpai') {
-    let waits = '';
-    if (a.phase === 'hand14') waits = '1枚切ればテンパイ。切る牌を押すと待ちが出ます。';
-    else if (a.hiddenMelds) waits = `待ち ${a.waits.length}種（鳴き${a.hiddenMelds}組は省略）。`;
-    else if (a.waits && a.waits.length) waits = `<span class="sh-waits">待ち ${a.waits.length}種 ${tilesInline(a.waits.map((w) => w.tile), 'xs')}</span>`;
+    const lead = a.phase !== 'hand14' && a.waits && a.waits.length ? waitBoxHTML(a.waits.map((w) => w.tile), a.hiddenMelds | 0) : '';
     return {
       title: 'テンパイです',
-      hint: `${waits}アガリ想定（場風・自風・本場・ドラ・リーチなど）を入れると、待ち牌ごとに役と点数が出ます`,
+      lead,
+      hint: `${a.phase === 'hand14' ? '1枚切ればテンパイ。切る牌を押すと待ちが出ます。' : ''}アガリ想定（場風・自風・本場・ドラ・リーチなど）を入れると、待ち牌ごとに役と点数が出ます`,
       no: '待ちだけ見る',
     };
   }
@@ -11095,6 +11195,7 @@ function pageHTML(q, a) {
       const g = gateText(a);
       return {
         title: g.title,
+        lead: g.lead || '',
         hint: g.hint,
         body:
           `<div class="sh-list">` +
@@ -11310,7 +11411,7 @@ function setupSheetHTML(a) {
     prog +
     // v0.42: まとめのページは下の項目の一覧と同じなので、✓ の札は出さない（ボタンを上に寄せるため）
     (gate || q === 'summary' ? '' : doneChips(a)) +
-    `<div class="sh-q">${p.title}</div>${p.hint ? `<div class="sh-hint">${p.hint}</div>` : ''}` +
+    `<div class="sh-q">${p.title}</div>${p.lead || ''}${p.hint ? `<div class="sh-hint">${p.hint}</div>` : ''}` +
     `<div class="sh-body">${p.body}</div>` +
     (p.note ? `<div class="sh-note">${p.note}</div>` : '') +
     (!gate && !scoreReady() ? `<div class="sh-foot"><button type="button" class="linkish" data-action="su-later">あとで入れる（待ちだけ見る）</button></div>` : '')
@@ -13600,6 +13701,7 @@ const FLOWER_ID = 37; // 花牌（抜きドラ）。手牌からは外す
 // 手牌として読めなかったときの案内（写真が手牌でない・小さすぎる・暗いなど）
 const REJECT_TEXT = {
   noRow: '手牌が見つかりませんでした。枠の中に手牌を横一列に入れて撮り直してください（「＋」から手で入力もできます）',
+  tooSmall: '枠の中に手牌が見つかりませんでした。手牌が枠いっぱいに入るように、写真を拡大するか近づいて撮り直してください',
   tooFew: '手牌として読める牌が足りませんでした。手牌が枠いっぱいに入るように撮り直してください',
   impossible: '同じ牌が5枚以上になりました。手牌の写真か確認して、はっきり写るように撮り直してください',
   unsure: '牌をはっきり読み取れませんでした。明るい場所で、手牌を枠いっぱいに入れて撮り直してください',
@@ -13786,7 +13888,7 @@ async function readOnDevice() {
     return true;
   }
   // 手牌でない写真に無理やり牌を当てはめない（風景・人物など）
-  const check = checkHand(r, { melds: state.melds.length, minP: MIN_P, flowers: !!state.rules.flowers });
+  const check = checkHand(r, { melds: state.melds.length, minP: MIN_P, flowers: !!state.rules.flowers, roi: lastRoi });
   if (!check.ok) {
     track('read_ng');
     cam.note = REJECT_TEXT[check.reason] || REJECT_TEXT.noRow;
@@ -14969,7 +15071,7 @@ function renderControls() {
   sort.querySelector('.st-state').textContent = !sortReady ? '—' : cam.sorted ? 'ON' : 'OFF';
 }
 
-/** 鳴きを省いた10枚・7枚の「何待ち問題」の形は、テンパイの画面として見せる（点数は出さない） */
+/** 鳴きを省いた10枚・7枚・4枚の「何待ち問題」の形は、テンパイの画面として見せる（点数は出さない） */
 function cameraView(a) {
   if (a && a.phase === 'incomplete' && a.hidden && !cam.draft) {
     const h = a.hidden;
@@ -15413,7 +15515,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.44</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.45</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
