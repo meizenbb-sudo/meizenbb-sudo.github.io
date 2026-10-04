@@ -4812,6 +4812,17 @@ html[data-cam-land] .land-hint:not([hidden])::before {
   align-items: center;
   gap: 8px 10px;
 }
+/* v0.49: 形ごとの［形］と牌のかたまり（bigscore.js tenpaiSections）。役も点数も同じ牌がある形どうしは1つの枠にまとめ、
+   見出しに形を横に並べる（.multi。形と形の間は少し広く。入りきらなければ形ごと次の行へ） */
+.bs-gp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.bs-gh.multi {
+  column-gap: 14px;
+}
 .bs-shape {
   padding: 3px 11px;
   border-radius: 9px;
@@ -11745,7 +11756,9 @@ function handleGuide(el) {
 //   だけが極端に目に入る画面が出てきてもよい。✖を押したら今の画面に戻る」。
 //   点数条件の最後の「この条件で点数を見る」を押したら、テンパイ・アガリ形なら写真の画面・手入力の画面の上に重ねて出す。
 //   ✖（右上）・「閉じる」（下）・Esc で今の画面に戻る。テンパイ・アガリのカードの下の「点数を大きく表示」からもう一度開ける。
-//   待ちは形ごと、点数が牌ごとに違うときは牌ごとに分ける。役も出す（ユーザーの要望「役もお願いします」）: 牌ごとに「役 リーチ・平和・ドラ1」の行、
+//   待ちは形ごと、点数か役が牌ごとに違うときは牌ごとに分ける（v0.48 から役も見る。役も点数も同じ牌だけ「4索・7索でアガリ」と1つに）。
+//   v0.49: 役も点数も同じ牌がある形どうしは1つの枠にまとめ、見出しに形を横に並べる（「両面 3萬 6萬 ／ カンチャン 4萬」。tenpaiSections）。
+//   役も出す（ユーザーの要望「役もお願いします」）: 牌ごとに「役 リーチ・平和・ドラ1」の行、
 //   ツモだけ・ロンだけでつく役（メンゼンツモなど）はその行に「＋メンゼンツモ」。ロン・ツモの文字の前には新しく作ったアイコン（shared.js RON_SVG・TSUMO_SVG）
 // v0.42（ユーザーの要望）: 本場・供託があるときは、大きな点数（基本の点数）の下に本場・供託込みの点数を少し小さく
 //   「1,500-2,800(2本場)+2,000(供託2)」（shared.js honbaLineHTML。カード・内訳・手入力でも同じ書き方）。
@@ -11820,27 +11833,67 @@ function lineHTML(kind, r, extra = [], own = false) {
   return `<div class="bs-l ${kind}">${em}${hanFuHTML(r)}${plus}<strong${long}>${pts}</strong>${hb ? `<div class="bs-hb">${hb}</div>` : ''}</div>`;
 }
 
-/** 点数が同じかどうかの目印（ロン・ツモの翻・符・点数・払い方） */
+/**
+ * 1つにまとめてよいかの目印（ロン・ツモの翻・符・点数・払い方と、役・ドラの並び）。表示が同じになる牌どうしだけが同じ目印になる。
+ * v0.48: 役も見る（ユーザーの要望「役が同じで点数が同じであれば、2種で一つの表記に」）。v0.47 までは点数だけで比べていたので、
+ * 点数が同じで役が違う牌（1・4・7筒待ちの 1筒 平和・一盃口 と 7筒 平和・タンヤオ。どちらも2翻30符。シャンポンの 北 自風 と 發 役牌）が
+ * 「1筒・7筒でアガリ」のようにまとまり、役の行は最初の牌のものしか出ていなかった。
+ * 符は、表示に出すとき（4翻以下）だけ比べる。満貫以上（5翻〜）・役満は符を出さず、符で点数も変わらないので、
+ * 符だけ違う牌（清一色の 3萬 ツモ40符 と 6萬 ツモ30符。どちらも7翻 跳満）は1つにまとめる（v0.47 は同じ中身を2回並べていた）
+ */
 function sig(w) {
-  const one = (r) => (r && r.ok ? [r.han, r.fu, r.points, r.limit || '', JSON.stringify(r.payment || {})].join('/') : 'x');
+  const one = (r) =>
+    r && r.ok
+      ? [r.han, r.yakuman || r.han >= 5 ? '' : r.fu, r.points, r.limit || '', JSON.stringify(r.payment || {}), yakuItems(r).map((x) => x.t).sort().join(',')].join('/')
+      : 'x';
   return `${one(w.ron)}|${one(w.tsumo)}`;
 }
 
 const hasScore = (w) => (w.ron && w.ron.ok) || (w.tsumo && w.tsumo.ok);
 
-/** テンパイ: 形ごとに、点数が同じ牌をまとめる（[{ label, waits, blocks: [[w, w], [w]] }]）。
- *  牌ごとに点数が違う形（両面の 1萬 と 4萬 でタンヤオの有無 など）は、形の見出しは1つで、下に牌ごとの点数を並べる */
-function tenpaiGroups(a) {
+/**
+ * テンパイ: 待ちを枠に分ける（[{ shapes: [{ label, waits }], blocks: [[w, w], [w]] }]）。
+ *  - 枠の見出しは形（両面・カンチャン…）とその牌。枠の中で役や点数が違う牌（両面の 1萬 と 4萬 でタンヤオの有無 など）は、
+ *    見出しの下に「4萬・7萬でアガリ」のように分けて並べる（役も点数も同じ牌だけが1つ。`sig`）
+ *  - v0.49: 役も点数も同じ牌がある形どうしは1つの枠にまとめ、見出しに形を横に並べる（ユーザーの要望「役も点数も同じなので
+ *    カンチャン4マンは3.6まんの横に持ってきてほしい。スペースありそうなので」）。
+ *    清一色の 両面 3・6萬 と カンチャン 4萬（どれも清一色・跳満）→ 見出し「両面 3萬 6萬 ／ カンチャン 4萬」と点数1つ。
+ *    3・6筒のノベタン＋9筒の単騎で3筒だけ一気通貫（234m1233456789p）→ 見出し「ノベタン 3筒 6筒 ／ 単騎 9筒」の下に「3筒でアガリ」「6筒・9筒でアガリ」。
+ *    同じ目印の牌がない形どうし（点数か役が全部違う）は、今までどおり別の枠
+ */
+function tenpaiSections(a) {
   const groups = groupWaits(state.concealed, state.melds.length + (a.hiddenMelds | 0), a.waits);
-  return groups.map((g) => {
-    const blocks = [];
+  // 同じ目印（役も点数も同じ）の牌がある形どうしをつなぐ
+  const parent = groups.map((_, i) => i);
+  const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+  const first = new Map(); // 目印 → その目印が最初に出た形
+  groups.forEach((g, i) => {
     for (const w of g.waits) {
-      const b = blocks.find((x) => sig(x[0]) === sig(w));
-      if (b) b.push(w);
-      else blocks.push([w]);
+      const s = sig(w);
+      if (first.has(s)) parent[find(i)] = find(first.get(s));
+      else first.set(s, i);
     }
-    return { label: g.label, waits: g.waits, blocks };
   });
+  // 枠の並びは、その枠の最初の形の並び（groupWaits は点数の高い順）
+  const sections = [];
+  const byRoot = new Map();
+  groups.forEach((g, i) => {
+    const r = find(i);
+    let sec = byRoot.get(r);
+    if (!sec) {
+      sec = { shapes: [], blocks: [] };
+      byRoot.set(r, sec);
+      sections.push(sec);
+    }
+    sec.shapes.push({ label: g.label, waits: g.waits });
+    for (const w of g.waits) {
+      const b = sec.blocks.find((x) => sig(x[0]) === sig(w));
+      if (!b) sec.blocks.push([w]);
+      else if (!b.some((x) => x.tile === w.tile)) b.push(w); // 念のため同じ牌は1回だけ（groupWaits で待ち牌は1つの形にしか入らない）
+    }
+  });
+  for (const sec of sections) for (const b of sec.blocks) b.sort((x, y) => x.tile - y.tile);
+  return sections;
 }
 
 /** 大きな表示を出せるか（点数条件がそろい、テンパイかアガリ形で、どこかに点数がある） */
@@ -11875,26 +11928,26 @@ function contentHTML(a) {
         `</section>`,
     };
   }
-  const groups = tenpaiGroups(a);
+  const sections = tenpaiSections(a);
   const dama = damaAnswered(a) ? '<span class="bs-dama">リーチなし</span>' : '';
   const lines = (w) => {
     const y = yakuSplit(w.ron, w.tsumo);
     return yakuRowHTML(y.common) + lineHTML('ron', w.ron, y.ron, y.own) + lineHTML('tsumo', w.tsumo, y.tsumo, y.own);
   };
-  const body = groups
-    .map((g) => {
-      const tiles = g.waits.map((w) => tileHTML(w.tile, { size: 'md' })).join('');
-      const names = g.waits.map((w) => tileLabel(w.tile)).join('・');
+  const body = sections
+    .map((sec) => {
+      // 見出し: 形ごとに［形］と牌のかたまり。形が2つ以上なら横に並べる（入りきらなければ形ごと次の行へ）
+      const head = sec.shapes
+        .map((s) => `<span class="bs-gp"><span class="bs-shape">${s.label}</span><span class="bs-tiles">${s.waits.map((w) => tileHTML(w.tile, { size: 'md' })).join('')}</span></span>`)
+        .join('');
+      const names = sec.shapes.map((s) => `${s.label} ${s.waits.map((w) => tileLabel(w.tile)).join('・')}待ち`).join('、');
       const inner =
-        g.blocks.length === 1
-          ? lines(g.blocks[0][0])
-          : g.blocks
+        sec.blocks.length === 1
+          ? lines(sec.blocks[0][0])
+          : sec.blocks
               .map((b) => `<div class="bs-sub"><div class="bs-sh">${b.map((w) => tileHTML(w.tile, { size: 'sm' })).join('')}<span>${b.map((w) => tileLabel(w.tile)).join('・')}でアガリ</span></div>${lines(b[0])}</div>`)
               .join('');
-      return (
-        `<section class="bs-g" aria-label="${g.label} ${names}待ち"><div class="bs-gh"><span class="bs-shape">${g.label}</span><span class="bs-tiles">${tiles}</span></div>` +
-        `${inner}</section>`
-      );
+      return `<section class="bs-g" aria-label="${names}"><div class="bs-gh${sec.shapes.length > 1 ? ' multi' : ''}">${head}</div>${inner}</section>`;
     })
     .join('');
   // v0.42: テンパイの点数は裏ドラ・一発を聞かずに出しているので、リーチしたときはそれが分かる注記を見出しの下に
@@ -15566,7 +15619,7 @@ else init();
 })();
 </script>
 
-<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.47</small></footer>
+<footer class="site-foot"><nav><a href="features.html">できること</a><i>・</i><a href="help.html">使い方</a><i>・</i><a href="learn.html">解説</a><i>・</i><a href="privacy.html">プライバシー</a><i>・</i><a href="terms.html">免責事項</a></nav><a class="sis-card" href="https://kiroku.nanimachi.net/" target="_blank" rel="noopener"><img src="kiroku-icon-192.png" width="40" height="40" alt="" decoding="async"><span class="sis-t"><span class="sis-n"><b>麻雀記録帳</b><em>姉妹アプリ</em></span><small>持ち点を入れるだけで、<wbr>成績を自動で集計</small></span><svg class="sis-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a><small class="site-ver">v0.49</small></footer>
 <div class="sw-bar" id="sw-update" hidden role="status"><span>新しい版があります</span><button type="button" id="sw-reload">更新</button></div>
 <script>
 (() => {
