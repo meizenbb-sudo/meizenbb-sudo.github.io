@@ -6,12 +6,12 @@
  * VERSION は「版-中身の指紋」（例: v0.23-5c2262cea9ea）。指紋は公開用の一式（sw.js 以外）から作る。
  * 書体（Google Fonts）は使ったときに保存する。取れなくても端末の丸ゴシックで代替できるので必須にはしない。
  */
-const VERSION = 'v0.49-4486c758826f';
+const VERSION = 'v0.50-83b84418074d';
 const CACHE = `haiyomi-${VERSION}`;
 const FONTS = 'haiyomi-fonts';
 const SHELL = new URL('./', self.registration.scope).href;
 // 解説ページ（build.mjs の PAGES から入れる。v0.38 で6ページ増えたので、手で並べるのをやめた）
-const PAGES = ["./features.html","./help.html","./tips.html","./learn.html","./waits.html","./shanten.html","./yaku.html","./fu.html","./score.html","./sanma.html","./privacy.html","./terms.html"];
+const PAGES = ["./features.html","./help.html","./tips.html","./learn.html","./waits.html","./quiz-basic.html","./quiz-chinitsu.html","./shanten.html","./yaku.html","./fu.html","./score.html","./sanma.html","./privacy.html","./terms.html"];
 // 姉妹アプリ（麻雀記録帳）のアイコンも、オフラインでカードの絵が欠けないよう最初に保存する（v0.39）
 const ICONS = ['./favicon.ico', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable.png', './kiroku-icon-192.png'];
 const CORE = ['./', './manifest.json', ...ICONS, ...PAGES];
